@@ -33,6 +33,8 @@ bash run_synopsys.sh ../agent_A/submission \
 
 首次运行会在同一平台实测两份准确定点基线，取较小面积作为 `A_ref`。后续设计复用匹配的校准。通过全部硬件约束后，连续分数为 `clip(1-A/A_ref,0,1)`，通过目标为 `A/A_ref≤0.80`。这些仍是 pre-layout 面积与 ideal-interconnect STA，不称为 post-route。
 
+DC 总面积按映射后每个 leaf instance 对应的 library cell area 累加；同一单元类型出现多次则按实例数计入，层级容器不重复计入。寄存器面积在同一遍历中统计，不依赖部分 DC 版本缺失的顶层 design `area` 属性。原始 `dc_area.rpt` 仍保留；机器结果的 `area_method` 标明统计方式。综合报错或面积/时序数据无效时停止，不生成有效评分。
+
 ## 多个 agent / 两组实验
 
 准备 CSV，例如：
@@ -61,6 +63,8 @@ bash run_synopsys.sh --manifest /workspace/designs.csv \
 - `<输出目录>_feedback.tar.gz`：可回传分析的结果包，含校准诊断日志。
 
 重复同一命令可恢复：成功完成、同源同协议同工具的点直接复用；未完成或基础设施错误的点重试。变更 RTL 会使用独立目录，不覆盖旧点。工具/许可证/库错误标为未评分，不当作已测得的零面积或有效零收益。
+
+评分器或综合脚本更新会改变平台指纹，自动建立新的校准/候选缓存目录，不复用旧版本的失败结果或面积分母。无需删除 `.eval_state/`；旧记录保持可查。
 
 `.eval_state/` 缓存平台校准和默认公共实验协议，不进入 Git。默认协议首次创建后在本平台所有设计间复用。跨服务器同步时显式使用同一 `--protocol /path/protocol.json`；首次也可用 `--seed 12345` 指定可复现的实验种子。实际最终测试协议应由出题人保存，和 agent 的公开开发输入分开。
 

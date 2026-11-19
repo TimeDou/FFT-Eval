@@ -1,19 +1,32 @@
+"""Inspect or prepare the installed EDA toolchain without importing NumPy."""
 import argparse
 import json
-import shutil
-from common import COMB, SEQ
+import os
+import sys
+from common import read, save
+from toolchain import prepare, write_environment
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--backend', choices=['commercial', 'local'], default='commercial')
-args = parser.parse_args()
-if args.backend == 'commercial':
-    from commercial import preflight
-    result = preflight()
-else:
-    from local_asic import ABC, STA
-    paths = {name: shutil.which(name) for name in ['yosys', 'iverilog', 'vvp', 'verilator']}
-    paths.update(ABC=str(ABC), OpenSTA=str(STA))
-    result = dict(commands=paths, ready=all(paths.values()) and ABC.is_file() and STA.is_file()
-                  and COMB.is_file() and SEQ.is_file())
-print(json.dumps(result, indent=2))
-raise SystemExit(0 if result['ready'] else 2)
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--backend', choices=['auto', 'commercial', 'local'], default='auto')
+    parser.add_argument('--check-only', action='store_true')
+    parser.add_argument('--no-build', action='store_true')
+    parser.add_argument('--quick', action='store_true')
+    parser.add_argument('--calibration')
+    parser.add_argument('--report')
+    parser.add_argument('--env-file')
+    args = parser.parse_args()
+    calibration = read(args.calibration) if args.calibration else None
+    report = prepare(args.backend, quick=args.quick, check_only=args.check_only,
+                     allow_build=not args.no_build and os.environ.get('FFT_NO_BUILD')!='1', calibration=calibration)
+    if args.report:
+        save(args.report, report)
+    if args.env_file and report['ready']:
+        write_environment(args.env_file, report)
+    print(json.dumps(report, indent=2))
+    return 0 if report['ready'] else 2
+
+
+if __name__ == '__main__':
+    sys.exit(main())

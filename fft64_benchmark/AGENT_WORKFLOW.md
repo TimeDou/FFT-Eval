@@ -2,6 +2,8 @@
 
 The purpose is to test engineering judgment and iterative hardware optimization, **not documentation volume**.
 
+Use the supplied environment first. Run `bash setup.sh --check-only`; `setup.sh` and `run_preview.sh` load DSBench's EDA profile and prefer installed VCS/DC/PrimeTime. Installed open-source tools are the next choice; source builds are only a last fallback for missing components. Do not start by rebuilding Yosys or Icarus. `--no-build` restricts preview to existing EDA tools.
+
 1. **Read:** `TASK_EN.md` or `TASK_ZH.md`, `SPEC.json`, `ARCHITECTURE_GUIDE.md`, `INTERFACE.md`.
 2. **Plan:** create `DESIGN_PLAN.md` yourself; identify at least two plausible architecture families and measurable hypotheses. Treat the guide as background, not as a required prescribed design.
 3. **Build a correct baseline:** run functional, protocol, synthesis and STA checks in the supplied EDA environment. Establish a measured area reference for your own comparison.

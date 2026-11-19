@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import re
 import sys
 import time
@@ -13,6 +14,7 @@ import numpy as np
 from common import ROOT, TECH, COMB, SEQ, flow_identity, read, save, sha
 from model import make_frames, quality, reference as fft_reference
 from simulate import schedule, simulate, decode
+from toolchain import activate, probe, select_backend
 
 
 def assemble(submission):
@@ -91,7 +93,7 @@ def compact(result):
     quality_result = result.get('quality', {})
     latency = result.get('latency', {})
     ppa = result.get('ppa', {})
-    return dict(status=result['status'],
+    return dict(status=result['status'], backend=result.get('backend'),
                 functional_pass=bool(result.get('protocol_pass') and quality_result.get('feasible')),
                 worst_frame_sqnr_db=quality_result.get('minimum_frame_sqnr_db'),
                 first_output_cycles=latency.get('first_output_latency_cycles'),
@@ -103,18 +105,21 @@ def compact(result):
                 grade=result.get('grade'), failure=result.get('failure'))
 
 
-def evaluate(submission, outdir, backend='local', seed=20261118, scale=1,
+def evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
              calibration=None, quick=False, formal=False):
     directory = Path(outdir).resolve()
     directory.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
     result = dict(status='RUNNING', backend=backend, seed=seed, scale=scale)
     try:
+        activate()
+        backend, selection_reason = select_backend(probe(quick), backend, calibration)
+        result.update(backend=backend, selection_reason=selection_reason)
         spec = read(ROOT/'SPEC.json')
         assert spec['fft']['points'] == 64 and spec['numeric']['per_nonzero_frame_sqnr_min_db'] == 50
         assert spec['timing_protocol']['min_frame_start_interval_cycles'] == 384
         assert spec['timing_protocol']['clock_period_ns'] == 10
-        if backend == 'commercial':
+        if backend == 'commercial' and not quick:
             from commercial import preflight
             environment = preflight()
             save(directory/'environment.json', environment)
@@ -188,7 +193,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--submission', required=True)
     parser.add_argument('--out', required=True)
-    parser.add_argument('--backend', choices=['local', 'commercial'], default='commercial')
+    parser.add_argument('--backend', choices=['auto', 'local', 'commercial'], default=os.environ.get('FFT_BACKEND','auto'))
     parser.add_argument('--seed', type=int, default=20261118)
     parser.add_argument('--scale', type=int, default=1)
     parser.add_argument('--calibration')

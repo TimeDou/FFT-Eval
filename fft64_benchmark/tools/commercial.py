@@ -2,10 +2,12 @@
 from pathlib import Path
 import os,re,time,subprocess,shutil
 from common import ROOT,TECH,COMB,SEQ,run,read,save,sha,lock,flow_identity
+from toolchain import activate
 
 def preflight(require_db=True):
+ tools=activate()
  cmds=['vcs','dc_shell','pt_shell']
- return dict(commands={x:shutil.which(x)for x in cmds},libraries={str(x):x.exists()for x in [COMB,SEQ]},compiled_db={str(x):x.exists()for x in [TECH/'db/comb_rvt_tt.db',TECH/'db/seq_rvt_tt.db']},ready=all(shutil.which(x)for x in cmds)and all(x.exists()for x in [COMB,SEQ])and(not require_db or all(x.exists()for x in [TECH/'db/comb_rvt_tt.db',TECH/'db/seq_rvt_tt.db'])))
+ return dict(commands={x:tools[x]for x in cmds},libraries={str(x):x.exists()for x in [COMB,SEQ]},compiled_db={str(x):x.exists()for x in [TECH/'db/comb_rvt_tt.db',TECH/'db/seq_rvt_tt.db']},ready=all(tools[x]for x in cmds)and all(x.exists()for x in [COMB,SEQ])and(not require_db or all(x.exists()for x in [TECH/'db/comb_rvt_tt.db',TECH/'db/seq_rvt_tt.db'])))
 
 def measure(source,outdir,formal=False):
  d=Path(outdir).resolve();d.mkdir(parents=True,exist_ok=True)

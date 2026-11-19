@@ -48,6 +48,8 @@ You may **not** use gate-level approximate logic synthesis (ALS), approximate ga
 
 ## Recommended workflow
 
+Use the installed platform environment first: run `bash setup.sh --check-only`. The default evaluator loads the EDA profile, prefers existing VCS/DC/PrimeTime, then reuses installed open-source tools, and only finally attempts builds of missing components. Do not begin by reinstalling Yosys or Icarus. Use `--no-build` to disable automatic tool compilation.
+
 1. Read `SPEC.json`, `ARCHITECTURE_GUIDE.md`, and `INTERFACE.md`.
 2. Create your own `DESIGN_PLAN.md` using `DESIGN_PLAN_TEMPLATE.md`, including at least two plausible architecture candidates and the first measurements you intend to make.
 3. Implement or modify RTL. Establish one accurate (high-precision) baseline before aggressive quantization.

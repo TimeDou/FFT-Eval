@@ -1,0 +1,8 @@
+{
+  "purpose": "Operator-only accurate fixed-point calibration designs; no optimized approximate solution in this branch.",
+  "generator": "Original FFT64 generator from the author solution; interface fft64_top; unscaled forward FFT; coefficient fractional bits 16; no data precision reduction.",
+  "designs": [
+    "sdf",
+    "iterative"
+  ]
+}

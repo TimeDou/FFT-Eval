@@ -29,6 +29,10 @@ def read(path):
     return json.loads(Path(path).read_text())
 
 def run(argv, log, timeout=600, cwd=None):
+    argv = list(map(str, argv))
+    from toolchain import TOOLS, find_tool
+    if argv[0] in TOOLS:
+        argv[0] = find_tool(argv[0]) or argv[0]
     log = Path(log)
     log.parent.mkdir(parents=True, exist_ok=True)
     if log.exists():
@@ -37,7 +41,7 @@ def run(argv, log, timeout=600, cwd=None):
         log.rename(previous / (log.name + '.' + str(time.time_ns())))
     start = time.monotonic()
     with log.open('w') as stream:
-        proc = subprocess.Popen(list(map(str, argv)), stdin=subprocess.DEVNULL,
+        proc = subprocess.Popen(argv, stdin=subprocess.DEVNULL,
                                 stdout=stream, stderr=subprocess.STDOUT,
                                 cwd=cwd or ROOT, start_new_session=True)
         try:

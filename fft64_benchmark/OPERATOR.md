@@ -2,7 +2,7 @@
 
 ## 部署
 
-将本目录放到 `/workspace/benchmark/`，运行 `bash setup.sh commercial`，然后保存 agent 初始环境。任务提示使用 `TASK_ZH.md` 或 `TASK_EN.md`，提交目录为 `/workspace/submission/`。
+将本目录放到 `/workspace/benchmark/`，先运行 `bash setup.sh --check-only` 查看已有工具，再运行 `bash setup.sh` 准备缺失依赖。脚本会加载平台已有环境，优先选 VCS/DC/PrimeTime；不要求 agent 重新构建 Yosys/Icarus。完成准备后保存初始环境。任务提示使用 `TASK_ZH.md` 或 `TASK_EN.md`，提交目录为 `/workspace/submission/`。
 
 本目录可独立交给 agent；解题目录只用于出题人校准。当前仅提供架构说明与接口。若以后提供准确 RTL 起点，请作为 Assisted 模式另行统计。
 
@@ -19,7 +19,9 @@ python3 tools/calibrate.py --backend commercial \
 
 每份实现也使用 `rtl/` 布局和 `fft64_top` 接口。所有基线验证成功后，会生成 `area_reference.json`。审核实测结果与 0.80 通过目标，然后将这个文件作为该版本的面积参考。agent 可通过 `FFT_CALIBRATION` 使用它。
 
-平台若没有默认的 Python 3.10+，将命令中的 `python3` 换成 `/opt/dsbench/bin/python3`。Liberty 原生单位为 ps/fF，随题 SDC 已按 10 ns、0.1 ns uncertainty、1 fF load 配置。
+平台若没有默认的 Python 3.10+，将命令中的 `python3` 换成 `/opt/dsbench/bin/python3`。Liberty 原生单位为 ps/fF，随题 SDC 已按 10 ns、0.1 ns uncertainty、1 fF load 配置。手册说明平台没有预置工艺库，因此仍需用随题 Liberty/DB，不需另装 EDA 软件。
+
+正式测试时使用校准后固定的后端。自动选择是为了适配开发环境，评分不会因许可证或工具故障静默换成另一种面积流程。可设置 `FFT_NO_BUILD=1`，避免模型试验期间触发源码构建。
 
 ## DSBench Code Grade
 

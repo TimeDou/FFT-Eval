@@ -9,18 +9,25 @@
 正式流程使用 ASAP7 RVT/TT、VCS、Design Compiler 和 PrimeTime。组合与时序 Liberty、门级功能模型和 Python 依赖随题提供。支持 Python 3.10+；随包离线 NumPy wheel 对应平台的 Python 3.12 / Linux x86-64 / GLIBC 2.17。
 
 ```bash
-bash setup.sh commercial
+bash setup.sh --check-only  # 只检测，不安装、不构建
+bash setup.sh               # 自动选择，并准备缺少的依赖
 ```
 
-脚本会检查工具并在需要时调用 Library Compiler 生成 `tech/db/`。工具或许可证未就绪时会说明缺少什么。尚未准备商业环境时，也可以用 Yosys、ABC、OpenSTA、Icarus 和 Verilator 执行本机流程：
+默认 `auto` 的优先顺序是：**已有 VCS/DC/PrimeTime → 已有开源工具链 → 最后才构建缺少的开源组件**。所有入口都会加载手册规定的 `/etc/profile.d/eda-env.sh`，优先使用 `/opt/dsbench/bin/python3`，并识别 `VCS_HOME/DC_HOME/PT_HOME`。平台已有工具可直接使用，agent 无需先安装 Yosys 或 Icarus。
+
+Synopsys 已有而 ASAP7 DB 尚未准备时，只调用 Library Compiler 转换随题 Liberty；也可通过 `FFT_LC_BIN` 指定编译器，或直接提供 `tech/db/` 中的两份 DB。库配置仍不满足时，自动模式可复用已就绪的开源流程，但不为这个问题新建一套 Yosys。实际工具执行中的许可证错误会明确报告。`--quick` 只需 RTL 仿真器，不要求 DC/PT 或 DB 已准备好。
+
+开源流程需要 Yosys、ABC、OpenSTA、Icarus、Verilator 及 C++ 构建工具。已有组件直接复用，缺少组件才尝试安装到独立的 `FFT_TOOLS_PREFIX`；不覆盖系统工具。构建日志、固定源码版本和实际 commit 保留在该目录。缺少基础编译依赖或网络时会报告原因。
+
+可用 `bash setup.sh commercial` 或 `bash setup.sh local` 显式选流程；`--no-build` 禁止自动编译 EDA 工具。例如已有 ABC/OpenSTA 不在 PATH 时：
 
 ```bash
 export FFT_ABC=/path/to/abc
 export FFT_STA=/path/to/sta
-bash setup.sh local
+bash setup.sh --no-build
 ```
 
-默认调用 `python3`；可以用 `FFT_PYTHON` 指定解释器。在 DSBench 上会优先使用 `/opt/dsbench/bin/python3`。
+`FFT_PYTHON` 可指定解释器。已经有 NumPy 时不重复安装；DSBench 的 Python 3.12 可使用随题离线 wheel。
 
 ## 做题与自测
 
@@ -32,16 +39,19 @@ bash setup.sh local
 # 仅 RTL 数值和协议检查
 bash run_preview.sh /workspace/submission /workspace/run_quick --quick
 
-# 完整 VCS → DC → PrimeTime → 映射网表仿真
+# 自动使用已有 Synopsys，否则使用已有开源工具
 bash run_preview.sh /workspace/submission /workspace/run_full
 
-# 同样的测试，在本机开源工具上运行
+# 只使用现有环境，禁止自动编译 EDA 工具
+bash run_preview.sh /workspace/submission /workspace/run_existing --no-build
+
+# 需要时显式指定开源流程
 bash run_preview.sh /workspace/submission /workspace/run_local --backend local
 ```
 
 终端只返回简短结果。`summary.json` 是便于阅读的反馈，`result.json` 和子目录保留逐帧质量、周期记录、网表与工具日志。每个候选使用独立输出目录；相同 RTL 的重复测量可复用映射与编译缓存。
 
-有已校准的面积参考时，设置 `FFT_CALIBRATION=/path/to/area_reference.json`。未校准时仍报告实测面积和时序，面积比和正式得分留空。
+反馈包含实际选择的 `backend`，检测详情在输出目录的 `environment_selection.json`。有已校准的面积参考时，设置 `FFT_CALIBRATION=/path/to/area_reference.json`，自动模式使用该参考指定的后端。未校准时仍报告实测面积和时序，面积比和正式得分留空。
 
 不运行 RTL 时，也可用 `tools/check_numeric.py` 检查自己导出的整数输出 JSON；它只检查数值，不替代完整电路评估。
 

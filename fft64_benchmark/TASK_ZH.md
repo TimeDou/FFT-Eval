@@ -48,6 +48,8 @@
 
 ## 推荐执行流程
 
+优先使用平台已有环境：先运行 `bash setup.sh --check-only`。默认评估会加载平台 EDA 配置并优先调用已有 VCS/DC/PrimeTime，其次复用开源工具，最后才尝试构建缺失组件；不需要先自行安装 Yosys 或 Icarus。可用 `--no-build` 禁止自动编译工具。
+
 1. 阅读 `SPEC.json`、`ARCHITECTURE_GUIDE.md` 和 `INTERFACE.md`。
 2. 参考 `DESIGN_PLAN_TEMPLATE.md` **自行创建** `DESIGN_PLAN.md`，列出至少两种可选架构与首轮实验假设。
 3. 实现或修改 RTL；先获得一个精度充分、可复现的准确基线，再进行激进的精度搜索。

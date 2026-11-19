@@ -16,7 +16,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 BENCHMARK = ROOT/'fft64_benchmark'
 sys.path.insert(0, str(BENCHMARK/'tools'))
-from common import read, save, sha, lock, flow_identity
+from common import TECH,read, save, sha, lock, flow_identity
 from toolchain import prepare
 
 
@@ -214,6 +214,13 @@ def execute(args):
         # This entry never selects local tools or builds an open-source EDA stack.
         environment=prepare('commercial',check_only=args.check_only,allow_build=False)
         save(out/'environment.json',environment)
+        # Preparation can fail before calibration starts. Keep the actual
+        # compiler output and argv receipt in the feedback archive as well.
+        for name in ['library_compile.log','library_compile.log.json']:
+            source=TECH/name
+            if source.is_file():
+                (out/'setup').mkdir(exist_ok=True)
+                shutil.copy2(source,out/'setup'/name)
         if not environment['ready'] or args.check_only:
             status='ENVIRONMENT_READY'if environment['ready']else'ENVIRONMENT_NOT_READY'
             reason='Environment check only; no design was scored.'if environment['ready']else'Synopsys tools/libraries are not ready; see environment.json. No local fallback or valid score.'

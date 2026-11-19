@@ -1,0 +1,3 @@
+read_json /mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_solution/results/runs/47657957d1b4/development/accurate_sdf/asic/mapped.json
+splitnets -ports
+write_verilog -noattr -noexpr /mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_solution/results/runs/47657957d1b4/development/accurate_sdf/asic/timing_netlist.v

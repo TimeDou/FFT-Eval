@@ -1,0 +1,77 @@
+OpenSTA 2.0.17 GITDIR-NOT Copyright (c) 2019, Parallax Software, Inc.
+License GPLv3: GNU GPL version 3 <http://gnu.org/licenses/gpl.html>
+
+This is free software, and you are free to change and redistribute it
+under certain conditions; type `show_copying' for details. 
+This program comes with ABSOLUTELY NO WARRANTY; for details type `show_warranty'.
+Startpoint: _74820_ (rising edge-triggered flip-flop clocked by clk)
+Endpoint: _74902_ (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+    Delay      Time   Description
+-------------------------------------------------------------
+   0.0000    0.0000   clock clk (rise edge)
+   0.0000    0.0000   clock network delay (ideal)
+   0.0000    0.0000 ^ _74820_/CLK (DFFHQNx1_ASAP7_75t_R)
+  65.1962   65.1962 v _74820_/QN (DFFHQNx1_ASAP7_75t_R)
+  50.3083  115.5046 v _73361_/Y (HB1xp67_ASAP7_75t_R)
+  49.5223  165.0269 v _73362_/Y (HB1xp67_ASAP7_75t_R)
+  49.5712  214.5980 v _73374_/Y (HB1xp67_ASAP7_75t_R)
+  50.3808  264.9788 v _39186_/Y (HB1xp67_ASAP7_75t_R)
+  53.8284  318.8073 v _39187_/Y (OR4x1_ASAP7_75t_R)
+  29.4944  348.3016 ^ _39191_/Y (NOR2xp33_ASAP7_75t_R)
+  51.5719  399.8736 v _39193_/Y (NAND5xp2_ASAP7_75t_R)
+  38.7291  438.6027 ^ _39232_/Y (AOI22xp33_ASAP7_75t_R)
+  27.5726  466.1753 ^ _39233_/Y (OR3x1_ASAP7_75t_R)
+  25.3403  491.5156 v _39249_/Y (NAND3xp33_ASAP7_75t_R)
+  31.2086  522.7242 v _39327_/Y (AO21x1_ASAP7_75t_R)
+  18.6055  541.3298 v _39329_/Y (AND3x1_ASAP7_75t_R)
+  40.8575  582.1873 ^ _39330_/Y (AOI211xp5_ASAP7_75t_R)
+  42.1849  624.3722 v _39335_/Y (NOR2xp33_ASAP7_75t_R)
+  29.1507  653.5228 v _39357_/Y (XOR2xp5_ASAP7_75t_R)
+  27.0080  680.5309 ^ _39359_/Y (AOI31xp33_ASAP7_75t_R)
+  22.0144  702.5453 v _39364_/Y (A2O1A1Ixp33_ASAP7_75t_R)
+  40.4348  742.9801 ^ _39379_/Y (A2O1A1O1Ixp25_ASAP7_75t_R)
+  23.0930  766.0732 v _39386_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  46.1018  812.1750 ^ _39408_/Y (A2O1A1O1Ixp25_ASAP7_75t_R)
+  28.5064  840.6813 v _39429_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  39.9490  880.6304 ^ _39609_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  26.0327  906.6630 v _40095_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  39.3874  946.0505 ^ _40310_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  26.0231  972.0735 v _40730_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  40.4080 1012.4816 ^ _40942_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  29.3990 1041.8806 v _41362_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  41.4940 1083.3746 ^ _41605_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  29.4906 1112.8652 v _41966_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  52.9566 1165.8219 ^ _42167_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  43.7990 1209.6208 v _42513_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  44.6475 1254.2683 ^ _42706_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  26.5969 1280.8654 v _43010_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  40.4458 1321.3110 ^ _43139_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  34.9180 1356.2290 v _43357_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  56.8208 1413.0498 v _43360_/Y (OR5x1_ASAP7_75t_R)
+  30.2867 1443.3364 ^ _43462_/Y (NOR3xp33_ASAP7_75t_R)
+  19.6756 1463.0121 v _43463_/Y (NOR3xp33_ASAP7_75t_R)
+  58.9492 1521.9612 ^ _43465_/Y (A2O1A1O1Ixp25_ASAP7_75t_R)
+  57.4109 1579.3721 ^ _43710_/Y (HB1xp67_ASAP7_75t_R)
+  23.4714 1602.8435 v _43714_/Y (OAI21xp33_ASAP7_75t_R)
+  24.5791 1627.4226 v _43715_/Y (AO21x1_ASAP7_75t_R)
+   0.0000 1627.4226 v _74902_/D (DFFHQNx1_ASAP7_75t_R)
+          1627.4226   data arrival time
+
+10000.0000 10000.0000   clock clk (rise edge)
+   0.0000 10000.0000   clock network delay (ideal)
+-100.0000 9900.0000   clock uncertainty
+   0.0000 9900.0000   clock reconvergence pessimism
+          9900.0000 ^ _74902_/CLK (DFFHQNx1_ASAP7_75t_R)
+  -0.5899 9899.4102   library setup time
+          9899.4102   data required time
+-------------------------------------------------------------
+          9899.4102   data required time
+          -1627.4226   data arrival time
+-------------------------------------------------------------
+          8271.9873   slack (MET)
+
+
+worst slack 8271.9873

@@ -1,0 +1,523 @@
+{
+  "accurate_iterative": {
+    "status": "COMPLETE",
+    "backend": "local",
+    "seed": 20261118,
+    "scale": 2,
+    "selection_reason": "Explicit backend selection.",
+    "source": {
+      "top": "fft64_top",
+      "files": {
+        "rtl/fft64_top.sv": "11bc67b460ffd93c3bc1cfd2c106abcda1f19886350db58705e4728d5fa770ca"
+      },
+      "source_sha256": "11bc67b460ffd93c3bc1cfd2c106abcda1f19886350db58705e4728d5fa770ca"
+    },
+    "dataset_frames": 272,
+    "protocol_pass": true,
+    "quality": {
+      "frames": 272,
+      "minimum_frame_sqnr_db": 71.20207820495467,
+      "pooled_sqnr_db": 89.74683640389824,
+      "worst_frame_nmse": 7.582146640071044e-08,
+      "zero_frame_exact": true,
+      "failed_frames": [],
+      "feasible": true
+    },
+    "latency": {
+      "first_output_latency_cycles": [
+        256
+      ],
+      "computational_tail_cycles": [
+        193
+      ],
+      "frame_completion_cycles": [
+        319
+      ],
+      "observed_frame_II_on_384_cycle_workload": [
+        384
+      ],
+      "offered_frame_II": 384,
+      "required_samples_per_second": 16666666.666666664,
+      "required_ffts_per_second": 260416.66666666663,
+      "clock_period_ns": 10,
+      "reset_mid_frame_test": true,
+      "reset_during_processing_probes": [
+        {
+          "input_start": 5,
+          "reset_cycle": 93,
+          "idle_after_load": 24
+        },
+        {
+          "input_start": 99,
+          "reset_cycle": 245,
+          "idle_after_load": 82
+        },
+        {
+          "input_start": 251,
+          "reset_cycle": 525,
+          "idle_after_load": 210
+        }
+      ]
+    },
+    "ppa": {
+      "area_um2": 3567.930120000712,
+      "register_area_um2": 842.7240000000293,
+      "arithmetic_control_mux_other_area_um2": 2725.206120000683,
+      "cells": 36865,
+      "register_cells": 2890,
+      "clock_period_ns": 10,
+      "setup_uncertainty_ns": 0.1,
+      "worst_setup_slack_ns": 7.4685327,
+      "effective_required_period_ns": 2.5314673,
+      "timing_pass": true,
+      "prelayout_fmax_estimate_MHz": 395.0278164762389,
+      "flow": "Yosys/ABC;ASAP7RVT/TT comb+sequential;countedFF storage;OpenSTA ideal-interconnect;not DC/PrimeTime or postroute",
+      "source_sha256": "11bc67b460ffd93c3bc1cfd2c106abcda1f19886350db58705e4728d5fa770ca",
+      "mapped_sha256": "b4ee8239ad6b8f8a5af6db2e63bbd64d0f571d0e9077da8f54919a27eb445f53",
+      "comb_sha256": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+      "seq_sha256": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+      "mapping_wall_seconds": 39.417243511998095
+    },
+    "flow_id": "c01301d35dfecb844caa5c8dcc932daf4ae337cbf46af8e84d918f36a579df85",
+    "mapped_simulation_pass": true,
+    "mapped_full_four_state": false,
+    "seconds": 150.62703364598565,
+    "grade": {
+      "resolved": false,
+      "score": 0.0,
+      "area_ratio": 1.0,
+      "reason": "All hardware checks passed; score is the fractional full-design area saving."
+    }
+  },
+  "accurate_sdf": {
+    "status": "COMPLETE",
+    "backend": "local",
+    "seed": 20261118,
+    "scale": 2,
+    "selection_reason": "Explicit backend selection.",
+    "source": {
+      "top": "fft64_top",
+      "files": {
+        "rtl/fft64_top.sv": "c342a5dedfec900f97e98ebceb7f71b696d8280a72f83da74f59a90272478943"
+      },
+      "source_sha256": "c342a5dedfec900f97e98ebceb7f71b696d8280a72f83da74f59a90272478943"
+    },
+    "dataset_frames": 272,
+    "protocol_pass": true,
+    "quality": {
+      "frames": 272,
+      "minimum_frame_sqnr_db": 71.20207820495467,
+      "pooled_sqnr_db": 89.74683640389824,
+      "worst_frame_nmse": 7.582146640071044e-08,
+      "zero_frame_exact": true,
+      "failed_frames": [],
+      "feasible": true
+    },
+    "latency": {
+      "first_output_latency_cycles": [
+        133
+      ],
+      "computational_tail_cycles": [
+        70
+      ],
+      "frame_completion_cycles": [
+        196
+      ],
+      "observed_frame_II_on_384_cycle_workload": [
+        384
+      ],
+      "offered_frame_II": 384,
+      "required_samples_per_second": 16666666.666666664,
+      "required_ffts_per_second": 260416.66666666663,
+      "clock_period_ns": 10,
+      "reset_mid_frame_test": true,
+      "reset_during_processing_probes": [
+        {
+          "input_start": 5,
+          "reset_cycle": 93,
+          "idle_after_load": 24
+        },
+        {
+          "input_start": 99,
+          "reset_cycle": 245,
+          "idle_after_load": 82
+        },
+        {
+          "input_start": 251,
+          "reset_cycle": 525,
+          "idle_after_load": 210
+        }
+      ]
+    },
+    "ppa": {
+      "area_um2": 5468.666400000934,
+      "register_area_um2": 1566.7668000000708,
+      "arithmetic_control_mux_other_area_um2": 3901.8996000008633,
+      "cells": 50149,
+      "register_cells": 5373,
+      "clock_period_ns": 10,
+      "setup_uncertainty_ns": 0.1,
+      "worst_setup_slack_ns": 8.032714799999999,
+      "effective_required_period_ns": 1.9672852000000003,
+      "timing_pass": true,
+      "prelayout_fmax_estimate_MHz": 508.31470698808687,
+      "flow": "Yosys/ABC;ASAP7RVT/TT comb+sequential;countedFF storage;OpenSTA ideal-interconnect;not DC/PrimeTime or postroute",
+      "source_sha256": "c342a5dedfec900f97e98ebceb7f71b696d8280a72f83da74f59a90272478943",
+      "mapped_sha256": "8cb7ecb0c1be1d4f816b3d7dce107b4a746c3c7f7592000429fe0e85eedfadf9",
+      "comb_sha256": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+      "seq_sha256": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+      "mapping_wall_seconds": 61.78571558801923
+    },
+    "flow_id": "c01301d35dfecb844caa5c8dcc932daf4ae337cbf46af8e84d918f36a579df85",
+    "mapped_simulation_pass": true,
+    "mapped_full_four_state": false,
+    "seconds": 249.0414981590584,
+    "grade": {
+      "resolved": false,
+      "score": 0.0,
+      "area_ratio": 1.5327280008499278,
+      "reason": "All hardware checks passed; score is the fractional full-design area saving."
+    }
+  },
+  "exact_banked": {
+    "status": "COMPLETE",
+    "backend": "local",
+    "seed": 20261118,
+    "scale": 2,
+    "selection_reason": "Explicit backend selection.",
+    "source": {
+      "top": "fft64_top",
+      "files": {
+        "rtl/fft64_top.sv": "579ef93ce94a4c20b6ce577902fe0bbc49b510194610ba87cc09b2dc8c9645b4"
+      },
+      "source_sha256": "579ef93ce94a4c20b6ce577902fe0bbc49b510194610ba87cc09b2dc8c9645b4"
+    },
+    "dataset_frames": 272,
+    "protocol_pass": true,
+    "quality": {
+      "frames": 272,
+      "minimum_frame_sqnr_db": 71.20207820495467,
+      "pooled_sqnr_db": 89.74683640389824,
+      "worst_frame_nmse": 7.582146640071044e-08,
+      "zero_frame_exact": true,
+      "failed_frames": [],
+      "feasible": true
+    },
+    "latency": {
+      "first_output_latency_cycles": [
+        256
+      ],
+      "computational_tail_cycles": [
+        193
+      ],
+      "frame_completion_cycles": [
+        319
+      ],
+      "observed_frame_II_on_384_cycle_workload": [
+        384
+      ],
+      "offered_frame_II": 384,
+      "required_samples_per_second": 16666666.666666664,
+      "required_ffts_per_second": 260416.66666666663,
+      "clock_period_ns": 10,
+      "reset_mid_frame_test": true,
+      "reset_during_processing_probes": [
+        {
+          "input_start": 5,
+          "reset_cycle": 93,
+          "idle_after_load": 24
+        },
+        {
+          "input_start": 99,
+          "reset_cycle": 245,
+          "idle_after_load": 82
+        },
+        {
+          "input_start": 251,
+          "reset_cycle": 525,
+          "idle_after_load": 210
+        }
+      ]
+    },
+    "ppa": {
+      "area_um2": 2712.2299199998206,
+      "register_area_um2": 842.7240000000293,
+      "arithmetic_control_mux_other_area_um2": 1869.5059199997913,
+      "cells": 25301,
+      "register_cells": 2890,
+      "clock_period_ns": 10,
+      "setup_uncertainty_ns": 0.1,
+      "worst_setup_slack_ns": 7.185013700000001,
+      "effective_required_period_ns": 2.8149862999999997,
+      "timing_pass": true,
+      "prelayout_fmax_estimate_MHz": 355.2415157402365,
+      "flow": "Yosys/ABC;ASAP7RVT/TT comb+sequential;countedFF storage;OpenSTA ideal-interconnect;not DC/PrimeTime or postroute",
+      "source_sha256": "579ef93ce94a4c20b6ce577902fe0bbc49b510194610ba87cc09b2dc8c9645b4",
+      "mapped_sha256": "06043e3c3f0fe46f6e3bfdf86c334c10d556b555a36f20ae19e17f08aff47f18",
+      "comb_sha256": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+      "seq_sha256": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+      "mapping_wall_seconds": 22.242605698062107
+    },
+    "flow_id": "c01301d35dfecb844caa5c8dcc932daf4ae337cbf46af8e84d918f36a579df85",
+    "mapped_simulation_pass": true,
+    "mapped_full_four_state": false,
+    "seconds": 120.70940571394749,
+    "grade": {
+      "resolved": true,
+      "score": 0.23983098637613476,
+      "area_ratio": 0.7601690136238652,
+      "reason": "All hardware checks passed; score is the fractional full-design area saving."
+    }
+  },
+  "quantized_banked": {
+    "status": "COMPLETE",
+    "backend": "local",
+    "seed": 20261118,
+    "scale": 2,
+    "selection_reason": "Explicit backend selection.",
+    "source": {
+      "top": "fft64_top",
+      "files": {
+        "rtl/fft64_top.sv": "24531ad017e292cfa4371581a81a75d677fa5b0cbfeb63c05222a3c9d2973b06"
+      },
+      "source_sha256": "24531ad017e292cfa4371581a81a75d677fa5b0cbfeb63c05222a3c9d2973b06"
+    },
+    "dataset_frames": 272,
+    "protocol_pass": true,
+    "quality": {
+      "frames": 272,
+      "minimum_frame_sqnr_db": 55.105912664158836,
+      "pooled_sqnr_db": 65.58698389823412,
+      "worst_frame_nmse": 3.0860910395491973e-06,
+      "zero_frame_exact": true,
+      "failed_frames": [],
+      "feasible": true
+    },
+    "latency": {
+      "first_output_latency_cycles": [
+        256
+      ],
+      "computational_tail_cycles": [
+        193
+      ],
+      "frame_completion_cycles": [
+        319
+      ],
+      "observed_frame_II_on_384_cycle_workload": [
+        384
+      ],
+      "offered_frame_II": 384,
+      "required_samples_per_second": 16666666.666666664,
+      "required_ffts_per_second": 260416.66666666663,
+      "clock_period_ns": 10,
+      "reset_mid_frame_test": true,
+      "reset_during_processing_probes": [
+        {
+          "input_start": 5,
+          "reset_cycle": 93,
+          "idle_after_load": 24
+        },
+        {
+          "input_start": 99,
+          "reset_cycle": 245,
+          "idle_after_load": 82
+        },
+        {
+          "input_start": 251,
+          "reset_cycle": 525,
+          "idle_after_load": 210
+        }
+      ]
+    },
+    "ppa": {
+      "area_um2": 2236.469939999864,
+      "register_area_um2": 805.3992000000271,
+      "arithmetic_control_mux_other_area_um2": 1431.0707399998369,
+      "cells": 20412,
+      "register_cells": 2762,
+      "clock_period_ns": 10,
+      "setup_uncertainty_ns": 0.1,
+      "worst_setup_slack_ns": 7.5867773,
+      "effective_required_period_ns": 2.4132227000000004,
+      "timing_pass": true,
+      "prelayout_fmax_estimate_MHz": 414.38363728304057,
+      "flow": "Yosys/ABC;ASAP7RVT/TT comb+sequential;countedFF storage;OpenSTA ideal-interconnect;not DC/PrimeTime or postroute",
+      "source_sha256": "24531ad017e292cfa4371581a81a75d677fa5b0cbfeb63c05222a3c9d2973b06",
+      "mapped_sha256": "2acfd60c43b11136af64c9ebe62f179bead53b8a5f2436839a02be06f0562bca",
+      "comb_sha256": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+      "seq_sha256": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+      "mapping_wall_seconds": 19.602144684060477
+    },
+    "flow_id": "c01301d35dfecb844caa5c8dcc932daf4ae337cbf46af8e84d918f36a579df85",
+    "mapped_simulation_pass": true,
+    "mapped_full_four_state": false,
+    "seconds": 91.80728027503937,
+    "grade": {
+      "resolved": true,
+      "score": 0.3731743995032566,
+      "area_ratio": 0.6268256004967434,
+      "reason": "All hardware checks passed; score is the fractional full-design area saving."
+    }
+  },
+  "aggressive_quantization": {
+    "status": "QUALITY_FAILED",
+    "backend": "local",
+    "seed": 20261118,
+    "scale": 2,
+    "selection_reason": "Explicit backend selection.",
+    "source": {
+      "top": "fft64_top",
+      "files": {
+        "rtl/fft64_top.sv": "2927e1b6d77218438cd0c1e8884f88fef5b6ae279e829ab2fe59118b402fc00f"
+      },
+      "source_sha256": "2927e1b6d77218438cd0c1e8884f88fef5b6ae279e829ab2fe59118b402fc00f"
+    },
+    "dataset_frames": 272,
+    "protocol_pass": true,
+    "quality": {
+      "frames": 272,
+      "minimum_frame_sqnr_db": 49.75856773321249,
+      "pooled_sqnr_db": 64.70948592818853,
+      "worst_frame_nmse": 1.0571660962445968e-05,
+      "zero_frame_exact": true,
+      "failed_frames": [
+        207,
+        209
+      ],
+      "feasible": false
+    },
+    "latency": {
+      "first_output_latency_cycles": [
+        256
+      ],
+      "computational_tail_cycles": [
+        193
+      ],
+      "frame_completion_cycles": [
+        319
+      ],
+      "observed_frame_II_on_384_cycle_workload": [
+        384
+      ],
+      "offered_frame_II": 384,
+      "required_samples_per_second": 16666666.666666664,
+      "required_ffts_per_second": 260416.66666666663,
+      "clock_period_ns": 10,
+      "reset_mid_frame_test": true,
+      "reset_during_processing_probes": [
+        {
+          "input_start": 5,
+          "reset_cycle": 93,
+          "idle_after_load": 24
+        },
+        {
+          "input_start": 99,
+          "reset_cycle": 245,
+          "idle_after_load": 82
+        },
+        {
+          "input_start": 251,
+          "reset_cycle": 525,
+          "idle_after_load": 210
+        }
+      ]
+    },
+    "seconds": 3.61863843689207,
+    "grade": {
+      "resolved": false,
+      "score": 0.0,
+      "area_ratio": null,
+      "reason": "Area reference uses a different backend or measurement setup."
+    }
+  },
+  "pipelined_iterative": {
+    "status": "COMPLETE",
+    "backend": "local",
+    "seed": 20261118,
+    "scale": 2,
+    "selection_reason": "Explicit backend selection.",
+    "source": {
+      "top": "fft64_top",
+      "files": {
+        "rtl/fft64_top.sv": "6ac4a48205f79998c9f5f838cec278207853b2005b3a4443b546e1d0271c00aa"
+      },
+      "source_sha256": "6ac4a48205f79998c9f5f838cec278207853b2005b3a4443b546e1d0271c00aa"
+    },
+    "dataset_frames": 272,
+    "protocol_pass": true,
+    "quality": {
+      "frames": 272,
+      "minimum_frame_sqnr_db": 71.20207820495467,
+      "pooled_sqnr_db": 89.74683640389824,
+      "worst_frame_nmse": 7.582146640071044e-08,
+      "zero_frame_exact": true,
+      "failed_frames": [],
+      "feasible": true
+    },
+    "latency": {
+      "first_output_latency_cycles": [
+        262
+      ],
+      "computational_tail_cycles": [
+        199
+      ],
+      "frame_completion_cycles": [
+        325
+      ],
+      "observed_frame_II_on_384_cycle_workload": [
+        384
+      ],
+      "offered_frame_II": 384,
+      "required_samples_per_second": 16666666.666666664,
+      "required_ffts_per_second": 260416.66666666663,
+      "clock_period_ns": 10,
+      "reset_mid_frame_test": true,
+      "reset_during_processing_probes": [
+        {
+          "input_start": 5,
+          "reset_cycle": 93,
+          "idle_after_load": 24
+        },
+        {
+          "input_start": 99,
+          "reset_cycle": 245,
+          "idle_after_load": 82
+        },
+        {
+          "input_start": 251,
+          "reset_cycle": 525,
+          "idle_after_load": 210
+        }
+      ]
+    },
+    "ppa": {
+      "area_um2": 3735.8771400010446,
+      "register_area_um2": 885.0060000000317,
+      "arithmetic_control_mux_other_area_um2": 2850.871140001013,
+      "cells": 38258,
+      "register_cells": 3035,
+      "clock_period_ns": 10,
+      "setup_uncertainty_ns": 0.1,
+      "worst_setup_slack_ns": 8.271987300000001,
+      "effective_required_period_ns": 1.7280126999999994,
+      "timing_pass": true,
+      "prelayout_fmax_estimate_MHz": 578.699450530659,
+      "flow": "Yosys/ABC;ASAP7RVT/TT comb+sequential;countedFF storage;OpenSTA ideal-interconnect;not DC/PrimeTime or postroute",
+      "source_sha256": "6ac4a48205f79998c9f5f838cec278207853b2005b3a4443b546e1d0271c00aa",
+      "mapped_sha256": "12e3b444f8a9a51c2d68f82f144092381d60b12c1b413969345edef809dc4913",
+      "comb_sha256": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+      "seq_sha256": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+      "mapping_wall_seconds": 31.539160496089607
+    },
+    "flow_id": "c01301d35dfecb844caa5c8dcc932daf4ae337cbf46af8e84d918f36a579df85",
+    "mapped_simulation_pass": true,
+    "mapped_full_four_state": false,
+    "seconds": 124.00285920093302,
+    "grade": {
+      "resolved": false,
+      "score": 0.0,
+      "area_ratio": 1.0470712750395177,
+      "reason": "All hardware checks passed; score is the fractional full-design area saving."
+    }
+  }
+}

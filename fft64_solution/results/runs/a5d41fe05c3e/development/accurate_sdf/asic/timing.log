@@ -1,0 +1,80 @@
+OpenSTA 2.0.17 GITDIR-NOT Copyright (c) 2019, Parallax Software, Inc.
+License GPLv3: GNU GPL version 3 <http://gnu.org/licenses/gpl.html>
+
+This is free software, and you are free to change and redistribute it
+under certain conditions; type `show_copying' for details. 
+This program comes with ABSOLUTELY NO WARRANTY; for details type `show_warranty'.
+Startpoint: _097390_ (rising edge-triggered flip-flop clocked by clk)
+Endpoint: _097463_ (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+    Delay      Time   Description
+-------------------------------------------------------------
+   0.0000    0.0000   clock clk (rise edge)
+   0.0000    0.0000   clock network delay (ideal)
+   0.0000    0.0000 ^ _097390_/CLK (DFFHQNx1_ASAP7_75t_R)
+  60.2307   60.2307 v _097390_/QN (DFFHQNx1_ASAP7_75t_R)
+  43.6333  103.8640 v _064804_/Y (XNOR2xp5_ASAP7_75t_R)
+  25.3651  129.2290 ^ _065687_/Y (OAI21xp33_ASAP7_75t_R)
+  38.8396  168.0686 v _065713_/Y (A2O1A1Ixp33_ASAP7_75t_R)
+  57.4263  225.4949 ^ _065731_/Y (A2O1A1O1Ixp25_ASAP7_75t_R)
+  40.9949  266.4897 v _065732_/Y (MAJIxp5_ASAP7_75t_R)
+  54.0878  320.5775 ^ _065788_/Y (A2O1A1O1Ixp25_ASAP7_75t_R)
+  35.2646  355.8421 v _065813_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  53.0703  408.9124 ^ _065880_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  41.0200  449.9324 v _065950_/Y (MAJIxp5_ASAP7_75t_R)
+  55.4758  505.4082 ^ _066150_/Y (A2O1A1O1Ixp25_ASAP7_75t_R)
+  41.7077  547.1159 v _066447_/Y (MAJIxp5_ASAP7_75t_R)
+  44.1623  591.2783 ^ _067444_/Y (A2O1A1O1Ixp25_ASAP7_75t_R)
+  36.5102  627.7885 ^ _067600_/Y (XNOR2xp5_ASAP7_75t_R)
+  49.0546  676.8430 ^ _067620_/Y (HB1xp67_ASAP7_75t_R)
+  62.1175  738.9606 v _068629_/Y (NOR2xp33_ASAP7_75t_R)
+  75.1965  814.1571 ^ _068933_/Y (XNOR2xp5_ASAP7_75t_R)
+  45.4982  859.6553 ^ _068935_/Y (OR2x2_ASAP7_75t_R)
+  27.7834  887.4387 v _069182_/Y (A2O1A1Ixp33_ASAP7_75t_R)
+  63.2102  950.6489 ^ _071686_/Y (OAI211xp5_ASAP7_75t_R)
+  89.2960 1039.9449 v _072009_/Y (NOR2xp33_ASAP7_75t_R)
+  46.1652 1086.1101 v _072010_/Y (XNOR2xp5_ASAP7_75t_R)
+  36.9342 1123.0443 v _072011_/Y (XNOR2xp5_ASAP7_75t_R)
+  33.2484 1156.2927 ^ _072012_/Y (XNOR2xp5_ASAP7_75t_R)
+  32.5485 1188.8413 ^ _072013_/Y (XOR2xp5_ASAP7_75t_R)
+  36.5145 1225.3557 ^ _072014_/Y (XOR2xp5_ASAP7_75t_R)
+  28.2464 1253.6022 ^ _072015_/Y (XNOR2xp5_ASAP7_75t_R)
+  34.7397 1288.3418 ^ _072016_/Y (XOR2xp5_ASAP7_75t_R)
+  25.0665 1313.4083 ^ _072044_/Y (AND2x2_ASAP7_75t_R)
+  16.9676 1330.3760 v _072045_/Y (NOR2xp33_ASAP7_75t_R)
+  29.2113 1359.5873 v _072179_/Y (XNOR2xp5_ASAP7_75t_R)
+  24.6035 1384.1908 v _072180_/Y (AND2x2_ASAP7_75t_R)
+  24.0193 1408.2101 ^ _072182_/Y (NOR2xp33_ASAP7_75t_R)
+  39.2392 1447.4492 ^ _072183_/Y (XOR2xp5_ASAP7_75t_R)
+  24.8206 1472.2699 v _072328_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  41.6185 1513.8883 ^ _072481_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  34.7358 1548.6241 v _072732_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  43.1866 1591.8107 ^ _072872_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  29.6253 1621.4360 v _073081_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  41.4350 1662.8710 ^ _073185_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  38.9443 1701.8153 v _073364_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  58.0059 1759.8212 v _073366_/Y (OR5x1_ASAP7_75t_R)
+  29.7675 1789.5887 ^ _073445_/Y (NOR3xp33_ASAP7_75t_R)
+  23.3508 1812.9395 ^ _073510_/Y (XNOR2xp5_ASAP7_75t_R)
+  18.3863 1831.3258 v _073514_/Y (A2O1A1O1Ixp25_ASAP7_75t_R)
+  23.3633 1854.6891 ^ _073516_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+   0.0000 1854.6891 ^ _097463_/D (DFFHQNx1_ASAP7_75t_R)
+          1854.6891   data arrival time
+
+10000.0000 10000.0000   clock clk (rise edge)
+   0.0000 10000.0000   clock network delay (ideal)
+-100.0000 9900.0000   clock uncertainty
+   0.0000 9900.0000   clock reconvergence pessimism
+          9900.0000 ^ _097463_/CLK (DFFHQNx1_ASAP7_75t_R)
+ -12.5962 9887.4043   library setup time
+          9887.4043   data required time
+-------------------------------------------------------------
+          9887.4043   data required time
+          -1854.6891   data arrival time
+-------------------------------------------------------------
+          8032.7148   slack (MET)
+
+
+worst slack 8032.7148

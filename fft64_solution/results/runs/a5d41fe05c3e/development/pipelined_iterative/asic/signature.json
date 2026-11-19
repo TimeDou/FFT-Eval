@@ -1,0 +1,11 @@
+{
+  "source": "6ac4a48205f79998c9f5f838cec278207853b2005b3a4443b546e1d0271c00aa",
+  "comb": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+  "seq": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+  "abc": "1a50d3fe480f411433cc3d29668bd00b3cc33bfd7dd47b9666d1502e8281ce01",
+  "sta": "9630070fdbcfd2a92a9d0dc6b6e5480f7be8e216b720f1fb32f447fb4cedc2ff",
+  "yosys": "dab84e88b53146fe22d675a142de32b1e545ee9b7fe1054238f6220245b24c8d",
+  "flow_sha256": "117ac249efdb2357381af964df8a733dc79349ea380c1e76044bb51e1b5a980b",
+  "flow": "yosys-flatten-dfflibmap-abc-scalarSTA-v4",
+  "constraints": "create_clock -name clk -period 10000 [get_ports clk]\nset_clock_uncertainty -setup 100 [get_clocks clk]\nset_clock_transition 20 [get_clocks clk]\nset_input_delay 0 -clock clk [get_ports {rst in_valid frame_start in_re* in_im*}]\nset_input_transition 20 [get_ports {rst in_valid frame_start in_re* in_im*}]\nset_output_delay 0 -clock clk [all_outputs]\nset_load 1 [all_outputs]\n# Reset is exercised functionally; frequency rating is for normal operation.\nset_false_path -from [get_ports rst]\n"
+}

@@ -1,0 +1,12 @@
+{
+  "top": "fft64_top",
+  "rtl": [
+    "rtl/fft64_top.sv"
+  ],
+  "config": {
+    "architecture": "folded",
+    "banked": true,
+    "drop": 1,
+    "twiddle": 9
+  }
+}

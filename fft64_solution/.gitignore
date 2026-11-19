@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+**/obj/
+**/simv
+**/simv.daidir/
+**/csrc/
+**/dc_work/
+**/lock
+**/search.lock
+**/attempts/
+**/vectors.txt
+**/source.sv
+**/premap.v
+**/mapped.json
+**/*.o
+**/*.a
+# Earlier internal cache-layout checkpoints remain local; their measured data
+# are also present in the current published run.
+results/runs/47657957d1b4/
+results/runs/e46102e7d6c2/

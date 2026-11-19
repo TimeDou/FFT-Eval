@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "tests": [
+    {
+      "name": "prefer_synopsys_over_existing_oss",
+      "passed": true
+    },
+    {
+      "name": "reuse_existing_oss",
+      "passed": true
+    },
+    {
+      "name": "explicit_local_override",
+      "passed": true
+    },
+    {
+      "name": "calibrated_backend_stays_fixed",
+      "passed": true
+    },
+    {
+      "name": "existing_yosys_only_missing_opensta_is_built",
+      "passed": true
+    },
+    {
+      "name": "source_build_is_last_fallback",
+      "passed": true
+    },
+    {
+      "name": "check_only_has_no_install",
+      "passed": true
+    },
+    {
+      "name": "no_build_respected",
+      "passed": true
+    },
+    {
+      "name": "missing_db_does_not_trigger_yosys_install",
+      "passed": true
+    },
+    {
+      "name": "missing_db_can_reuse_an_already_ready_oss_chain",
+      "passed": true
+    },
+    {
+      "name": "platform_profile_home_paths_and_vcs_only_quick_mode",
+      "passed": true
+    },
+    {
+      "name": "nonlogin_python_entry_loads_eda_profile",
+      "passed": true
+    },
+    {
+      "name": "auto_calibration_records_actual_backend",
+      "passed": true
+    }
+  ],
+  "scope": "Policy tests with mocked availability plus a shell-profile fixture. No commercial simulation/synthesis/STA or source compilation is claimed."
+}

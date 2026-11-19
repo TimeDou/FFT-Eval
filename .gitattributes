@@ -1,0 +1,5 @@
+# Preserve generated scientific artifacts byte for byte, including CSV CRLF
+# and whitespace emitted by the EDA tools.
+fft64_solution/results/** -text -whitespace
+fft64_solution/**/measurements.csv -text -whitespace
+fft64_solution/measurements.csv -text -whitespace

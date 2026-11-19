@@ -1,0 +1,92 @@
+OpenSTA 2.0.17 GITDIR-NOT Copyright (c) 2019, Parallax Software, Inc.
+License GPLv3: GNU GPL version 3 <http://gnu.org/licenses/gpl.html>
+
+This is free software, and you are free to change and redistribute it
+under certain conditions; type `show_copying' for details. 
+This program comes with ABSOLUTELY NO WARRANTY; for details type `show_warranty'.
+Startpoint: _72096_ (rising edge-triggered flip-flop clocked by clk)
+Endpoint: _72397_ (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+    Delay      Time   Description
+-------------------------------------------------------------
+   0.0000    0.0000   clock clk (rise edge)
+   0.0000    0.0000   clock network delay (ideal)
+   0.0000    0.0000 ^ _72096_/CLK (DFFHQNx1_ASAP7_75t_R)
+  47.4743   47.4743 v _72096_/QN (DFFHQNx1_ASAP7_75t_R)
+  40.0051   87.4794 v _69697_/Y (HB1xp67_ASAP7_75t_R)
+  57.9532  145.4326 ^ _69721_/Y (AOI21xp33_ASAP7_75t_R)
+  40.5319  185.9645 v _69722_/Y (NOR2xp33_ASAP7_75t_R)
+  64.7958  250.7604 ^ _69951_/Y (NOR2xp33_ASAP7_75t_R)
+  69.5549  320.3152 v _69958_/Y (NAND3xp33_ASAP7_75t_R)
+  59.4237  379.7389 v _69959_/Y (HB1xp67_ASAP7_75t_R)
+  50.4939  430.2328 v _70636_/Y (HB1xp67_ASAP7_75t_R)
+  49.7933  480.0261 v _37215_/Y (HB1xp67_ASAP7_75t_R)
+  50.9416  530.9677 v _37436_/Y (HB1xp67_ASAP7_75t_R)
+  50.1259  581.0936 v _37977_/Y (HB1xp67_ASAP7_75t_R)
+  50.2173  631.3109 v _38213_/Y (HB1xp67_ASAP7_75t_R)
+  50.4415  681.7524 v _40465_/Y (HB1xp67_ASAP7_75t_R)
+  49.7919  731.5443 v _41338_/Y (HB1xp67_ASAP7_75t_R)
+  24.1609  755.7051 ^ _41580_/Y (OAI22xp33_ASAP7_75t_R)
+  15.7240  771.4292 v _41582_/Y (NOR3xp33_ASAP7_75t_R)
+  15.7568  787.1860 ^ _41583_/Y (A2O1A1Ixp33_ASAP7_75t_R)
+  26.5986  813.7845 v _41598_/Y (NAND3xp33_ASAP7_75t_R)
+  39.4599  853.2445 ^ _41710_/Y (XNOR2xp5_ASAP7_75t_R)
+  32.1948  885.4393 v _42618_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  58.3728  943.8120 ^ _43118_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  41.2964  985.1085 v _44010_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  57.2122 1042.3207 ^ _44669_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  41.1957 1083.5164 v _45822_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  61.2224 1144.7388 ^ _46373_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  63.9765 1208.7152 v _47291_/Y (OAI31xp33_ASAP7_75t_R)
+  49.1189 1257.8342 ^ _62946_/Y (OAI21xp5_ASAP7_75t_R)
+ 103.8223 1361.6565 v _62948_/Y (NOR2xp33_ASAP7_75t_R)
+  51.1534 1412.8098 v _62949_/Y (XNOR2xp5_ASAP7_75t_R)
+  31.9228 1444.7327 ^ _62950_/Y (XNOR2xp5_ASAP7_75t_R)
+  35.8846 1480.6173 ^ _62956_/Y (XOR2xp5_ASAP7_75t_R)
+  24.7325 1505.3499 v _62957_/Y (XOR2xp5_ASAP7_75t_R)
+  32.3678 1537.7177 v _62958_/Y (XNOR2xp5_ASAP7_75t_R)
+  34.1566 1571.8741 v _62959_/Y (XNOR2xp5_ASAP7_75t_R)
+  30.0443 1601.9185 v _62960_/Y (XNOR2xp5_ASAP7_75t_R)
+  22.7617 1624.6802 ^ _62961_/Y (AOI21xp33_ASAP7_75t_R)
+  28.3620 1653.0421 v _62963_/Y (NOR2xp33_ASAP7_75t_R)
+  38.0854 1691.1276 v _63016_/Y (XNOR2xp5_ASAP7_75t_R)
+  27.7810 1718.9086 v _63017_/Y (XOR2xp5_ASAP7_75t_R)
+  35.1013 1754.0099 v _63033_/Y (XNOR2xp5_ASAP7_75t_R)
+  29.7948 1783.8047 v _63034_/Y (XNOR2xp5_ASAP7_75t_R)
+  30.8075 1814.6122 v _63035_/Y (XNOR2xp5_ASAP7_75t_R)
+  31.9172 1846.5294 v _63036_/Y (XNOR2xp5_ASAP7_75t_R)
+  40.1170 1886.6464 ^ _63049_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  45.7605 1932.4069 v _63382_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  46.1584 1978.5653 ^ _63565_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  30.0742 2008.6395 v _63874_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  41.5579 2050.1973 ^ _64054_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  38.9300 2089.1274 v _64347_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  57.2178 2146.3452 v _64350_/Y (OR5x1_ASAP7_75t_R)
+  37.3666 2183.7117 v _64485_/Y (OR3x1_ASAP7_75t_R)
+  46.0103 2229.7219 ^ _64728_/Y (NOR4xp25_ASAP7_75t_R)
+  33.7761 2263.4980 v _64846_/Y (NAND3xp33_ASAP7_75t_R)
+  20.4361 2283.9341 ^ _64933_/Y (OAI21xp33_ASAP7_75t_R)
+  12.0446 2295.9788 v _64934_/Y (AOI21xp33_ASAP7_75t_R)
+  51.9054 2347.8840 ^ _64936_/Y (O2A1O1Ixp33_ASAP7_75t_R)
+  57.4958 2405.3799 ^ _64937_/Y (HB1xp67_ASAP7_75t_R)
+  22.5815 2427.9614 v _65302_/Y (OAI21xp33_ASAP7_75t_R)
+   0.0000 2427.9614 v _72397_/D (DFFHQNx1_ASAP7_75t_R)
+          2427.9614   data arrival time
+
+10000.0000 10000.0000   clock clk (rise edge)
+   0.0000 10000.0000   clock network delay (ideal)
+-100.0000 9900.0000   clock uncertainty
+   0.0000 9900.0000   clock reconvergence pessimism
+          9900.0000 ^ _72397_/CLK (DFFHQNx1_ASAP7_75t_R)
+  -3.5060 9896.4941   library setup time
+          9896.4941   data required time
+-------------------------------------------------------------
+          9896.4941   data required time
+          -2427.9614   data arrival time
+-------------------------------------------------------------
+          7468.5327   slack (MET)
+
+
+worst slack 7468.5327

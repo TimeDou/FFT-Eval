@@ -1,0 +1,43 @@
+{
+  "tools": {
+    "yosys": {
+      "path": "/usr/bin/yosys",
+      "sha256": "dab84e88b53146fe22d675a142de32b1e545ee9b7fe1054238f6220245b24c8d"
+    },
+    "abc": {
+      "path": "/mnt/DATA1/sj/ALS/DP2.0/build/abc/abc",
+      "sha256": "1a50d3fe480f411433cc3d29668bd00b3cc33bfd7dd47b9666d1502e8281ce01"
+    },
+    "sta": {
+      "path": "/mnt/DATA1/sj/ALS/DP2.0/research/tcas19_butterfly/tools/opensta/usr/bin/sta",
+      "sha256": "9630070fdbcfd2a92a9d0dc6b6e5480f7be8e216b720f1fb32f447fb4cedc2ff"
+    },
+    "iverilog": {
+      "path": "/usr/bin/iverilog",
+      "sha256": "1ba67856249142771239573b5d51c7f6e4d67a1e7931a0d0fab56e0d473d2167"
+    },
+    "vvp": {
+      "path": "/usr/bin/vvp",
+      "sha256": "075b114070eed3bc72e0e4559decf40520f3b693b1da9c94bba1defe8896966d"
+    },
+    "verilator": {
+      "path": "/usr/bin/verilator",
+      "sha256": "ebe0a4ad8d1995ffcf1f9972f2e2614998ffc73f3fc94003ec7b689d5432f463"
+    },
+    "g++": {
+      "path": "/usr/bin/x86_64-linux-gnu-g++-11",
+      "sha256": "2360901d864cf10bfd6296e261cb2c14053552a80377761ab07146ec9ec9a2c0"
+    },
+    "make": {
+      "path": "/usr/bin/make",
+      "sha256": "92f646030615cd98490a68a94c0aefd87b552be3158b941c02e43b0bfdb576db"
+    }
+  },
+  "libraries": {
+    "ASAP7_RVT_TT_nldm_NO_FAHA.lib": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "ASAP7_SEQ_RVT_TT_nldm_220123.lib": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+    "cells_sim.v": "1f7a09709beae0cfcf39ae3c19248dc464041f7f487d1b7227f5ac4c3835fe59"
+  },
+  "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+  "numpy": "2.2.6"
+}

@@ -1,0 +1,11 @@
+read_liberty -lib /mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_benchmark/tech/ASAP7_RVT_TT_nldm_NO_FAHA.lib
+read_liberty -lib /mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_benchmark/tech/ASAP7_SEQ_RVT_TT_nldm_220123.lib
+read_verilog -sv /mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_solution/results/runs/47657957d1b4/development/quantized_banked/asic/source.sv
+synth -top fft64_top -flatten -noabc
+write_verilog -noattr /mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_solution/results/runs/47657957d1b4/development/quantized_banked/asic/premap.v
+dfflibmap -liberty /mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_benchmark/tech/ASAP7_SEQ_RVT_TT_nldm_220123.lib
+abc -exe /mnt/DATA1/sj/ALS/DP2.0/build/abc/abc -liberty /mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_benchmark/tech/ASAP7_RVT_TT_nldm_NO_FAHA.lib -constr /mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_solution/results/runs/47657957d1b4/development/quantized_banked/asic/abc.constr -D 10000
+clean
+write_verilog -noattr -noexpr /mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_solution/results/runs/47657957d1b4/development/quantized_banked/asic/mapped.v
+write_json /mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_solution/results/runs/47657957d1b4/development/quantized_banked/asic/mapped.json
+stat

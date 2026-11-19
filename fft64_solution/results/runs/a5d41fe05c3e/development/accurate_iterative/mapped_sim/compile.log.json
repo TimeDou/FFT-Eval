@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/usr/bin/verilator",
+    "--cc",
+    "--exe",
+    "--build",
+    "-j",
+    "2",
+    "-Wno-fatal",
+    "--top-module",
+    "fft64_top",
+    "--Mdir",
+    "/mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_solution/results/runs/47657957d1b4/development/accurate_iterative/mapped_sim/obj",
+    "/mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_solution/results/runs/47657957d1b4/development/accurate_iterative/mapped_sim/source.sv",
+    "/mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_solution/results/runs/47657957d1b4/development/accurate_iterative/mapped_sim/driver.cpp"
+  ],
+  "seconds": 51.44524959102273,
+  "returncode": 0
+}

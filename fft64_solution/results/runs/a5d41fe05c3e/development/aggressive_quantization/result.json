@@ -1,0 +1,71 @@
+{
+  "status": "QUALITY_FAILED",
+  "backend": "local",
+  "seed": 20261118,
+  "scale": 2,
+  "selection_reason": "Explicit backend selection.",
+  "source": {
+    "top": "fft64_top",
+    "files": {
+      "rtl/fft64_top.sv": "2927e1b6d77218438cd0c1e8884f88fef5b6ae279e829ab2fe59118b402fc00f"
+    },
+    "source_sha256": "2927e1b6d77218438cd0c1e8884f88fef5b6ae279e829ab2fe59118b402fc00f"
+  },
+  "dataset_frames": 272,
+  "protocol_pass": true,
+  "quality": {
+    "frames": 272,
+    "minimum_frame_sqnr_db": 49.75856773321249,
+    "pooled_sqnr_db": 64.70948592818853,
+    "worst_frame_nmse": 1.0571660962445968e-05,
+    "zero_frame_exact": true,
+    "failed_frames": [
+      207,
+      209
+    ],
+    "feasible": false
+  },
+  "latency": {
+    "first_output_latency_cycles": [
+      256
+    ],
+    "computational_tail_cycles": [
+      193
+    ],
+    "frame_completion_cycles": [
+      319
+    ],
+    "observed_frame_II_on_384_cycle_workload": [
+      384
+    ],
+    "offered_frame_II": 384,
+    "required_samples_per_second": 16666666.666666664,
+    "required_ffts_per_second": 260416.66666666663,
+    "clock_period_ns": 10,
+    "reset_mid_frame_test": true,
+    "reset_during_processing_probes": [
+      {
+        "input_start": 5,
+        "reset_cycle": 93,
+        "idle_after_load": 24
+      },
+      {
+        "input_start": 99,
+        "reset_cycle": 245,
+        "idle_after_load": 82
+      },
+      {
+        "input_start": 251,
+        "reset_cycle": 525,
+        "idle_after_load": 210
+      }
+    ]
+  },
+  "seconds": 3.61863843689207,
+  "grade": {
+    "resolved": false,
+    "score": 0.0,
+    "area_ratio": null,
+    "reason": "Area reference uses a different backend or measurement setup."
+  }
+}

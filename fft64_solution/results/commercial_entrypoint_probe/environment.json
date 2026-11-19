@@ -1,0 +1,32 @@
+{
+  "requested_backend": "commercial",
+  "selected_backend": "commercial",
+  "selection_reason": "Explicit backend selection.",
+  "ready": false,
+  "missing": [
+    "vcs",
+    "dc_shell",
+    "pt_shell",
+    "/mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_benchmark/tech/db/comb_rvt_tt.db",
+    "/mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/fft64_benchmark/tech/db/seq_rvt_tt.db"
+  ],
+  "tools": {
+    "vcs": null,
+    "dc_shell": null,
+    "pt_shell": null,
+    "lc_shell": null,
+    "yosys": "/usr/bin/yosys",
+    "abc": "/mnt/DATA1/sj/ALS/DP2.0/build/abc/abc",
+    "sta": "/mnt/DATA1/sj/ALS/DP2.0/research/tcas19_butterfly/tools/opensta/usr/bin/sta",
+    "iverilog": "/usr/bin/iverilog",
+    "vvp": "/usr/bin/vvp",
+    "verilator": "/usr/bin/verilator"
+  },
+  "python": "/mnt/DATA1/sj/ALS/DP2.0/.venv/bin/python",
+  "actions": [],
+  "failures": [],
+  "notices": [],
+  "check_only": false,
+  "quick": false,
+  "tools_prefix": "/mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Bench/.fft64-tools"
+}

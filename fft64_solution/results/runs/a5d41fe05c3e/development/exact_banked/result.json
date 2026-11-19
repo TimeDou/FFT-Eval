@@ -1,0 +1,90 @@
+{
+  "status": "COMPLETE",
+  "backend": "local",
+  "seed": 20261118,
+  "scale": 2,
+  "selection_reason": "Explicit backend selection.",
+  "source": {
+    "top": "fft64_top",
+    "files": {
+      "rtl/fft64_top.sv": "579ef93ce94a4c20b6ce577902fe0bbc49b510194610ba87cc09b2dc8c9645b4"
+    },
+    "source_sha256": "579ef93ce94a4c20b6ce577902fe0bbc49b510194610ba87cc09b2dc8c9645b4"
+  },
+  "dataset_frames": 272,
+  "protocol_pass": true,
+  "quality": {
+    "frames": 272,
+    "minimum_frame_sqnr_db": 71.20207820495467,
+    "pooled_sqnr_db": 89.74683640389824,
+    "worst_frame_nmse": 7.582146640071044e-08,
+    "zero_frame_exact": true,
+    "failed_frames": [],
+    "feasible": true
+  },
+  "latency": {
+    "first_output_latency_cycles": [
+      256
+    ],
+    "computational_tail_cycles": [
+      193
+    ],
+    "frame_completion_cycles": [
+      319
+    ],
+    "observed_frame_II_on_384_cycle_workload": [
+      384
+    ],
+    "offered_frame_II": 384,
+    "required_samples_per_second": 16666666.666666664,
+    "required_ffts_per_second": 260416.66666666663,
+    "clock_period_ns": 10,
+    "reset_mid_frame_test": true,
+    "reset_during_processing_probes": [
+      {
+        "input_start": 5,
+        "reset_cycle": 93,
+        "idle_after_load": 24
+      },
+      {
+        "input_start": 99,
+        "reset_cycle": 245,
+        "idle_after_load": 82
+      },
+      {
+        "input_start": 251,
+        "reset_cycle": 525,
+        "idle_after_load": 210
+      }
+    ]
+  },
+  "ppa": {
+    "area_um2": 2712.2299199998206,
+    "register_area_um2": 842.7240000000293,
+    "arithmetic_control_mux_other_area_um2": 1869.5059199997913,
+    "cells": 25301,
+    "register_cells": 2890,
+    "clock_period_ns": 10,
+    "setup_uncertainty_ns": 0.1,
+    "worst_setup_slack_ns": 7.185013700000001,
+    "effective_required_period_ns": 2.8149862999999997,
+    "timing_pass": true,
+    "prelayout_fmax_estimate_MHz": 355.2415157402365,
+    "flow": "Yosys/ABC;ASAP7RVT/TT comb+sequential;countedFF storage;OpenSTA ideal-interconnect;not DC/PrimeTime or postroute",
+    "source_sha256": "579ef93ce94a4c20b6ce577902fe0bbc49b510194610ba87cc09b2dc8c9645b4",
+    "mapped_sha256": "06043e3c3f0fe46f6e3bfdf86c334c10d556b555a36f20ae19e17f08aff47f18",
+    "comb_sha256": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "seq_sha256": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+    "mapping_wall_seconds": 22.242605698062107
+  },
+  "flow_id": "c01301d35dfecb844caa5c8dcc932daf4ae337cbf46af8e84d918f36a579df85",
+  "mapped_simulation_pass": true,
+  "mapped_full_four_state": false,
+  "seconds": 120.70940571394749,
+  "grade": {
+    "resolved": true,
+    "score": 0.23983098637613476,
+    "area_ratio": 0.7601690136238652,
+    "reason": "All hardware checks passed; score is the fractional full-design area saving."
+  }
+}

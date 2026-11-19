@@ -17,16 +17,15 @@ bash run_synopsys.sh /workspace/submissions/agent_A \
 
 在 Synopsys 环境中生成的设计使用同一个命令，只需将来源标为 `--origin synopsys`。两类来源仅作为实验标签，不改变质量测试、面积参考或评分规则。
 
-如果 agent 的结果保存在同仓库另一个分支，可使用独立 worktree 保持评分器版本固定：
+如果 agent 的结果保存在同仓库另一个分支，可用第二个普通 clone 保持评分器版本固定。这也兼容环境手册中的旧版 Git：
 
 ```bash
-git fetch origin
-git worktree add ../agent_A origin/agent_A
+git clone --branch agent_A git@github.com:TimeDou/FFT-Bench.git ../agent_A
 bash run_synopsys.sh ../agent_A/submission \
   --origin open-source --agent agent_A --out /workspace/eval/agent_A
 ```
 
-这样可直接读取那个分支的设计，无需将 agent 的工具脚本合并进评分器分支。参考解分支也可用同样方式读取。
+这样可直接读取那个分支的设计，无需将 agent 的工具脚本合并进评分器分支，也不要求平台支持 `git worktree`。参考解分支可用同样方式读取。
 
 提交目录沿用题目格式：`rtl/` 下为完整 RTL，顶层 `fft64_top`。多文件顺序可在 `design_config.json` 的 `rtl` 字段列出。读取的是源 RTL，不导入原平台的 mapped netlist、OpenROAD 面积、时序或自报分数；设计会在目标工具下重新编译和映射。
 

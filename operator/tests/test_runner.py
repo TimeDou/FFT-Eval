@@ -27,7 +27,7 @@ class RunnerTests(unittest.TestCase):
         self.submission=self.root/'agent_A';(self.submission/'rtl').mkdir(parents=True)
         (self.submission/'rtl/top.sv').write_text('module fft64_top; endmodule\n')
         (self.submission/'measurements.csv').write_text('area_um2\n1\n')
-        self.calls=[];self.fail_license=False
+        self.calls=[];self.fail_license=False;self.fail_calibration=False
         self.identity=dict(backend='commercial',flow_id='FIXTURE_ONLY_NOT_MEASURED',tools={'fixture':'test'})
         self.environment=dict(ready=True,selected_backend='commercial',tools={},actions=[],failures=[])
 
@@ -52,6 +52,8 @@ class RunnerTests(unittest.TestCase):
                     mapped_simulation_pass=True)
         if calibration is not None and self.fail_license:
             result.update(status='FAILED',failure='No valid license available')
+        if Path(submission).name=='sdf' and self.fail_calibration:
+            result.update(status='FAILED',failure='fixture DC script failure')
         result['grade']=score_result(result,calibration)
         save(Path(outdir)/'result.json',result)
         return result
@@ -97,6 +99,19 @@ class RunnerTests(unittest.TestCase):
         self.execute(self.args())
         self.assertEqual(len(self.calls),1)
         self.assertEqual(len(list((self.root/'out/candidates/agent_A/runs').iterdir())),2)
+
+    def test_changed_flow_does_not_reuse_or_overwrite_failed_calibration(self):
+        self.fail_calibration=True
+        self.assertEqual(self.execute(self.args()),2)
+        previous=list((self.root/'state/calibration').glob('*/sdf/result.json'))
+        self.assertEqual(len(previous),1)
+        original=previous[0].read_bytes()
+        self.fail_calibration=False;self.calls.clear()
+        self.identity['flow_id']='FIXTURE_NEW_SYNTH_SCRIPT_NOT_MEASURED'
+        self.assertEqual(self.execute(self.args()),0)
+        self.assertEqual(len(self.calls),3)
+        self.assertEqual(previous[0].read_bytes(),original)
+        self.assertEqual(len(list((self.root/'state/calibration').iterdir())),2)
 
     def test_license_failure_is_not_a_valid_zero_score_and_is_retried(self):
         self.fail_license=True

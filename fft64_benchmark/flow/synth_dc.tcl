@@ -1,3 +1,6 @@
+# Batch shells can log a Tcl error and continue to exit successfully. Stop at
+# the first Tcl failure, and leave no partial metrics JSON for the evaluator.
+if {[catch {
 source [file join [file dirname [info script]] paths.tcl]
 set_app_var target_library $DBLIST
 set_host_options -max_cores 2
@@ -19,6 +22,7 @@ set_dont_touch_network [get_ports clk]
 compile_ultra -area_high_effort_script
 change_names -rules verilog -hierarchy
 set leaf_count 0
+set ar 0.0
 set seq_area 0.0
 foreach_in_collection c [get_cells -hierarchical *] {
     if {[get_attribute $c is_hierarchical]} {continue}
@@ -27,12 +31,21 @@ foreach_in_collection c [get_cells -hierarchical *] {
     if {![regexp {ASAP7_75t_R$} $ref]} {error "Unmapped/GTECH/foreign cell: $ref"}
     set libcell [get_lib_cells -quiet */$ref]
     if {[sizeof_collection $libcell] != 1} {error "Ambiguous/missing target cell: $ref"}
+    set cell_area [get_attribute $libcell area]
+    if {![string is double -strict $cell_area] || $cell_area <= 0.0 || $cell_area >= Inf} {
+        error "Missing/invalid library area for $ref: '$cell_area'"
+    }
+    # Count every mapped leaf instance exactly once. A top-level design area
+    # attribute is not available in all DC versions; report_area is retained
+    # below for independent inspection of the same mapped design.
+    set ar [expr {$ar+$cell_area}]
     if {[regexp {^DFF} $ref]} {
-        set seq_area [expr {$seq_area+[get_attribute $libcell area]}]
+        set seq_area [expr {$seq_area+$cell_area}]
         set clknet [get_nets -of_objects [get_pins [get_object_name $c]/CLK]]
         if {[sizeof_collection $clknet] != 1 || [get_object_name $clknet] != "clk"} {error "Only the direct top-level positive-edge clk is permitted"}
     } elseif {[regexp {^(LH|ICG)} $ref]} {error "Latch/derived clock not permitted"}
 }
+if {$leaf_count == 0 || $ar <= 0.0 || $ar >= Inf} {error "No finite positive mapped cell area"}
 redirect [file join $WORK dc_check.rpt] {check_design}
 redirect [file join $WORK dc_units.rpt] {report_units}
 redirect [file join $WORK dc_area.rpt] {report_area -hierarchy}
@@ -40,10 +53,15 @@ redirect [file join $WORK dc_timing.rpt] {report_timing -delay_type max -max_pat
 write -format verilog -hierarchy -output [file join $WORK mapped.v]
 write -format ddc -hierarchy -output [file join $WORK mapped.ddc]
 write_sdc [file join $WORK dc_generated.sdc]
-set ar [get_attribute [current_design] area]
 set n $leaf_count
-set f [open [file join $WORK dc_metrics.json] w]
-puts $f [format {{"area_um2":%.9f,"register_area_um2":%.9f,"cells":%d,"flow":"DesignCompiler compile_ultra area_high_effort; pre-layout"}} $ar $seq_area $n]
+set metrics_tmp [file join $WORK dc_metrics.json.tmp]
+set f [open $metrics_tmp w]
+puts $f [format {{"area_um2":%.9f,"register_area_um2":%.9f,"cells":%d,"area_method":"sum_mapped_leaf_library_cell_area","flow":"DesignCompiler compile_ultra area_high_effort; pre-layout"}} $ar $seq_area $n]
 close $f
+file rename -force $metrics_tmp [file join $WORK dc_metrics.json]
 set_svf -off
-exit
+} task_error]} {
+    puts stderr "TASK_FATAL: $task_error"
+    exit 1
+}
+exit 0

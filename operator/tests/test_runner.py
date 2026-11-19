@@ -8,6 +8,7 @@ import io
 import json
 import sys
 import tempfile
+import tarfile
 import unittest
 from unittest.mock import patch
 
@@ -131,6 +132,17 @@ class RunnerTests(unittest.TestCase):
         self.assertFalse((self.root/'out/scores.csv').exists())
         self.assertEqual(read(self.root/'out/summary.json')['status'],'ENVIRONMENT_NOT_READY')
         self.assertTrue(list((self.root/'out/history').rglob('scores.csv')))
+
+    def test_library_setup_log_is_included_in_failed_feedback(self):
+        tech=self.root/'tech';tech.mkdir()
+        (tech/'library_compile.log').write_text('fixture compiler diagnostic\n')
+        (tech/'library_compile.log.json').write_text('{"argv":["lc_shell"]}\n')
+        with patch.object(runner,'TECH',tech):
+            self.execute(self.args(),dict(ready=False,selected_backend='commercial',tools={},actions=[]))
+        self.assertEqual((self.root/'out/setup/library_compile.log').read_text(),'fixture compiler diagnostic\n')
+        with tarfile.open(self.root/'out_feedback.tar.gz')as archive:
+            self.assertIn('out/setup/library_compile.log',archive.getnames())
+            self.assertIn('out/setup/library_compile.log.json',archive.getnames())
 
 
 if __name__=='__main__':unittest.main()

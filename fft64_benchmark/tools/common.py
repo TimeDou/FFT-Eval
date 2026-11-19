@@ -84,9 +84,10 @@ def flow_identity(backend):
 
 def executable(variable, candidates):
     if os.environ.get(variable):
-        return Path(os.environ[variable]).resolve()
+        value = os.environ[variable]
+        return Path(os.path.abspath(shutil.which(value) or value))
     for name in candidates:
         found = shutil.which(name)
         if found:
-            return Path(found).resolve()
+            return Path(os.path.abspath(found))
     return Path(candidates[0])

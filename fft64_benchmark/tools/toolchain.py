@@ -51,16 +51,28 @@ def prefix():
     return Path(os.environ.get('FFT_TOOLS_PREFIX', default)).resolve()
 
 
+def executable_path(path):
+    # Synopsys product commands may be links to a shared snps_shell launcher.
+    # Keep the invoked name (argv[0]); realpath is suitable for fingerprints,
+    # not for choosing which executable entrypoint to run.
+    return os.path.abspath(os.fspath(path))
+
+
+def databases_ready():
+    return all(path.is_file() and path.stat().st_size > 0 for path in
+               [TECH/'db/comb_rvt_tt.db', TECH/'db/seq_rvt_tt.db'])
+
+
 def find_tool(name):
     variable, names, homes = TOOLS[name]
     if os.environ.get(variable):
         value = os.environ[variable]
         path = shutil.which(value)
-        return str(Path(path).resolve()) if path else None
+        return executable_path(path) if path else None
     for candidate in names:
         path = shutil.which(candidate)
         if path:
-            return str(Path(path).resolve())
+            return executable_path(path)
     directories = []
     for home in homes:
         if os.environ.get(home):
@@ -74,7 +86,7 @@ def find_tool(name):
         for candidate in names:
             path = directory/candidate
             if path.is_file() and os.access(path, os.X_OK):
-                return str(path.resolve())
+                return executable_path(path)
     return None
 
 
@@ -107,8 +119,8 @@ def probe(quick=False):
     common_missing = ([] if numerical else ['numpy']) + ([] if quick else [str(p) for p in library_files if not p.is_file()])
     return dict(tools=tools, python=sys.executable, numpy_available=numerical,
                 commercial=dict(tools_present=not commercial_missing,
-                    missing=commercial_missing+common_missing+([] if quick else [str(p) for p in db_files if not p.is_file()]),
-                    ready=not commercial_missing and not common_missing and (quick or all(p.is_file() for p in db_files))),
+                    missing=commercial_missing+common_missing+([] if quick else [str(p) for p in db_files if not p.is_file() or p.stat().st_size == 0]),
+                    ready=not commercial_missing and not common_missing and (quick or databases_ready())),
                 local=dict(tools_present=not local_missing, missing=local_missing+common_missing,
                            ready=not local_missing and not common_missing), quick=quick)
 
@@ -143,13 +155,15 @@ def prepare(requested='auto', quick=False, check_only=False, allow_build=True, c
             except Exception as exc:
                 failures.append(str(exc))
         if backend == 'commercial' and not quick:
-            if initial['commercial']['tools_present'] and any(not p.is_file() for p in [TECH/'db/comb_rvt_tt.db', TECH/'db/seq_rvt_tt.db']):
+            if initial['commercial']['tools_present'] and not databases_ready():
                 compiler = find_tool('lc_shell')
                 if compiler:
                     try:
                         with lock(TECH/'db/compile.lock'):
-                            if any(not p.is_file() for p in [TECH/'db/comb_rvt_tt.db', TECH/'db/seq_rvt_tt.db']):
+                            if not databases_ready():
                                 run([compiler, '-f', ROOT/'flow/compile_libraries.tcl'], TECH/'library_compile.log', 300)
+                            if not databases_ready():
+                                raise EnvironmentError('Library Compiler did not produce both nonempty ASAP7 DB files; see '+str(TECH/'library_compile.log'))
                         actions.append('Compiled the supplied Liberty files into DB; no open-source EDA build.')
                     except Exception as exc:
                         failures.append(str(exc))

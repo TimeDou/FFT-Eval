@@ -72,6 +72,8 @@ bash run_synopsys.sh --check-only --out /workspace/eval/environment
 
 手册中的平台已有 VCS/DC/PrimeTime，但没有默认工艺库。若缺 DB，可设置 `FFT_LC_BIN`，或提前将匹配的两份 DB 放到 `fft64_benchmark/tech/db/`。脚本会给出实际缺项及反馈包。
 
+Synopsys 工具入口可能是指向共享 `snps_shell` 的软链接。调用路径必须保留 `lc_shell`、`dc_shell` 等入口名称；不要把 `readlink -f` 的结果设置成工具命令。库编译失败时，反馈包的 `setup/library_compile.log` 和 `.log.json` 保存完整输出及实际 argv。
+
 ## 分支
 
 - `main`：原始版本，保持不变。

@@ -1,0 +1,118 @@
+{
+  "benchmark_id": "fft64_quant_arch_v0.2",
+  "status": "FUNCTIONAL_SPEC_FIXED_COMMERCIAL_AREA_CALIBRATION_PENDING",
+  "task_language": [
+    "en",
+    "zh-CN"
+  ],
+  "profile": "AREA_ORIENTED",
+  "fft": {
+    "points": 64,
+    "direction": "forward",
+    "scale": "unscaled",
+    "input_order": "natural",
+    "output_order": "natural"
+  },
+  "numeric": {
+    "input": {
+      "signed_bits_per_component": 16,
+      "fractional_bits": 15,
+      "component_min": -0.5,
+      "component_max": 0.5
+    },
+    "output": {
+      "signed_bits_per_component": 24,
+      "fractional_bits": 15
+    },
+    "nonzero_frame_complex_rms_min": 0.03125,
+    "reference": "float64_fft_of_same_quantized_input",
+    "per_nonzero_frame_sqnr_min_db": 50.0,
+    "per_nonzero_frame_nmse_max": 1e-05,
+    "zero_input_requires_exact_zero_output": true
+  },
+  "timing_protocol": {
+    "clock_period_ns": 10.0,
+    "input_samples_per_frame": 64,
+    "input_valid_cycles_consecutive": true,
+    "min_frame_start_interval_cycles": 384,
+    "output_samples_per_frame": 64,
+    "output_valid_cycles_consecutive": true,
+    "first_output_latest_cycle_from_first_input": 300,
+    "last_output_latest_cycle_from_first_input": 364,
+    "reset": "synchronous_active_high_abort_inflight_frame"
+  },
+  "hardware": {
+    "area_measurement": "full_top_mapped_standard_cell_area_pre_layout",
+    "cell_library": "ASAP7 RVT/TT combinational and sequential cells",
+    "include_registers_muxes_control_reorder_standard_cell_memories": true,
+    "unaccounted_sram_allowed": false,
+    "exact_reference_area_um2": null,
+    "proposed_pass_area_ratio_max": 0.8,
+    "official_area_threshold_status": "NOT_FROZEN",
+    "tools": [
+      "VCS",
+      "Design Compiler",
+      "PrimeTime"
+    ],
+    "setup_uncertainty_ns": 0.1,
+    "external_io_delay_ns": 0,
+    "output_load_fF": 1,
+    "clock_transition_ns": 0.02,
+    "liberty_time_unit": "ps",
+    "liberty_capacitance_unit": "fF"
+  },
+  "allowed_approximation": [
+    "stage_or_instruction_precision_reduction",
+    "truncation",
+    "round_to_nearest_even",
+    "twiddle_precision_reduction",
+    "quantization_boundary_selection"
+  ],
+  "allowed_exact_optimization": [
+    "architecture_selection",
+    "constant_twiddle_specialization",
+    "resource_sharing",
+    "memory_banking",
+    "legal_retiming",
+    "pipeline_organization"
+  ],
+  "forbidden": [
+    "gate_level_approximate_logic_synthesis",
+    "approximate_gate_pruning",
+    "approximate_compressors",
+    "undeclared_boolean_functional_corruption",
+    "clock_or_output_protocol_changes",
+    "oracle_lookup_or_simulation_only_design"
+  ],
+  "required_submission": [
+    "rtl/",
+    "DESIGN_PLAN.md",
+    "measurements.csv"
+  ],
+  "data_policy": "public_development_and_independent_hidden_cases",
+  "mode": "OPEN",
+  "interface": {
+    "top": "fft64_top",
+    "inputs": [
+      "clk",
+      "rst",
+      "in_valid",
+      "frame_start",
+      "in_re[15:0]",
+      "in_im[15:0]"
+    ],
+    "outputs": [
+      "out_valid",
+      "out_start",
+      "out_re[23:0]",
+      "out_im[23:0]"
+    ],
+    "sampling": "Inputs stable before rising edge; outputs observed after that edge; first input edge is cycle 0."
+  },
+  "scoring": {
+    "feasible_design_score": "clip(1 - area/area_reference, 0, 1)",
+    "resolved": "all hardware constraints pass and area <= 0.80 * area_reference",
+    "area_reference_source": "operator-calibrated accurate implementations in the identical backend and flow",
+    "official_status": "PENDING_COMMERCIAL_CALIBRATION"
+  }
+}

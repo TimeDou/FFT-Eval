@@ -1,0 +1,39 @@
+{
+  "status": "CERTIFIED",
+  "passing_period_ns": 3.820556640625,
+  "failing_period_ns": 3.81103515625,
+  "passing_setup_slack_ns": 0.005543701,
+  "passing_hold_slack_ns": 0.037591587,
+  "hold_pass": true,
+  "capped_at_minimum_period": false,
+  "trials": 13,
+  "mapped_sha256": "07670ecd539b9acd684230d8691fe2a35a38ed2a46468a29a284db54a49b1375",
+  "script_sha256": "42d666491dbcb3ed48717595e3ae596b04dac470c590e67303e3438f15c1022a",
+  "pt_path": "/usr/synopsys/pt-M-2016.12-SP1/bin/pt_shell",
+  "pt_sha256": "4628e991bb7477042adc7b8af31cad457af59054ea4a757d4cd2dbcf9c138e2f",
+  "scan": {
+    "minimum_period_ns": 0.25,
+    "maximum_period_ns": 10.0,
+    "resolution_ns": 0.01,
+    "maximum_iterations": 24,
+    "method": "clock reconstraint and full STA update on the fixed mapped netlist; score uses passing endpoint",
+    "hold": "report min-path slack; certification requires no observed negative hold slack"
+  },
+  "policy_sha256": "78639b42bf9bb24595d4a23c3f199d26774c0d32c5968397c8a427f1c9f2efb4",
+  "mapping_signature": {
+    "source": "24531ad017e292cfa4371581a81a75d677fa5b0cbfeb63c05222a3c9d2973b06",
+    "comb": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "seq": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+    "db": [
+      "bb9da4b949600abc0365715400a2b67687ed47896cc71529fddfb3a4f7097e38",
+      "51026f0d4c67f909966900a15908f76d2c6d74cf27631f658c4216f00855b08a"
+    ],
+    "flow": "DC-PT-setup-hold-v3",
+    "identity": "735b418c3df404fe2666e9ebc29510055c61b490d1dee3b0ddebfb3ef56e5925",
+    "formal": false
+  },
+  "trial_trace_sha256": "9337ed9e6571932b022be587692ddc4868fd55137a52d7844734f148c6d08c07",
+  "certified_frequency_MHz": 261.7419643427695,
+  "measurement": "PrimeTime setup/hold passing endpoint on a fixed mapped netlist; pre-layout",
+  "certificate_directory": "/mnt/mydata/eval/scoring_profiles_v04_architecture_r1/candidates/fft64_solution/runs/b3cfd00f8a57f293dec6edf5/asic/frequency_certificates/d067ff4b48b9019390254f4f"
+}

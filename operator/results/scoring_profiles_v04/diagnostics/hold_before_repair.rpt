@@ -1,0 +1,159 @@
+Information: Updating design information... (UID-85)
+Warning: Design 'fft64_top' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay min
+        -max_paths 5
+Design : fft64_top
+Version: L-2016.03-SP1
+Date   : Sat Nov 21 20:46:03 2026
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: PVT_0P7V_25C   Library: asap7sc7p5t_ALL_RVT_TT_nldm_211120
+Wire Load Model Mode: top
+
+  Startpoint: in_im[0] (input port clocked by clk)
+  Endpoint: mi_reg_0__0_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                               0.000000   0.000000
+  clock network delay (ideal)                         0.000000   0.000000
+  input external delay                                0.000000   0.000000 r
+  in_im[0] (in)                                       0.000000   0.000000 r
+  U14056/Y (AOI21xp33_ASAP7_75t_R)                    13.653260  13.653260 f
+  mi_reg_0__0_/D (DFFHQNx1_ASAP7_75t_R)               0.000000   13.653260 f
+  data arrival time                                              13.653260
+
+  clock clk (rise edge)                               0.000000   0.000000
+  clock network delay (ideal)                         0.000000   0.000000
+  mi_reg_0__0_/CLK (DFFHQNx1_ASAP7_75t_R)             0.000000   0.000000 r
+  library hold time                                   14.820539  14.820539
+  data required time                                             14.820539
+  --------------------------------------------------------------------------
+  data required time                                             14.820539
+  data arrival time                                              -13.653260
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                               -1.167279
+
+
+  Startpoint: in_im[11] (input port clocked by clk)
+  Endpoint: mi_reg_0__11_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                               0.000000   0.000000
+  clock network delay (ideal)                         0.000000   0.000000
+  input external delay                                0.000000   0.000000 r
+  in_im[11] (in)                                      0.000000   0.000000 r
+  U18906/Y (AOI21xp33_ASAP7_75t_R)                    13.653260  13.653260 f
+  mi_reg_0__11_/D (DFFHQNx1_ASAP7_75t_R)              0.000000   13.653260 f
+  data arrival time                                              13.653260
+
+  clock clk (rise edge)                               0.000000   0.000000
+  clock network delay (ideal)                         0.000000   0.000000
+  mi_reg_0__11_/CLK (DFFHQNx1_ASAP7_75t_R)            0.000000   0.000000 r
+  library hold time                                   14.820000  14.820000
+  data required time                                             14.820000
+  --------------------------------------------------------------------------
+  data required time                                             14.820000
+  data arrival time                                              -13.653260
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                               -1.166739
+
+
+  Startpoint: in_im[5] (input port clocked by clk)
+  Endpoint: mi_reg_0__5_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                               0.000000   0.000000
+  clock network delay (ideal)                         0.000000   0.000000
+  input external delay                                0.000000   0.000000 r
+  in_im[5] (in)                                       0.000000   0.000000 r
+  U16977/Y (AOI21xp33_ASAP7_75t_R)                    13.653260  13.653260 f
+  mi_reg_0__5_/D (DFFHQNx1_ASAP7_75t_R)               0.000000   13.653260 f
+  data arrival time                                              13.653260
+
+  clock clk (rise edge)                               0.000000   0.000000
+  clock network delay (ideal)                         0.000000   0.000000
+  mi_reg_0__5_/CLK (DFFHQNx1_ASAP7_75t_R)             0.000000   0.000000 r
+  library hold time                                   14.819984  14.819984
+  data required time                                             14.819984
+  --------------------------------------------------------------------------
+  data required time                                             14.819984
+  data arrival time                                              -13.653260
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                               -1.166724
+
+
+  Startpoint: in_im[7] (input port clocked by clk)
+  Endpoint: mi_reg_0__7_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                               0.000000   0.000000
+  clock network delay (ideal)                         0.000000   0.000000
+  input external delay                                0.000000   0.000000 r
+  in_im[7] (in)                                       0.000000   0.000000 r
+  U17539/Y (AOI21xp33_ASAP7_75t_R)                    13.653260  13.653260 f
+  mi_reg_0__7_/D (DFFHQNx1_ASAP7_75t_R)               0.000000   13.653260 f
+  data arrival time                                              13.653260
+
+  clock clk (rise edge)                               0.000000   0.000000
+  clock network delay (ideal)                         0.000000   0.000000
+  mi_reg_0__7_/CLK (DFFHQNx1_ASAP7_75t_R)             0.000000   0.000000 r
+  library hold time                                   14.819984  14.819984
+  data required time                                             14.819984
+  --------------------------------------------------------------------------
+  data required time                                             14.819984
+  data arrival time                                              -13.653260
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                               -1.166724
+
+
+  Startpoint: in_im[13] (input port clocked by clk)
+  Endpoint: mi_reg_0__13_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                               0.000000   0.000000
+  clock network delay (ideal)                         0.000000   0.000000
+  input external delay                                0.000000   0.000000 r
+  in_im[13] (in)                                      0.000000   0.000000 r
+  U19467/Y (AOI21xp33_ASAP7_75t_R)                    13.653260  13.653260 f
+  mi_reg_0__13_/D (DFFHQNx1_ASAP7_75t_R)              0.000000   13.653260 f
+  data arrival time                                              13.653260
+
+  clock clk (rise edge)                               0.000000   0.000000
+  clock network delay (ideal)                         0.000000   0.000000
+  mi_reg_0__13_/CLK (DFFHQNx1_ASAP7_75t_R)            0.000000   0.000000 r
+  library hold time                                   14.819983  14.819983
+  data required time                                             14.819983
+  --------------------------------------------------------------------------
+  data required time                                             14.819983
+  data arrival time                                              -13.653260
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                               -1.166723
+
+
+1

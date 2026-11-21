@@ -1,0 +1,29 @@
+{
+  "resolved": true,
+  "feasible": true,
+  "score": 0.0,
+  "score_valid": true,
+  "scoring_version": "independent_fft_profiles_v1",
+  "profile": "area",
+  "policy_sha256": "78639b42bf9bb24595d4a23c3f199d26774c0d32c5968397c8a427f1c9f2efb4",
+  "area_ratio": 1.495322015243565,
+  "components": {
+    "area": 0.0,
+    "throughput": 0.0,
+    "latency": 0.0
+  },
+  "weights": {
+    "area": 1.0,
+    "throughput": 0.0,
+    "latency": 0.0
+  },
+  "performance": {
+    "area_um2": 3644.518860003,
+    "first_output_cycles": 133,
+    "first_output_latency_ns": 1330.0,
+    "target_clock_period_ns": 10.0,
+    "base_frame_II_cycles": 384,
+    "measured_frequency_in_score": false
+  },
+  "reason": "All required profile specifications passed; continuous hardware score has no pass threshold."
+}

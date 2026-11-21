@@ -40,7 +40,7 @@ def main():
             certified_period_ns=perf.get('certified_period_ns'),certified_setup_fmax_MHz=perf.get('certified_setup_fmax_MHz'),verified_frame_II_cycles=perf.get('verified_frame_II_cycles'),
             effective_throughput_ffts_per_second=perf.get('effective_throughput_ffts_per_second'),effective_throughput_samples_per_second=perf.get('effective_throughput_samples_per_second'),
             first_output_cycles=perf.get('first_output_cycles'),first_output_ns=perf.get('first_output_latency_ns'),first_output_at_certified_clock_ns=perf.get('first_output_latency_at_certified_clock_ns'),
-            frame_completion_cycles=max(lat.get('frame_completion_cycles',[]),default=None),minimum_sqnr_db=r.get('quality',{}).get('minimum_frame_sqnr_db'),frames=r.get('dataset_frames'),
+            frame_completion_cycles=max(lat.get('frame_completion_cycles',[])+r.get('throughput_check',{}).get('latency',{}).get('frame_completion_cycles',[]),default=None),minimum_sqnr_db=min(x for x in [r.get('quality',{}).get('minimum_frame_sqnr_db'),r.get('throughput_check',{}).get('quality',{}).get('minimum_frame_sqnr_db')]if x is not None),frames=r.get('dataset_frames'),
             mapped_pass=r.get('mapped_simulation_pass'),worst_setup_slack_ns=ppa.get('worst_setup_slack_ns'),worst_hold_slack_ns=ppa.get('worst_hold_slack_ns'),
             source_sha256=r.get('source',{}).get('source_sha256'),mapped_sha256=ppa.get('mapped_sha256'),raw_directory=str(d)))
         target=out/'designs'/name;target.mkdir(parents=True,exist_ok=True)

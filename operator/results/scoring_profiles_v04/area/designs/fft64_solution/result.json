@@ -1,0 +1,126 @@
+{
+  "status": "COMPLETE",
+  "backend": "commercial",
+  "seed": 20261121,
+  "scale": 3,
+  "profile": "area",
+  "selection_reason": "Explicit backend selection.",
+  "source": {
+    "top": "fft64_top",
+    "files": {
+      "rtl/fft64_top.sv": "24531ad017e292cfa4371581a81a75d677fa5b0cbfeb63c05222a3c9d2973b06"
+    },
+    "frame_ii_cycles": 320,
+    "source_sha256": "24531ad017e292cfa4371581a81a75d677fa5b0cbfeb63c05222a3c9d2973b06"
+  },
+  "dataset_frames": 376,
+  "protocol_pass": true,
+  "quality": {
+    "frames": 376,
+    "minimum_frame_sqnr_db": 55.30391101650743,
+    "pooled_sqnr_db": 65.41839632062877,
+    "worst_frame_nmse": 2.9485527267807203e-06,
+    "zero_frame_exact": true,
+    "failed_frames": [],
+    "feasible": true
+  },
+  "latency": {
+    "first_output_latency_cycles": [
+      256
+    ],
+    "computational_tail_cycles": [
+      193
+    ],
+    "frame_completion_cycles": [
+      319
+    ],
+    "observed_frame_II_on_384_cycle_workload": [
+      384
+    ],
+    "observed_frame_II_at_verified_interval": [
+      384
+    ],
+    "offered_frame_II": 384,
+    "required_samples_per_second": 16666666.666666664,
+    "required_ffts_per_second": 260416.66666666663,
+    "clock_period_ns": 10,
+    "reset_mid_frame_test": true,
+    "reset_during_processing_probes": [
+      {
+        "input_start": 5,
+        "reset_cycle": 93,
+        "idle_after_load": 24
+      },
+      {
+        "input_start": 99,
+        "reset_cycle": 245,
+        "idle_after_load": 82
+      },
+      {
+        "input_start": 251,
+        "reset_cycle": 525,
+        "idle_after_load": 210
+      }
+    ]
+  },
+  "ppa": {
+    "area_um2": 1614.77874,
+    "register_area_um2": 804.2328,
+    "cells": 12498,
+    "area_method": "sum_mapped_leaf_library_cell_area",
+    "flow": "PrimeTime ideal-interconnect pre-layout; fixed-target setup/hold only; Fmax requires scan",
+    "worst_setup_slack_ns": 6.184986816,
+    "worst_hold_slack_ns": 0.037591587,
+    "legacy_slack_period_estimate_ns": 3.815013184,
+    "clock_period_ns": 10.0,
+    "setup_uncertainty_ns": 0.1,
+    "timing_pass": true,
+    "source_sha256": "24531ad017e292cfa4371581a81a75d677fa5b0cbfeb63c05222a3c9d2973b06",
+    "mapped_sha256": "07670ecd539b9acd684230d8691fe2a35a38ed2a46468a29a284db54a49b1375",
+    "mapping_wall_seconds": 163.20984245510772,
+    "library_hashes": [
+      "bb9da4b949600abc0365715400a2b67687ed47896cc71529fddfb3a4f7097e38",
+      "51026f0d4c67f909966900a15908f76d2c6d74cf27631f658c4216f00855b08a"
+    ],
+    "physical_flow_id": "735b418c3df404fe2666e9ebc29510055c61b490d1dee3b0ddebfb3ef56e5925",
+    "formal_status": "NOT_REQUESTED; mapped simulation still mandatory"
+  },
+  "flow_id": "189600940f950cd9bb76f5e332086131ec0e05f5784aef03023be7ab7f50cec0",
+  "mapped_simulation_pass": true,
+  "mapped_full_four_state": true,
+  "mapped_initial_state_modes": [
+    0,
+    1,
+    20261121
+  ],
+  "seconds": 382.18320005596615,
+  "grade": {
+    "resolved": true,
+    "feasible": true,
+    "score": 0.6749338980414678,
+    "score_valid": true,
+    "scoring_version": "independent_fft_profiles_v1",
+    "profile": "area",
+    "policy_sha256": "78639b42bf9bb24595d4a23c3f199d26774c0d32c5968397c8a427f1c9f2efb4",
+    "area_ratio": 0.6625330509792661,
+    "components": {
+      "area": 0.6749338980414678,
+      "throughput": 0.0,
+      "latency": 0.0
+    },
+    "weights": {
+      "area": 1.0,
+      "throughput": 0.0,
+      "latency": 0.0
+    },
+    "performance": {
+      "area_um2": 1614.77874,
+      "first_output_cycles": 256,
+      "first_output_latency_ns": 2560.0,
+      "target_clock_period_ns": 10.0,
+      "base_frame_II_cycles": 384,
+      "measured_frequency_in_score": false
+    },
+    "reason": "All required profile specifications passed; continuous hardware score has no pass threshold."
+  }
+}

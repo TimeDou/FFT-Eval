@@ -1,0 +1,46 @@
+{
+  "status": "COMPLETE",
+  "backend": "commercial",
+  "reference_area_um2": 2437.28028,
+  "protocol": {
+    "benchmark_id": "fft64_quant_arch_v0.4",
+    "specification_sha256": "c685f3529f6b971951aa6521d99577f5fc655392360611f49c6c67f11a24c206",
+    "data_generator_sha256": "63e7374a7a3c07e296c4b44878419a559b6c22e7b975b18b2ba45532034f6eee",
+    "seed": 20261121,
+    "scale": 3
+  },
+  "submissions": [
+    {
+      "id": "fft64_solution",
+      "origin": "reference",
+      "agent": "unspecified",
+      "backend": "commercial",
+      "profile": "area",
+      "state": "COMPLETE",
+      "resolved": true,
+      "score": 0.6749338980414678,
+      "area_um2": 1614.77874,
+      "area_ratio": 0.6625330509792661,
+      "worst_sqnr_db": 55.30391101650743,
+      "area_component": 0.6749338980414678,
+      "throughput_component": 0.0,
+      "latency_component": 0.0,
+      "certified_period_ns": null,
+      "certified_setup_fmax_MHz": null,
+      "verified_frame_II_cycles": null,
+      "effective_throughput_ffts_per_second": null,
+      "effective_throughput_samples_per_second": null,
+      "first_output_ns_at_certified_clock": null,
+      "worst_slack_ns": 6.184986816,
+      "timing_pass": true,
+      "first_output_cycles": 256,
+      "first_output_ns": 2560.0,
+      "completion_cycles": 319,
+      "completion_ns": 3190.0,
+      "mapped_pass": true,
+      "reused": true,
+      "result_directory": "/mnt/mydata/eval/scoring_profiles_v04_area_r1/candidates/fft64_solution/runs/98a36e10d1052a0e5ac3a853",
+      "source_sha256": "24531ad017e292cfa4371581a81a75d677fa5b0cbfeb63c05222a3c9d2973b06"
+    }
+  ]
+}

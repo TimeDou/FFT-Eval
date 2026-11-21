@@ -48,6 +48,7 @@ def main():
         writer=csv.DictWriter(stream,list(rows[0]));writer.writeheader();writer.writerows(rows)
     accurate_area=calibration['reference_area_um2'];bank_area=results['exact_banked']['ppa']['area_um2']
     chosen=results[status['selected']];area=chosen['ppa']['area_um2'];minimum=min(r['quality']['minimum_frame_sqnr_db']for r in validation)
+    score_policy=chosen['grade'].get('scoring_version','legacy_fractional_area_saving_v0.2')
     # Same input packets, different legal output timings: compare decoded values.
     frames,_=make_frames(20261118,2);events,metadata=schedule(frames,20261118+17)
     exact_outputs=[]
@@ -108,9 +109,9 @@ def main():
 
 ## 对新 benchmark 的结论
 
-题目可以形成一个小而完整的工程闭环：架构选择 → 精确资源优化 → 量化 → 协议/数值 → 映射/STA → 网表复测。最终方案确实超过拟定的 20% 面积节省目标，但该通过目标仍需真实 DC/PT 平台校准。
+题目可以形成一个小而完整的工程闭环：架构选择 → 精确资源优化 → 量化 → 协议/数值 → 映射/STA → 网表复测。面积节省是设计收益的一项；通过与否只取决于基本硬件规格，不设置最低面积降幅。
 
-新的连续分数是面积相对节省，因此本机为 {chosen['grade']['score']:.6f}；它不沿用旧任务的满分曲线。实际 agent 评分须使用商业平台的面积参考。
+本次原始记录使用评分规则 `{score_policy}`，保存得分为 {chosen['grade']['score']:.6f}。历史结果不重新标注为新版本测量；v0.3 使用归一化吞吐量/面积效率，准确参考点为 0.5。实际 agent 评分须使用同一商业平台的新版本校准。
 
 本次使用已经修正长空闲计数和表达式兼容性的生成器；没有拷贝旧版本的运行目录或将旧故障当成本轮失败。所有表格来自当前仓库下重新执行的测量。
 

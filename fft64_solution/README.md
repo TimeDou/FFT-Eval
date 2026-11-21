@@ -1,5 +1,7 @@
 # 重新生成的 FFT64 参考解
 
+本机 Docker 的当前 **v0.3 商业验证已完成**：`resolved=true`，连续分数 **0.602319**，完整面积 **1614.78 µm²**。见 [SYNOPSYS_RESULTS.md](SYNOPSYS_RESULTS.md)。旧开源表格、分数和 `results/status.json` 保留为历史 v0.2 记录。
+
 本目录基于同仓库的 `fft64_benchmark/` 和 `synopsys-eval` 分支重新生成并验证。旧实验结果没有拷入本目录。RTL 生成器沿用原创实现，对新版本重新测量，并使用新的留出种子确认。
 
 它是出题人的参考解，不是一次独立 agent 从零完成任务的 rollout。候选搜索是有限采样，不声称全局最优。

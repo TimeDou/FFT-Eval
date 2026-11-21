@@ -1,7 +1,7 @@
 """Exported commercial backend. Execution status is separate from local evidence."""
 from pathlib import Path
 import math,os,re,time,subprocess,shutil,hashlib,json
-from common import ROOT,TECH,COMB,SEQ,run,read,save,sha,lock,flow_identity
+from common import ROOT,TECH,COMB,SEQ,run,read,save,sha,lock,flow_identity,InfrastructureError,CacheIdentityError,tool_failure
 from toolchain import activate,find_tool
 
 def preflight(require_db=True):
@@ -12,23 +12,23 @@ def preflight(require_db=True):
 def check_log(path):
  # A Synopsys batch process can exit zero after reporting script errors.
  errors=re.findall(r'^\s*(?:Error:|Fatal:|TASK_FATAL)[^\n]*',path.read_text(),re.M)
- if errors:raise RuntimeError(str(path)+'\n'+'\n'.join(errors[:8]))
+ if errors:raise tool_failure(str(path)+'\n'+'\n'.join(errors[:8]))
 
 def checked_metrics(path,kind):
  try:metrics=read(path)
- except (OSError,ValueError) as exc:raise RuntimeError('Missing or malformed '+kind+' metrics: '+str(path))from exc
+ except (OSError,ValueError) as exc:raise InfrastructureError('Missing or malformed '+kind+' metrics: '+str(path))from exc
  fields=['area_um2','register_area_um2']if kind=='DC'else['worst_setup_slack_ns','worst_hold_slack_ns','clock_period_ns']
- if not isinstance(metrics,dict):raise RuntimeError('Invalid '+kind+' metrics object: '+str(path))
+ if not isinstance(metrics,dict):raise InfrastructureError('Invalid '+kind+' metrics object: '+str(path))
  for field in fields:
   value=metrics.get(field)
   if type(value)not in (int,float)or not math.isfinite(value):
-   raise RuntimeError('Invalid '+kind+' metric '+field+': '+str(path))
+   raise InfrastructureError('Invalid '+kind+' metric '+field+': '+str(path))
  if kind=='DC':
   if(metrics['area_um2']<=0 or not 0<=metrics['register_area_um2']<=metrics['area_um2']
      or type(metrics.get('cells'))is not int or metrics['cells']<=0):
-   raise RuntimeError('Invalid DC mapped area/count: '+str(path))
+   raise InfrastructureError('Invalid DC mapped area/count: '+str(path))
  elif metrics['clock_period_ns']<=0:
-  raise RuntimeError('Invalid PT required period: '+str(path))
+  raise InfrastructureError('Invalid PT required period: '+str(path))
  return metrics
 
 def mapping_identity():
@@ -61,9 +61,10 @@ def _measure(source,outdir,formal,physical):
  check=preflight();save(d/'preflight.json',check)
  if not check['ready']:raise EnvironmentError('COMMERCIAL_ENVIRONMENT_NOT_READY: '+str(d/'preflight.json'))
  identity=physical
- sig=dict(source=__import__('hashlib').sha256(source.encode()).hexdigest(),comb=sha(COMB),seq=sha(SEQ),db=[sha(TECH/'db/comb_rvt_tt.db'),sha(TECH/'db/seq_rvt_tt.db')],flow='DC-PT-setup-hold-v3',identity=identity,formal=formal)
+ sig=dict(source=__import__('hashlib').sha256(source.encode()).hexdigest(),comb=sha(COMB),seq=sha(SEQ),db=[sha(TECH/'db/comb_rvt_tt.db'),sha(TECH/'db/seq_rvt_tt.db')],flow='DC-PT-setup-hold',identity=identity,formal=formal)
  with lock(d/'lock'):
-  if(d/'signature.json').exists():assert read(d/'signature.json')==sig,'Changed tool/RTL/constraints require new build directory'
+  if(d/'signature.json').exists():
+   if read(d/'signature.json')!=sig:raise CacheIdentityError('Changed tool/RTL/constraints require new build directory')
   else:save(d/'signature.json',sig)
   if(d/'metrics.json').exists():return read(d/'metrics.json')
   start=time.monotonic();(d/'staged.sv').write_text(source)

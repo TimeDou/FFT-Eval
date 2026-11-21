@@ -19,7 +19,7 @@ BENCHMARK = ROOT/'fft64_benchmark'
 sys.path.insert(0, str(BENCHMARK/'tools'))
 from common import TECH,read, save, sha, lock, flow_identity
 from toolchain import prepare
-from scoring import make_calibration, POLICY_SHA256, SCORING_VERSION
+from scoring import make_calibration, POLICY_SHA256, SCORING_ID
 
 
 def digest(value):
@@ -68,14 +68,10 @@ def protocol(args, state):
         result = dict(**definition, seed=args.seed, scale=args.scale)
     else:
         with lock(state/'protocol.lock'):
-            # A specification upgrade gets its own immutable protocol. Preserve
-            # an old matching protocol, without overwriting prior experiments.
+            # Protocols are immutable and identified by their content hashes.
             path = state/'protocols'/digest(definition)[:24]/'evaluation_protocol.json'
-            legacy = state/'evaluation_protocol.json'
             if not path.exists():
-                prior=read(legacy)if legacy.exists()else{}
-                matching=all(prior.get(k)==v for k,v in definition.items())
-                save(path,prior if matching else dict(**definition,seed=secrets.randbits(48),scale=args.scale))
+                save(path,dict(**definition,seed=secrets.randbits(48),scale=args.scale))
             result = read(path)
     if any(result.get(key) != value for key,value in definition.items()):
         raise ValueError('Evaluation protocol uses another specification/data generator; choose a matching protocol or a new state directory')
@@ -91,7 +87,7 @@ def platform_identity(environment):
     names=['vcs','dc_shell','pt_shell']if backend=='commercial'else['yosys','abc','sta','iverilog','vvp','verilator']
     tools={name:dict(path=environment['tools'][name],sha256=sha(environment['tools'][name]))for name in names}
     files={name:sha(BENCHMARK/'tools'/name)for name in
-           ['evaluate.py','model.py','simulate.py','common.py','toolchain.py','commercial.py','scoring.py','throughput.py','frequency.py']}
+           ['evaluate.py','model.py','simulate.py','common.py','cache.py','toolchain.py','commercial.py','scoring.py','throughput.py','frequency.py']}
     baselines={name:assemble(ROOT/'operator/baselines'/name)[1]['source_sha256']for name in ['sdf','iterative']}
     return dict(backend=backend,flow_id=flow_identity(backend),tools=tools,
                 evaluator_files=files,baseline_source_sha256=baselines,
@@ -101,22 +97,18 @@ def platform_identity(environment):
 
 
 def infrastructure_failure(result):
-    if result.get('status') == 'ENVIRONMENT_ERROR':
-        return True
-    message = result.get('failure','')+'\n'+result.get('traceback','')
-    return bool(re.search(r'license (?:checkout|check.?out|server|manager)|no valid license|licensing error|'
-                          r'unable to (?:obtain|check out).*license|cannot (?:obtain|checkout).*license|'
-                          r'FLEXnet|SNPSLMD_LICENSE_FILE|Fatal License Error|Inconsistent Encryption|'
-                          r'Design Compiler is not enabled|DCSH-1|TimeoutExpired',message,re.I))
+    from scoring import evaluation_outcome
+    return evaluation_outcome(result)=='UNSCORED_INFRASTRUCTURE'
 
 
 def cached_evaluate(submission, directory, settings, calibration=None, formal=False, profile='area', auto_ii=False):
     from evaluate import evaluate, score_result
     path=directory/'result.json'
     if path.exists():
-        result=read(path)
+        try:result=read(path)
+        except (OSError,ValueError):result={}
         finished='seconds'in result and 'grade'in result
-        if finished and result.get('profile','area')==profile and result.get('status') in {'COMPLETE','QUALITY_FAILED','THROUGHPUT_FAILED','FAILED'} and not infrastructure_failure(result):
+        if finished and result.get('profile','area')==profile and result.get('status') in {'COMPLETE','QUALITY_FAILED','THROUGHPUT_FAILED','DESIGN_INVALID'} and not infrastructure_failure(result):
             result['grade']=score_result(result,calibration)
             return result,True
     result=evaluate(submission,directory,settings.get('measurement_backend','commercial'),seed=settings['seed'],scale=settings['scale'],
@@ -160,7 +152,7 @@ def calibration(args,state,identity,settings,location=None):
             save(directory/'calibration.json',reference)
         expected=dict(backend=identity['backend'],flow_id=identity['flow_id'],platform_fingerprint=fingerprint,
                       protocol_fingerprint=digest(settings),profile=profile,policy_sha256=POLICY_SHA256,
-                      scoring_version=SCORING_VERSION)
+                      scoring_policy_id=SCORING_ID)
         if any(reference.get(key)!=value for key,value in expected.items()):
             raise EnvironmentError('Calibration does not match this Synopsys environment/protocol; omit --calibration to measure a matching reference')
         return reference,directory
@@ -186,12 +178,14 @@ def worker(entry,outdir,settings,reference,identity,formal):
         (snapshot/'rtl').mkdir(parents=True,exist_ok=True)
         (snapshot/'rtl/fft64_top.sv').write_text(source)
         save(snapshot/'design_config.json',dict(top='fft64_top',rtl=['rtl/fft64_top.sv'],frame_ii_cycles=info['frame_ii_cycles']))
+        for name in ['DESIGN_PLAN.md','measurements.csv']:
+            if (Path(entry['submission'])/name).is_file():shutil.copy2(Path(entry['submission'])/name,snapshot/name)
         save(run/'original_source.json',info)
         evaluated_source=snapshot
     result,reused=cached_evaluate(evaluated_source,run,settings,reference,formal,profile=profile)
     grade=result['grade']
-    unavailable=infrastructure_failure(result)or(grade.get('feasible',False)and not grade.get('score_valid',False))
-    code=dict(resolved=False,score=0.0,reason='Environment error; no valid score: '+result.get('failure',''))if unavailable else {k:grade[k]for k in ['resolved','score','reason']}
+    unavailable=not grade.get('score_valid',False)
+    code={k:grade[k]for k in ['resolved','score','reason']}
     save(directory/'code_result.json',code)
     save(directory/'latest.json',dict(directory=str(run),reused=reused))
     quality=result.get('quality',{});ppa=result.get('ppa',{});lat=result.get('latency',{})
@@ -200,7 +194,9 @@ def worker(entry,outdir,settings,reference,identity,formal):
     period=read(BENCHMARK/'SPEC.json')['timing_protocol']['clock_period_ns']
     performance=grade.get('performance',{})
     row=dict(id=entry['id'],origin=entry['origin'],agent=entry['agent'],backend=reference['backend'],profile=profile,
-             state='UNSCORED_INFRASTRUCTURE'if unavailable else result['status'],resolved=code['resolved'],
+             state='UNSCORED_INFRASTRUCTURE'if unavailable else grade['evaluation_outcome'],
+             measurement_status=result['status'],score_valid=grade.get('score_valid',False),resolved=code['resolved'],
+             submission_completeness=result.get('submission_completeness'),
              score=None if unavailable else code['score'],area_um2=ppa.get('area_um2'),
              area_ratio=grade.get('area_ratio'),worst_sqnr_db=quality.get('minimum_frame_sqnr_db'),
              area_component=grade.get('components',{}).get('area'),
@@ -245,11 +241,11 @@ def execute(args):
     os.environ['FFT_PHYSICAL_CACHE_DIR']=str(state/'physical_cache')
     rows=[]
     with lock(out/'run.lock'):
-        history=out/'history'/str(time.time_ns())
+        attempt=out/'attempts'/str(time.time_ns())
         for name in ['summary.json','scores.csv','code_result.json','protocol.json','platform_identity.json','calibration.json','calibration_location.json']:
             if (out/name).exists():
-                history.mkdir(parents=True,exist_ok=True)
-                shutil.move(str(out/name),str(history/name))
+                attempt.mkdir(parents=True,exist_ok=True)
+                shutil.move(str(out/name),str(attempt/name))
         save(out/'status.json',dict(status='PREPARING',started_utc=utc()))
         # This entry never selects local tools or builds an open-source EDA stack.
         environment=prepare(getattr(args,'backend','commercial'),check_only=args.check_only,allow_build=False)
@@ -264,8 +260,8 @@ def execute(args):
                 shutil.copy2(source,out/'setup'/name)
         if not environment['ready'] or args.check_only:
             status='ENVIRONMENT_READY'if environment['ready']else'ENVIRONMENT_NOT_READY'
-            reason='Environment check only; no design was scored.'if environment['ready']else'Synopsys tools/libraries are not ready; see environment.json. No local fallback or valid score.'
-            save(out/'status.json',dict(status=status,backend=selected_backend,reason=reason))
+            reason='INCOMPLETE: Environment check only; no design was scored.'if environment['ready']else'UNSCORED_INFRASTRUCTURE: Tools/libraries are not ready; see environment.json. No valid score.'
+            save(out/'status.json',dict(status=status,backend=selected_backend,reason=reason,score_valid=False))
             save(out/'summary.json',dict(status=status,backend=selected_backend,submissions=[],reason=reason))
             save(out/'code_result.json',dict(resolved=False,score=0.0,reason=reason))
             print(json.dumps(dict(status=status,backend=selected_backend,output=str(out),feedback=str(feedback(out))),indent=2))
@@ -308,7 +304,7 @@ def execute(args):
         except Exception as exc:
             save(out/'status.json',dict(status='INCOMPLETE',backend=selected_backend,failure=str(exc),finished_utc=utc()))
             save(out/'summary.json',dict(status='INCOMPLETE',backend=selected_backend,submissions=rows,failure=str(exc)))
-            if len(entries)<=1:save(out/'code_result.json',dict(resolved=False,score=0.0,reason='Evaluation incomplete; no valid score: '+str(exc)))
+            if len(entries)<=1:save(out/'code_result.json',dict(resolved=False,score=0.0,reason='UNSCORED_INFRASTRUCTURE: Evaluation incomplete; no valid score: '+str(exc)))
             print(json.dumps(dict(status='INCOMPLETE',failure=str(exc),feedback=str(feedback(out))),indent=2))
             return 2
 
@@ -331,7 +327,7 @@ def main():
     parser.add_argument('--agent',default='unspecified')
     parser.add_argument('--check-only',action='store_true')
     parser.add_argument('--formal',action='store_true')
-    parser.add_argument('--profile',choices=['area','architecture'],default='architecture',help='Independent frozen scoring profile; default area')
+    parser.add_argument('--profile',choices=['area','architecture'],default='architecture',help='Independent frozen scoring profile; default architecture')
     args=parser.parse_args()
     if sum(bool(x)for x in [args.submission,args.manifest,args.batch])>1:parser.error('Choose one input mode')
     if args.protocol and args.seed is not None:parser.error('Choose --protocol or --seed')

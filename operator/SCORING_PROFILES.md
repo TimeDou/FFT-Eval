@@ -1,41 +1,66 @@
-# Running the frozen scoring profiles
+# Operator Scoring Profiles and Reproducible Evaluation
 
-Default, compatible with the original fixed-service FFT64 task:
+## 1. Current profile
 
-```bash
-bash run_synopsys.sh /workspace/submission --profile area --out /workspace/eval/area
-```
+**FFT64-Quant defaults to `architecture`.** It uses hard functional/quality requirements and a continuous hardware score with **60% mapped area, 30% verified throughput, 10% worst first-output latency**. `area` remains an independent **diagnostic** profile, not the default and not comparable to architecture-profile scores.
 
-Architecture/throughput task:
+Use one frozen profile, protocol, backend and toolchain for an evaluation campaign. Do not replace a failed candidate's performance with a previous PASS or a result from another physical flow.
 
-```bash
-bash run_synopsys.sh /workspace/submission --profile architecture --out /workspace/eval/architecture
-```
+## 2. Commands
 
-For local SSH Docker replace `run_synopsys.sh` with `run_synopsys_docker.sh`. The host submission path is copied into a private shared snapshot; `--out` is a container path under the shared mount, for example `/mnt/mydata/eval/my_architecture_run`. No password is stored. Existing VCS/DC/PrimeTime/LC are used.
-
-Architecture submissions declare an integer `frame_ii_cycles` in `design_config.json` (64–384, default 384). Baseline calibration searches all integers with a small qualification workload and strictly validates the selected interval on the full workload and three mapped initial states. Candidates strictly validate their declaration. The reported interval is an empirical achievable service bound, not a formal global minimum.
-
-Both profiles use the same DC mapped netlist and area. A physical mapping cache is independent of scoring policy, profile and input seed. A content hash covers RTL, physical scripts, libraries, DC/PT launchers and formal mode. A file lock prevents duplicate mappings across profiles. Scored-run caches additionally include profile, policy, declared II, input protocol and evaluator identity. Different scoring calibrations never share normalization anchors. Specification upgrades automatically get a separate default protocol without deleting the old protocol.
-
-The new common physical flow includes the documented DC `compile -incremental_mapping -only_hold_time` after area mapping. This is needed because the previous version left a 1.17ps input-to-register hold violation on the accurate folded implementation. Both accurate baselines and all candidates receive the same repair. New areas include the repair cells. Old checkpoints and v0.3 results remain intact.
-
-`frequency_certificates/` records actual PrimeTime reconstraints and timing updates on a fixed mapped netlist. Every trial reports requested and actual period plus setup/hold slack. The final certificate uses a passing clock, with a measured failing clock less than 0.01ns faster. No single-clock slack-derived Fmax enters scoring.
-
-Output includes separate area/throughput/latency components, calibration targets and their accurate-baseline source, verified II, certified period/frequency, effective FFTs/s and samples/s, first-output latency at the common 10ns clock, and latency at the certified clock. Raw strict simulations, failed II pilots, STA traces and hashes remain available. Area mode leaves frequency/throughput score fields blank because no capacity measurement is needed.
-
-The normalization vector and weights were registered in `fft64_benchmark/profiles/` before measuring new candidates. Full equations are in [SCORING.md](../fft64_benchmark/SCORING.md). SQNR is a hard constraint, never a bonus. Feasible zero-score designs pass. Missing tools/calibration/certification remain unscored.
-
-To collect a completed run into a small, portable report without changing its raw experiment:
+From the private evaluator root:
 
 ```bash
-python3 operator/collect_native_results.py /host/shared/eval/run \
-  --shared-dir /host/shared --container-share /mnt/mydata \
-  --out operator/results/my_new_run
+bash run_evaluation.sh /absolute/path/to/submission \
+  --backend auto --profile architecture --out /absolute/path/to/eval_run
+
+bash run_synopsys.sh /absolute/path/to/submission \
+  --backend commercial --profile architecture --out /absolute/path/to/eval_synopsys
+
+# Optional area-only diagnostic, in a SEPARATE output directory
+bash run_synopsys.sh /absolute/path/to/submission \
+  --backend commercial --profile area --out /absolute/path/to/eval_area
 ```
 
-All physical measurements here are synthesis cell area and ideal-interconnect STA, not post-route area/timing, power or silicon Fmax. The provided R2SDF reference is frame-isolated; its measured II must not be presented as a limit of the R2SDF architecture family.
+The private Docker wrapper is `run_synopsys_docker.sh`; see the operator environment configuration for its SSH/shared-mount requirements. Keep private credentials, accurate baselines, calibration, hidden inputs and results outside the agent checkout.
 
-The small DSBench attachment keeps the legacy filename `area_reference.json` for the selected profile calibration. The embedded `profile` and policy hash determine its meaning; an architecture calibration is not an area-profile denominator. Use `grading/make_grader.py --profile architecture --calibration ...` for that task.
+## 3. Calibration and scoring
 
-Grader packaging reuses the accurate calibration’s original input seed/scale. It rejects existing settings from a different input protocol rather than silently recalibrating after candidate results.
+Calibrate the accurate R2SDF and folded radix-2 baselines **before candidate scoring** with the identical EDA backend. For `architecture`, the area reference is the smaller validated baseline area; the throughput reference is the mandatory II=384 service at 10 ns, while its goal is twice the highest *measured accurate-baseline* throughput; the latency reference is the 300-cycle deadline, with a goal tied to the fastest accurate baseline and a 63-cycle physical floor. These anchors are not necessarily obtained from one physical baseline circuit.
+
+A candidate's reported throughput is
+
+\[
+T_{\mathrm{eff}}=10^9/(II_{\mathrm{ver}}P_{\mathrm{STA}})\quad\text{FFTs/s}
+\]
+
+with \(II_{\mathrm{ver}}\) the empirically shortest passing integer II from 64–384, and \(P_{\mathrm{STA}}\) a setup/hold-passing certified period on the **fixed mapped netlist**. Each integer II is exercised with ≥1,024 consecutive RTL frames; the selected minimum is independently checked using a representative mapped subset (128 frames, plus the specified gap/reset behavior). The `frame_ii_cycles` value in `design_config.json` is a **hint**, not an independently scoring declared minimum. Clock certification brackets a passing/failing clock within 0.01 ns unless the configured scan floor is reached.
+
+The first-output latency score uses the maximum observed per-frame latency at the **common 10 ns clock**, avoiding a second frequency reward. Numerical quality is a hard SQNR ≥50 dB constraint with no precision bonus. Complete definitions are in [SCORING.md](../fft64_benchmark/SCORING.md).
+
+The evaluator's common physical flow performs area mapping followed by incremental hold repair, then reports mapped area and ideal-interconnect setup/hold timing. All calibration baselines and candidates use this same mapping and hold-repair flow.
+
+## 4. Caches, grading, and result evidence
+
+Candidate runs are keyed by RTL source, evaluation protocol/seed, backend/platform identity, profile and scoring policy. Mapping caches can be shared across profiles only when the mapped physical flow is identical; **normalization and completed score caches cannot**. Store hashes and the raw measurement directory along with every result.
+
+The private DSBench attachment uses the filename `area_reference.json` for the calibrated profile. It is a **profile-specific calibration object**, not simply a scalar area denominator. Create it only after verifying a commercial baseline calibration:
+
+```bash
+python3 fft64_benchmark/grading/make_grader.py \
+  --profile architecture \
+  --calibration /private/calibration.json \
+  --out /private/grader_attachment
+```
+
+The official three-field result is `resolved`, `score`, and `reason`; internal reports must additionally preserve `score_valid`/infrastructure status, component scores, measured II, certified period, first/completion latencies, mapped area, worst-frame SQNR and reference hashes.
+
+Unit tests, nominal numerical simulation, a representative gate subset, full mapped long-stream tests, and full hidden numerical evaluation are **different evidence levels**. All hardware data are pre-layout synthesis and ideal-interconnect STA; no post-route, power, or silicon Fmax claim is supported.
+
+## Measurement outcomes and resume
+
+`score_valid=true` is required for ranking. A demonstrated design violation has outcome `DESIGN_INVALID` and a valid zero score. Tool crashes, license faults, timeouts, incomplete outputs and calibration mismatches have no valid score; their three-field `reason` starts with `UNSCORED_INFRASTRUCTURE:`. Quick or unfinished evaluations use `INCOMPLETE:`. The three-field format itself remains `resolved`, `score`, `reason`.
+
+All result directories bind their content identity before using checkpoints. Keep a separate directory when changing RTL, frames, seed, tools, libraries, policy, profile or mapping. A corrupt aggregate can be reconstructed from authenticated completed chunks. Incomplete tool attempts are retried, rather than cached as design failures. `long_intervals/progress.json` records elapsed time and Python-process peak RSS; tool execution receipts record command runtimes.
+
+`DESIGN_PLAN.md` and `measurements.csv` are checked separately in `submission_completeness.json`. Their absence is reported without changing electrical feasibility or hardware quality.

@@ -7,7 +7,34 @@ import math
 POLICY_PATH=Path(__file__).resolve().parents[1]/'profiles/policy.json'
 POLICY=json.loads(POLICY_PATH.read_text())
 POLICY_SHA256=hashlib.sha256(POLICY_PATH.read_bytes()).hexdigest()
-SCORING_VERSION='fft64_quant_pdf_long_frames_v1'
+SCORING_ID='fft64_quant'
+
+
+def measurement_context(result):
+    """Comparable protocol and runtime identities, excluding the candidate RTL."""
+    from cache import digest,runtime_identity
+    from common import ROOT,sha
+    runtime=runtime_identity(result['backend'])
+    platform={k:runtime[k]for k in ['tools','libraries','drivers','flow_scripts','python_version','python_sha256','numpy_version']}
+    protocol=dict(specification_sha256=sha(ROOT/'SPEC.json'),generator_sha256=sha(ROOT/'tools/model.py'),
+                  seed=result['seed'],scale=result['scale'],audience=result['audience'])
+    return dict(protocol_fingerprint=digest(protocol),measurement_platform_fingerprint=digest(platform))
+
+
+def evaluation_outcome(result):
+    status=result.get('status')
+    if status in {'UNSCORED_INFRASTRUCTURE','ENVIRONMENT_ERROR','FAILED'}:
+        return 'UNSCORED_INFRASTRUCTURE'
+    if status in {'DESIGN_INVALID','QUALITY_FAILED','THROUGHPUT_FAILED'}:
+        return 'DESIGN_INVALID'
+    if status=='COMPLETE':
+        if hardware_feasible(result):return 'FEASIBLE'
+        # Missing evidence is not a demonstrated design violation.
+        flags=[result.get('quality',{}).get('feasible'),result.get('protocol_pass'),
+               result.get('mapped_simulation_pass'),result.get('ppa',{}).get('timing_pass')]
+        if False in flags or result.get('ppa',{}).get('formal_status')=='FAILED':return 'DESIGN_INVALID'
+        return 'INCOMPLETE'
+    return 'INCOMPLETE'
 
 
 def profile_policy(profile):
@@ -79,6 +106,10 @@ def make_calibration(results,profile='area',**metadata):
         raise ValueError('All accurate baselines must pass the selected profile')
     if len({(r.get('backend'),r.get('flow_id'))for r in results.values()})!=1:
         raise ValueError('Accurate baselines must share backend and measurement flow')
+    contexts=[r.get('measurement_context')for r in results.values()]
+    if any(context!=contexts[0]for context in contexts):
+        raise ValueError('Accurate baselines must share the measured protocol and runtime')
+    if contexts[0] is not None:metadata['measurement_context']=contexts[0]
     measured={name:performance(r,profile)for name,r in results.items()}
     best_area=min(measured,key=lambda n:measured[n]['area_um2'])
     area_best=measured[best_area]['area_um2']
@@ -100,7 +131,7 @@ def make_calibration(results,profile='area',**metadata):
         sources.update(area_reference=best_area,throughput_reference='mandatory_384_cycle_service',throughput_target=fastest,
                        latency_reference='mandatory_300_cycle_deadline',latency_target=shortest)
     return dict(metadata,backend=first_result['backend'],flow_id=first_result['flow_id'],profile=profile,
-                scoring_version=SCORING_VERSION,policy_sha256=POLICY_SHA256,weights=policy['weights'],
+                scoring_policy_id=SCORING_ID,policy_sha256=POLICY_SHA256,weights=policy['weights'],
                 references=references,targets=targets,anchor_sources=sources,baseline_performance=measured,
                 reference_area_um2=references['area_um2'],reference_design=best_area if profile=='area'else'paper_contract_and_accurate_calibration',
                 normalization='frozen targets relative to accurate baselines only; no candidate adaptation')
@@ -117,22 +148,26 @@ def normalized(value,reference,target,lower_is_better):
 def score_result(result,calibration=None):
     profile=result.get('profile','area');profile_policy(profile)
     feasible=hardware_feasible(result)
+    outcome=evaluation_outcome(result)
     grade=dict(resolved=feasible,feasible=feasible,score=0.0,
-               score_valid=not feasible and result.get('status')in{'COMPLETE','QUALITY_FAILED','FAILED','THROUGHPUT_FAILED'},
-               scoring_version=SCORING_VERSION,profile=profile,policy_sha256=POLICY_SHA256,area_ratio=None)
-    if result.get('status')=='QUICK_CHECK_PASSED':return dict(grade,reason='Public numerical and sustained protocol checks passed; ASIC/capacity scoring was not requested.')
-    if result.get('status')=='RUNNING':return dict(grade,reason='Evaluation is still running; no final score.')
-    if not feasible:return dict(grade,reason='A required numerical, protocol, timing, RTL/mapped or declared-throughput check failed.')
+               score_valid=outcome=='DESIGN_INVALID',evaluation_outcome=outcome,
+               scoring_policy_id=SCORING_ID,profile=profile,policy_sha256=POLICY_SHA256,area_ratio=None)
+    if outcome=='UNSCORED_INFRASTRUCTURE':return dict(grade,reason='UNSCORED_INFRASTRUCTURE: '+result.get('failure','Measurement could not be completed.'))
+    if result.get('status')=='QUICK_CHECK_PASSED':return dict(grade,reason='INCOMPLETE: Public numerical and sustained protocol checks passed; ASIC/capacity scoring was not requested.')
+    if outcome=='INCOMPLETE':return dict(grade,reason='INCOMPLETE: Evaluation evidence is not complete; no final score.')
+    if not feasible:return dict(grade,reason='DESIGN_INVALID: A required numerical, protocol, timing or RTL/mapped check failed.')
     try:measured=performance(result,profile)
     except ValueError as exc:return dict(grade,reason=str(exc))
-    if not calibration:return dict(grade,performance=measured,reason='Hardware checks passed; matching frozen profile calibration is required.')
+    if not calibration:return dict(grade,performance=measured,reason='UNSCORED_INFRASTRUCTURE: Hardware checks passed; matching frozen profile calibration is required.')
     expected=dict(backend=result.get('backend'),flow_id=result.get('flow_id'),profile=profile,
-                  scoring_version=SCORING_VERSION,policy_sha256=POLICY_SHA256)
+                  scoring_policy_id=SCORING_ID,policy_sha256=POLICY_SHA256)
     if any(calibration.get(k)!=v for k,v in expected.items()):
-        return dict(grade,reason='Calibration belongs to another profile, policy, backend or flow; recalibrate.')
+        return dict(grade,reason='UNSCORED_INFRASTRUCTURE: Calibration belongs to another profile, policy, backend or flow; recalibrate.')
+    if calibration.get('measurement_context')!=result.get('measurement_context'):
+        return dict(grade,reason='UNSCORED_INFRASTRUCTURE: Calibration protocol, numerical runtime or tool identity does not match.')
     policy=profile_policy(profile)
     if calibration.get('weights')!=policy['weights']:
-        return dict(grade,reason='Calibration weights do not match the frozen policy.')
+        return dict(grade,reason='UNSCORED_INFRASTRUCTURE: Calibration weights do not match the frozen policy.')
     refs=calibration['references'];targets=calibration['targets']
     components=dict(area=normalized(measured['area_um2'],refs['area_um2'],targets['area_um2'],True),throughput=0.,latency=0.)
     if profile=='architecture':

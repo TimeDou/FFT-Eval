@@ -187,9 +187,9 @@ class RunnerTests(unittest.TestCase):
                                state_dir=str(self.root/'other_state'),out=str(self.root/'out3')))
         self.assertEqual(read(self.root/'out3/protocol.json'),first)
 
-    def test_previous_version_default_protocol_is_preserved_and_namespaced(self):
+    def test_unrelated_protocol_is_preserved_and_content_namespaced(self):
         old=self.root/'state/evaluation_protocol.json'
-        save(old,dict(benchmark_id='v0.3',seed=7,scale=1))
+        save(old,dict(benchmark_id='unrelated-task',seed=7,scale=1))
         before=old.read_bytes()
         self.assertEqual(self.execute(self.args(seed=None)),0)
         self.assertEqual(old.read_bytes(),before)
@@ -217,7 +217,7 @@ class RunnerTests(unittest.TestCase):
         self.execute(self.args(),dict(ready=False,selected_backend='commercial',tools={},actions=[]))
         self.assertFalse((self.root/'out/scores.csv').exists())
         self.assertEqual(read(self.root/'out/summary.json')['status'],'ENVIRONMENT_NOT_READY')
-        self.assertTrue(list((self.root/'out/history').rglob('scores.csv')))
+        self.assertTrue(list((self.root/'out/attempts').rglob('scores.csv')))
 
     def test_library_setup_log_is_included_in_failed_feedback(self):
         tech=self.root/'tech';tech.mkdir()

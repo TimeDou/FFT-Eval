@@ -1,70 +1,73 @@
-# EDA Agent Challenge: Design an Area- and Performance-Efficient, Quantized 64-Point FFT
+# EDA Agent Task: FFT64 Architecture and Precision Co-Design
 
-## Background
+## 1. Goal
 
-A fast Fourier transform (FFT) computes the frequency-domain representation of complex-valued input samples. A hardware FFT must balance arithmetic units, data storage, data reordering, throughput, latency, and numerical accuracy. Different hardware organizations (such as single-path delay feedback, multi-path delay commutator, or iterative/folded FFT) make different area/performance trade-offs. Precision reduction at selected computation stages or twiddle factors can save hardware, but errors accumulate at the final outputs.
+Design a **complete synthesizable 64-point complex FFT processor** that satisfies the functional and hardware contract and improves area, sustained throughput, and first-output latency. The task is open-design: no completed FFT RTL is provided. The evaluation rewards measured circuit quality, not the number of candidate designs or the length of a design report.
 
-**Your task is to design and optimize a complete working FFT operator, not merely a butterfly or arithmetic submodule.** You may compare architectures, select an implementation, and adjust its quantization policy. You are not required to prove that your result is globally optimal.
+An FFT circuit includes more than butterfly arithmetic: all buffers, register state, routing, control, twiddle-factor storage, and output reordering are part of the hardware cost. You may compare architectures and change the design strategy as measurements become available; no globally optimal solution is required.
 
-## Functional requirement
+## 2. Mandatory functional contract
 
-- Compute a **forward, unscaled, complex 64-point FFT**:
-  `X[k] = sum_{n=0}^{63} x[n] exp(-j*2*pi*n*k/64)` for `k=0..63`.
-- Accept 64 inputs per frame in natural order and produce 64 outputs in **natural frequency order**, including any required reordering hardware.
-- Input format: two signed 16-bit integers per complex sample, representing `real_int/2^15` and `imag_int/2^15`.
-- Each input real/imag component lies in `[-0.5, 0.5]` (inclusive). Every nonzero evaluated frame has complex RMS at least `1/32`.
-- Output format: two signed 24-bit integers per complex sample, representing `real_int/2^15` and `imag_int/2^15`. Output gain, phase, and frequency order must not be fitted to improve a score.
+- **Transform:** 64-point, forward, unscaled complex FFT, natural-order input and natural-frequency-order output.
+- **Input:** one complex sample per valid clock edge for 64 consecutive edges; each real/imaginary component is signed 16-bit with 15 fractional bits, within [-0.5, 0.5]. Tested nonzero frames have complex RMS ≥ 1/32.
+- **Output:** 64 consecutive valid frequency bins; each component is signed 24-bit with 15 fractional bits. The first output has `out_start=1`.
+- **Clock:** one synchronous rising-edge `clk`; mandatory 10 ns timing constraint, no extra clock.
+- **Service rate:** accept frames starting every 384 clock cycles, and legal larger gaps, without backpressure.
+- **Latency:** first valid output no later than cycle 300 and last valid output no later than cycle 364, measured from the first input edge (cycle 0). The first output cannot precede the last required input.
+- **Reset:** synchronous active-high reset aborts incomplete frames. Later frames must be processed correctly.
 
-## Numerical quality
+The 384-cycle interval is the **mandatory workload**, not a limit on the maximum capability of SDF/MDC architectures. A design may earn higher throughput credit by successfully handling shorter frame intervals.
 
-The reference FFT is evaluated in float64 using the **same already-quantized input samples**. For each evaluated nonzero frame, calculate
+## 3. Numerical accuracy
 
-`SQNR(dB) = 10*log10( sum_k |X_ref[k]|^2 / sum_k |X_hw[k]-X_ref[k]|^2 )`.
+The numerical reference is a float64 FFT of the **same quantized input**, not the signal before input quantization. For each nonzero 64-point frame:
 
-Every nonzero test frame must achieve **SQNR >= 50 dB** (equivalently frame NMSE <= 1e-5). An all-zero input frame must produce exactly zero outputs. This metric measures **implementation-induced error**, not the earlier input ADC quantization error. Finite development and hidden test sets do not constitute a formal guarantee for all possible inputs.
+\[
+\mathrm{SQNR}_f = 10\log_{10}\frac{\sum_{k=0}^{63}|X_f[k]|^2}{\sum_{k=0}^{63}|\hat{X}_f[k]-X_f[k]|^2}.
+\]
 
-## Hardware service contract — common workload
+**Every nonzero test frame must achieve SQNR ≥ 50 dB.** A zero input frame must yield exactly zero output. Gain, phase, frequency permutation, and output scaling cannot be fitted after simulation to improve the score. Public and hidden finite-sample tests are not a formal guarantee over the entire input domain.
 
-- Single synchronous clock, period **10 ns**.
-- One complex input on each of 64 consecutive valid cycles per frame; a `frame_start` pulse marks its first sample.
-- The testbench may start consecutive frames as often as **every 384 cycles**. Larger idle gaps are also legal.
-- Emit 64 **consecutive** valid complex outputs, with one `out_start` pulse, in natural order.
-- Relative to the first input edge: first valid output **no later than cycle 300**; final valid output **no later than cycle 364**. The first output must follow the last input required for that FFT.
-- Synchronous reset may occur between or during frames. Any unfinished pre-reset frame is discarded; later valid frames must compute correctly.
-- The complete design must meet the 10 ns timing constraint using the operator's fixed synthesis/STA setup.
+## 4. Allowed design decisions
 
-**Important:** the 384-cycle input service period is a workload requirement, **not a claim that a pipeline SDF design cannot run faster**. All architectures are compared under this same interface and workload.
+**Allowed:** R2SDF, R2²SDF, R4MDC, folded/iterative FFT, and other valid architectures; stage-dependent data/twiddle precision; explicit truncation or rounding (including round-to-nearest-even); guard bits and quantization boundaries; exact resource sharing, twiddle specialization, memory banking, and legal retiming/pipelining.
 
-## Objective and allowable design methods
+**Not allowed:** approximate logic synthesis (ALS), arbitrary approximate gate pruning/replacement, approximate compressors unrelated to explicit quantization, simulation-only/lookup implementations, or modifications to the external FFT function, I/O ordering, numerical domain, or service contract.
 
-**Primary objective:** improve the throughput per mapped standard-cell area of the **complete FFT top module**, including combinational logic, pipeline/register state, twiddle storage, control, multiplexing, output reorder, and memories implemented in standard cells. There is no free SRAM or uncounted data path.
+All area calculations include the **complete top-level mapped implementation**, including standard-cell memories, controls, registers, multiplexers, and output reordering. There is no free SRAM.
 
-You may use:
-- R2SDF, R2^2SDF, R4SDF, R2MDC, R4MDC, folded/iterative radix-2/radix-4, or another valid FFT architecture.
-- Stage-dependent bit widths, truncation, round-to-nearest-even, coefficient precision, fixed-point scaling/guard bits and quantization-boundary placement.
-- Exact arithmetic and architectural optimizations, such as constant-twiddle specialization, memory banking, resource sharing, legal retiming and pipeline organization.
+## 5. Recommended workflow
 
-You may **not** use gate-level approximate logic synthesis (ALS), approximate gate replacement/pruning, approximate compressor logic, or deliberate Boolean functional corruption unrelated to an explicit precision/quantization operation. Do not change the mathematical FFT gain, output order, clock, input range or SQNR threshold. Any algorithmic/resource optimization that preserves the declared fixed-point arithmetic is allowed.
+From the **repository root**:
 
-## Recommended workflow
+```bash
+bash fft64_benchmark/setup.sh --check-only
+bash fft64_benchmark/run_preview.sh submission runs/quick --quick --no-build
+bash fft64_benchmark/run_preview.sh submission runs/full --no-build
+```
 
-Use the installed platform environment first: run `bash setup.sh --check-only`. The default evaluator loads the EDA profile, prefers existing VCS/DC/PrimeTime, then reuses installed open-source tools, and only finally attempts builds of missing components. Do not begin by reinstalling Yosys or Icarus. Use `--no-build` to disable automatic tool compilation.
+1. Read `fft64_benchmark/SPEC.json`, `fft64_benchmark/INTERFACE.md`, and `fft64_benchmark/ARCHITECTURE_GUIDE.md`.
+2. Create `submission/DESIGN_PLAN.md`: compare at least two architecture ideas and state measurable hypotheses.
+3. Build an initially correct, sufficiently precise design before changing numerical precision.
+4. Measure complete-design numerical quality and ASIC results; compare alternatives using the same backend.
+5. After each meaningful experiment, update the plan with the measured outcome, decision, and next test; record data in `measurements.csv`.
+6. Submit your best feasible RTL and its concise design record.
 
-1. Read `SPEC.json`, `ARCHITECTURE_GUIDE.md`, and `INTERFACE.md`.
-2. Create your own `DESIGN_PLAN.md` using `DESIGN_PLAN_TEMPLATE.md`, including at least two plausible architecture candidates and the first measurements you intend to make.
-3. Implement or modify RTL. Establish one accurate (high-precision) baseline before aggressive quantization.
-4. Compare architectures under the *same* full-top PPA, numeric and protocol flow. Then explore stage-wise precision/rounding choices.
-5. After each material candidate experiment, revise `DESIGN_PLAN.md` with the measurement, decision, and next hypothesis. Keep a compact `measurements.csv`.
-6. Submit the fully validated RTL with the best continuous PPA score, its configuration and the updated plan. The evaluator, not your report, measures actual quality, timing and mapped area.
+The evaluator may use installed Synopsys tools, otherwise installed open-source simulation/mapping/STA tools. A preview run without matching frozen calibration can report useful measurements but **not an official score**. Do not rebuild the EDA toolchain unless necessary and permitted.
 
-## Success and ranking
+## 6. Evaluation and score
 
-The official objective is 60% complete mapped area, 30% measured sustained throughput, and 10% maximum first-output latency. SQNR is a hard constraint with no bonus. Every design satisfying all mandatory requirements has `resolved=true`, including a feasible zero-score design.
+**Feasibility (`resolved`) is separate from optimization quality (`score`).** There is no minimum area reduction or minimum score to pass. Mandatory numerical, protocol, reset, timing, and mapped-netlist checks must all succeed.
 
-Public numerical evaluation uses at least 1,024 independent nonzero frames plus directed cases; hidden evaluation uses at least 8,192 plus directed cases. Every frame has exactly 64 complex samples. Mandatory service uses at least 1,024 consecutive frames at II=384. Each formally evaluated II receives at least 1,024 consecutive frames. Scoring uses the smallest measured passing interval, never a theoretical/declared II. Failure at a shorter optional II does not reject mandatory service.
+The default `architecture` score combines mapped area **60%**, measured sustainable throughput **30%**, and maximum observed first-output latency **10%**. SQNR is a hard constraint; higher SQNR is not rewarded. Official throughput is based on the **smallest verified integer frame interval** in 64–384, not a claim in `design_config.json`. Each interval is exercised by at least 1,024 consecutive frames; the winning interval receives additional mapped-netlist confirmation. Optional faster intervals may fail without invalidating the mandatory 384-cycle service.
 
-SQNR feasibility uses the minimum over applicable nonzero test frames; latency uses the maximum across completed continuous-test frames, including the last frame. Representative mapped-netlist tests compare numeric outputs and valid/start cycles to RTL. See `SCORING.md` and `SPEC.json`.
+Numerical test sizes: ≥1,024 public nonzero random frames and ≥8,192 hidden nonzero random frames, each supplemented by directed cases. Worst-frame SQNR and worst observed per-frame latency determine feasibility. See [SCORING.md](SCORING.md) and [EVALUATION.md](EVALUATION.md).
 
-Start with `run_preview.sh ... --quick` for public numerical and sustained-protocol validation, then measure PPA. Quick still uses the full public frame minimum. Long searches support resume. `--profile area` is a development diagnostic; the official target is the combined score. The operator performs private calibration and hidden evaluation separately.
+## 7. Deliverables
 
-**Hand in:** `rtl/` + top module `fft64_top`, `DESIGN_PLAN.md`, `measurements.csv` and optionally `design_config.json`. Detailed log files are not required in the narrative.
+- `submission/rtl/`: self-contained synthesizable modules, top `fft64_top`
+- `submission/DESIGN_PLAN.md`: updated hypotheses and design choices
+- `submission/measurements.csv`: reproducible candidate measurements
+- `submission/design_config.json` (optional): source files and scheduling hint
+
+The evaluator remeasures circuit quality; self-reported numbers do not determine the grade. No hidden feedback is provided for changing the final submission.

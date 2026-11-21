@@ -1,5 +1,5 @@
 {
-  "benchmark_id": "fft64_quant_arch_v0.5",
+  "benchmark_id": "fft64_quant",
   "status": "FIXED_NUMERICAL_SPEC_INDEPENDENT_SCORING_PROFILES",
   "task_language": [
     "en",
@@ -40,7 +40,7 @@
     "first_output_latest_cycle_from_first_input": 300,
     "last_output_latest_cycle_from_first_input": 364,
     "reset": "synchronous_active_high_abort_inflight_frame",
-    "architecture_profile": "Additional continuous-frame verification at declared frame_ii_cycles, with mixed gaps and dense reset probes; original 384-cycle workload remains mandatory"
+    "architecture_profile": "Additional measured continuous-frame capacity tests with mixed gaps and dense reset probes; 384-cycle service remains mandatory"
   },
   "hardware": {
     "area_measurement": "full_top_mapped_standard_cell_area_pre_layout",
@@ -110,7 +110,6 @@
     "sampling": "Inputs stable before rising edge; outputs observed after that edge; first input edge is cycle 0."
   },
   "scoring": {
-    "version": "fft64_quant_pdf_long_frames_v1",
     "policy_file": "profiles/policy.json",
     "resolved": "all selected-profile numerical, protocol, timing and RTL/mapped requirements pass; independent of score",
     "area": "clip((A_ref-A)/(A_ref-0.5*A_ref),0,1); A_ref is smallest validated accurate mapped area",

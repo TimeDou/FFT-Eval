@@ -5,6 +5,7 @@ import errno
 import hashlib
 import json
 import os
+import re
 import shutil
 import signal
 import subprocess
@@ -14,6 +15,40 @@ ROOT = Path(__file__).resolve().parents[1]
 TECH = Path(os.environ.get('FFT_TECH_DIR', ROOT / 'tech')).resolve()
 COMB = TECH / 'ASAP7_RVT_TT_nldm_NO_FAHA.lib'
 SEQ = TECH / 'ASAP7_SEQ_RVT_TT_nldm_220123.lib'
+
+class InfrastructureError(RuntimeError):
+    """An evaluation could not be measured; this is not a design score."""
+
+class CacheIdentityError(InfrastructureError):
+    """A result directory belongs to another measurement."""
+
+class DesignInvalidError(ValueError):
+    """An observed violation attributable to the submitted design."""
+
+class ToolExecutionError(InfrastructureError):
+    """A tool failed without an established design violation."""
+
+def tool_failure(message):
+    """Classify explicit HDL/checker diagnostics; unknown tool errors stay unscored."""
+    infrastructure = (r'license\s+(?:checkout|check.?out|server|manager|error|unavailable|failed|failure|denied)|'
+                      r'no\s+valid\s+license|no\s+licenses?\s+available|licensing error|'
+                      r'(?:unable|failed|cannot)\s+to\s+(?:obtain|check\s*out).*license|'
+                      r'FLEXnet|SNPSLMD|DCSH-1|segmentation|internal error|out of memory|'
+                      r'No space left|file open|cannot open.*(?:lib|db)')
+    design = (r'X (?:control|data) cycle\d+|TASK_DESIGN_INVALID:|'
+              r'Error-\[(?:SE|IPD|XMRE|URMI|ICPD|PCWM)\]|'
+              r'source\.sv:\d+:.*(?:syntax error|Unknown module|error:)|'
+              r'syntax error.*source\.sv|%Error.*source\.sv|'
+              r'Error:.*\((?:VER|ELAB)-\d+\)')
+    if not re.search(infrastructure, message, re.I) and re.search(design, message, re.I):
+        return DesignInvalidError(message)
+    return ToolExecutionError(message)
+
+def failure_status(exc):
+    """Only identified design violations may enter a ranking as a valid zero."""
+    if isinstance(exc, (DesignInvalidError, AssertionError)):
+        return 'DESIGN_INVALID'
+    return 'UNSCORED_INFRASTRUCTURE'
 
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -47,7 +82,7 @@ def run(argv, log, timeout=600, cwd=None):
         try:
             proc = subprocess.Popen(argv, **options)
         except OSError as exc:
-            # Some legacy Synopsys launchers are executable shell text without
+            # Some Synopsys launchers are executable shell text without
             # a shebang. Interactive bash handles ENOEXEC automatically; Python
             # execve does not. Keep the product alias as the script's $0.
             if exc.errno != errno.ENOEXEC:
@@ -59,7 +94,7 @@ def run(argv, log, timeout=600, cwd=None):
             proc = subprocess.Popen(argv, **options)
         try:
             proc.wait(timeout=timeout)
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as exc:
             os.killpg(proc.pid, signal.SIGTERM)
             try:
                 proc.wait(timeout=3)
@@ -68,12 +103,12 @@ def run(argv, log, timeout=600, cwd=None):
                 proc.wait()
             save(str(log) + '.json', dict(argv=list(map(str, argv)),
                  seconds=time.monotonic()-start, status='TIMEOUT'))
-            raise
+            raise InfrastructureError('Tool timeout: '+str(log)) from exc
     receipt = dict(argv=list(map(str, argv)), seconds=time.monotonic()-start,
                    returncode=proc.returncode)
     save(str(log) + '.json', receipt)
     if proc.returncode:
-        raise RuntimeError(str(log) + '\n' + log.read_text()[-1600:])
+        raise tool_failure(str(log) + '\n' + log.read_text()[-4000:])
     return receipt
 
 def lock(path):

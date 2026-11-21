@@ -1,5 +1,4 @@
 {
-  "version": "fft64_quant_pdf_v0.5",
   "default": "architecture",
   "shared_spec": {
     "sqnr_min_db": 50.0,
@@ -45,7 +44,7 @@
         "latency_physical_floor_cycles": 63
       },
       "normalization": "componentwise accurate-baseline envelope; no claim that the reference vector is one physical design",
-      "throughput": "certified setup Fmax / verified claimed frame II; FFTs/s",
+      "throughput": "STA-certified frequency / minimum verified frame II; FFTs/s",
       "latency": "worst first-input to first-output cycles multiplied by common target period 10ns; no additional frequency reward",
       "claimed_ii": {
         "minimum": 64,

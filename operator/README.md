@@ -1,17 +1,28 @@
-# 统一复测资源
+# FFT64 Operator Reference and Evaluation Tools
 
-`evaluate_synopsys.py` 接受单个提交、目录批次或 CSV 清单，固定调用公开 benchmark 的商业后端。先在相同平台校准准确 SDF 与迭代式实现，再评分候选；生成设计的工具环境不参与最终面积分母。
+This directory is private. It contains **two accurate fixed-point FFT baseline implementations**, calibration utilities, and regression tests. These are for reference calibration only; **neither baseline nor the operator's prior optimized designs should be included in the agent's initial workspace**.
 
-`baselines/` 是出题人使用的高精度定点校准电路，不含数据精度缩减或优化参考解。它们和纯题目目录分开。数值参考仍为同一量化输入的 float64 FFT，准确定点基线不等同于零数值误差。
+## Execution
 
-测试运行：
+From the private repository root:
 
 ```bash
+# Unit/control regressions (synthetic fixtures, not actual commercial PPA)
 python3 -m unittest discover -s operator/tests -v
+
+# Full evaluation using a selected backend
+bash run_evaluation.sh /absolute/path/to/submission \
+  --backend auto --profile architecture --out /absolute/path/to/evaluation
+
+# Force commercial Synopsys where available
+bash run_synopsys.sh /absolute/path/to/submission \
+  --backend commercial --profile architecture --out /absolute/path/to/evaluation
 ```
 
-其中商业流程控制测试使用模拟结果，不产生真实商业 PPA。实际商业工具结果只由 `run_synopsys.sh` 在有许可证的目标平台测得。
+The `architecture` profile is the **default**. The optional `area` profile is an independent diagnostic; its numeric score and calibration must not be mixed with architecture results. See [SCORING_PROFILES.md](SCORING_PROFILES.md) and [../fft64_benchmark/SCORING.md](../fft64_benchmark/SCORING.md).
 
-本机 SSH Docker 可使用宿主机入口 `run_synopsys_docker.sh`。已完成的商业验证、历史评分 v0.3、原始数据和复现方法见 [LOCAL_SYNOPSYS.md](LOCAL_SYNOPSYS.md)。
+Calibration measures accurate SDF and folded radix-2 designs using the same standard-cell library, protocol, timing constraints, tools, and profile as candidate designs. Separate backends require separate normalization anchors. The float64 FFT of the **same quantized input** is the numerical oracle; an accurate fixed-point baseline is not numerically exact relative to float64.
 
-当前评分为 v0.4：默认 `--profile area`，可选 `--profile architecture`。见 [双模式评分定义](../fft64_benchmark/SCORING.md)，新旧分数不可混用。
+## Evidence and limits
+
+Regression tests exercise scoring, cache/protocol logic, simulation drivers, and operator entrypoints using clearly identified fixtures. Real hardware evidence and its scope are described in [VALIDATION.md](../VALIDATION.md). A source-only main export and an agent's measurement bundle are separate review inputs.

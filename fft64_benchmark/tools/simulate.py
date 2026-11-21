@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 import numpy as np
-from common import ROOT,run,save,sha,lock,read
+from common import ROOT,run,save,sha,lock,read,CacheIdentityError,InfrastructureError,tool_failure
 
 TB=r'''`timescale 1ns/1ps
 module tb;
@@ -83,9 +83,11 @@ def simulate(source,events,outdir,backend='verilator',initialization=None,probe=
  if initialization is not None and(backend!='vcs' or type(initialization)is not int or initialization<0):
   raise ValueError('Explicit gate initialization requires VCS and a nonnegative integer mode/seed')
  if probe and backend not in {'vcs','iverilog'}:raise ValueError('Probe capture requires a four-state simulator')
- d=Path(outdir).resolve();d.mkdir(parents=True,exist_ok=True);signature=dict(source_sha256=__import__('hashlib').sha256(source.encode()).hexdigest(),backend=backend,driver_sha256=sha(__file__),initialized_gate=initialization is not None,probe_capture=probe)
+ from cache import runtime_identity
+ d=Path(outdir).resolve();d.mkdir(parents=True,exist_ok=True);signature=dict(source_sha256=__import__('hashlib').sha256(source.encode()).hexdigest(),backend=backend,driver_sha256=sha(__file__),initialized_gate=initialization is not None,probe_capture=probe,tools=runtime_identity(backend)['tools'])
  with lock(d/'lock'):
-  if(d/'signature.json').exists():assert read(d/'signature.json')==signature,'Use a separate simulation directory for a new design'
+  if(d/'signature.json').exists():
+   if read(d/'signature.json')!=signature:raise CacheIdentityError('Use a separate simulation directory for changed RTL, tool or driver')
   else:save(d/'signature.json',signature)
   (d/'source.sv').write_text(source);np.savetxt(d/'vectors.txt',events,fmt='%d')
   if backend=='verilator':
@@ -97,7 +99,7 @@ def simulate(source,events,outdir,backend='verilator',initialization=None,probe=
    if reuse_compiled_from is not None:
     origin=Path(reuse_compiled_from).resolve()
     if read(origin/'signature.json')!=signature or not(origin/'simv').is_file():
-     raise ValueError('Compiled simulator source/driver/options do not match')
+     raise CacheIdentityError('Compiled simulator source/driver/options do not match')
     exe=origin/'simv'
    if not exe.exists():
     args=['iverilog','-g2012','-s','tb','-o',exe,d/'source.sv',d/'tb.sv']if backend=='iverilog'else['vcs','-sverilog','-full64',*(['+vcs+initreg+random']if initialization is not None else []),'-timescale=1ns/1ps','-top','tb',d/'source.sv',d/'tb.sv','-o',exe]
@@ -113,9 +115,11 @@ def simulate(source,events,outdir,backend='verilator',initialization=None,probe=
   if backend=='verilator':runtime=d
   log=(runtime/'simulation.log').read_text()
   if re.search(r'^\s*(?:Fatal:|Error:|Error-\[)',log,re.M)or'VCS initreg not enabled'in log:
-   raise RuntimeError('Simulator reported an error: '+str(runtime/'simulation.log')+'\n'+log[-1600:])
-  raw=np.loadtxt(runtime/'output.txt',dtype=np.int64,ndmin=2)
-  assert len(raw)==len(events)and np.array_equal(raw[:,0],np.arange(len(events))), 'Missing/duplicated clock observations'
+   raise tool_failure('Simulator reported an error: '+str(runtime/'simulation.log')+'\n'+log[-4000:])
+  try:raw=np.loadtxt(runtime/'output.txt',dtype=np.int64,ndmin=2)
+  except (OSError,ValueError)as exc:raise InfrastructureError('Missing or malformed simulator observations: '+str(runtime/'output.txt'))from exc
+  if raw.shape!=(len(events),5)or not np.array_equal(raw[:,0],np.arange(len(events))):
+   raise InfrastructureError('Missing/duplicated clock observations: '+str(runtime/'output.txt'))
   save(runtime/'receipt.json',dict(signature=signature,input_sha256=sha(d/'vectors.txt'),output_sha256=sha(runtime/'output.txt'),cycles=len(events),initialization=initialization,compiled_from=str(reuse_compiled_from)if reuse_compiled_from else None))
   return raw
 

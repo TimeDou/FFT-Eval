@@ -130,6 +130,8 @@ class ScoringTests(unittest.TestCase):
         import make_grader
         with tempfile.TemporaryDirectory()as d:
             root=Path(d);ref=dict(self.reference,baseline_results={'accurate':dict(seed=12345,scale=2)})
+            from scoring import measurement_context
+            ref['measurement_context']=measurement_context(dict(backend='commercial',seed=12345,scale=2,audience='hidden'))
             path=root/'calibration.json';path.write_text(json.dumps(ref))
             out=root/'grader'
             with patch.object(sys,'argv',['make_grader.py','--out',str(out),'--calibration',str(path),'--profile','area']):make_grader.main()
@@ -137,5 +139,18 @@ class ScoringTests(unittest.TestCase):
             (out/'settings.json').write_text(json.dumps(dict(seed=7,scale=2,profile='area')))
             with patch.object(sys,'argv',['make_grader.py','--out',str(out),'--calibration',str(path),'--profile','area']):
                 with self.assertRaisesRegex(SystemExit,'calibrated protocol'):make_grader.main()
+
+    def test_grader_rejects_public_or_changed_hidden_calibration_protocol(self):
+        sys.path.insert(0,str(ROOT/'fft64_benchmark/grading'))
+        import make_grader
+        from scoring import measurement_context
+        with tempfile.TemporaryDirectory()as d:
+            root=Path(d)
+            for audience,seed in [('public',12345),('hidden',7)]:
+                ref=dict(self.reference,baseline_results={'accurate':dict(seed=12345,scale=2)},
+                         measurement_context=measurement_context(dict(backend='commercial',seed=seed,scale=2,audience=audience)))
+                path=root/'calibration.json';path.write_text(json.dumps(ref))
+                with patch.object(sys,'argv',['make_grader.py','--out',str(root/audience),'--calibration',str(path),'--profile','area']):
+                    with self.assertRaisesRegex(SystemExit,'matching hidden-data calibration'):make_grader.main()
 
 if __name__=='__main__':unittest.main()

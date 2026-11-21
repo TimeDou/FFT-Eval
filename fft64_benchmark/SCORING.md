@@ -1,24 +1,59 @@
-# FFT64-Quant v0.5 评分
+# FFT64-Quant: Feasibility and Scoring
 
-以 `docs/FFT64-Quant.pdf` 第 2.4–2.5 节为依据。默认 `architecture`：
+This document describes the **default `architecture` profile**. `--profile area` is a separate diagnostic profile and its scores must not be mixed with architecture-profile scores. The numerical contract is defined in [SPEC.json](SPEC.json); the equations below agree with the report in [FFT64-Quant.pdf](../docs/FFT64-Quant.pdf).
 
+## 1. Feasibility is independent of optimization quality
+
+`resolved=true` means that all mandatory checks pass: FFT function and natural-order outputs; minimum nonzero-frame SQNR ≥ 50 dB and exact zero for zero frames; reset and input/output protocol; service at II=384; first-output and completion deadlines; 10 ns setup/hold timing; and representative RTL-to-mapped-netlist consistency. No minimum area reduction or score is required. A feasible design may receive `score=0`.
+
+An infrastructure failure or missing valid calibration is **not** a hardware design failure; no official score is assigned. Internal results set `score_valid=false`. The three-field platform result uses the prefix `UNSCORED_INFRASTRUCTURE:` in `reason`; such results must be excluded from rankings even if its required numeric `score` field is zero.
+
+## 2. Measured hardware quantities
+
+- **Area,** \(A\): complete pre-layout mapped top-module standard-cell area, including sequential cells, control, reordering, and all standard-cell storage.
+- **Verified frame interval,** \(II_{\mathrm{ver}}\): the smallest passing integer II in **64–384 cycles/frame**, found from at least **1,024 consecutive RTL frames at every interval**, with a representative mapped-netlist check at the selected interval. Optional faster-II failures do not invalidate II=384 feasibility. The user-provided `frame_ii_cycles` is only a hint.
+- **Certified clock period,** \(P_{\mathrm{STA}}\): a setup/hold-passing PrimeTime or OpenSTA clock-scan endpoint on the same fixed mapped netlist, with a passing/failing bracket ≤ 0.01 ns unless the configured scan floor is reached. This is pre-layout estimated timing, **not silicon Fmax**.
+- **Throughput,** \(T_{\mathrm{eff}}=10^9/(II_{\mathrm{ver}}P_{\mathrm{STA}})\) FFTs/s, with the period in ns. Frequency contributes through this term once; no separate frequency bonus is added.
+- **Latency,** \(L\): the **maximum observed first-output latency** across scored completed frames, in cycles. The latency score uses the **common 10 ns target clock**, so frequency is not rewarded twice. Frame-completion latency is also checked per frame, but not scored separately.
+
+## 3. Continuous score
+
+For every feasible candidate, normalize the three components to [0,1]:
+
+\[
+S_A=\operatorname{clip}\left(\frac{A_{\mathrm{ref}}-A}{A_{\mathrm{ref}}-A_{\mathrm{goal}}},0,1\right),\qquad A_{\mathrm{goal}}=0.5A_{\mathrm{ref}},
+\]
+\[
+S_T=\operatorname{clip}\left(\frac{T_{\mathrm{eff}}-T_{\mathrm{req}}}{T_{\mathrm{goal}}-T_{\mathrm{req}}},0,1\right),
+\]
+\[
+S_L=\operatorname{clip}\left(\frac{300-L}{300-L_{\mathrm{goal}}},0,1\right).
+\]
+
+Here \(T_{\mathrm{req}}=10^9/(384\cdot10)\) FFTs/s; \(T_{\mathrm{goal}}\) is twice the fastest measured throughput among the validated accurate calibration designs; and \(L_{\mathrm{goal}}\) is the larger of half the shortest accurate first-output latency and the physical lower bound of 63 cycles. All references and targets are **profile- and backend-specific**. The default combined score is
+
+\[
+\boxed{S=0.60S_A+0.30S_T+0.10S_L.}
+\]
+
+A demonstrated violation of a mandatory hardware condition is `DESIGN_INVALID` and receives a valid score of zero. An interrupted or failed measurement is unscored. These normalization targets and weights come from `profiles/policy.json` and are frozen before scored agent runs; they are **not** re-tuned using the results of evaluated agents. Higher SQNR does not earn extra credit once the 50 dB threshold is passed.
+
+## 4. Validation workload and comparability
+
+- Numerical: at least **1,024 public** / **8,192 hidden** independently generated nonzero 64-point frames, plus directed cases. Feasibility uses the **minimum** nonzero-frame SQNR; it is not based on the average.
+- Mandatory service: at least **1,024 consecutive frames** at II=384, with variable gaps, reset probes, and worst per-frame first/completion latency measured.
+- Architecture capacity: each integer II from 64 through 384 receives at least **1,024 consecutive RTL frames**; the selected shortest passing II is checked again against a representative **128-frame RTL/mapped subset**, including mixed gaps and reset cases. This is empirical capacity, not a proof that no shorter interval could work.
+- Mapped numerical/protocol comparison uses **representative subsets** and cannot be reported as 8,192 fully mapped frames.
+- Each backend is calibrated on two accurate FFT baselines using the **same flow** as the candidate. Commercial VCS/DC/PrimeTime and open-source Icarus/Verilator/Yosys/ABC/OpenSTA metrics are reported separately. All reported ASIC area/timing values are pre-layout/ideal-interconnect unless explicitly stated otherwise.
+
+## 5. Grader output
+
+The platform writes `/eval/code_result.json` with exactly:
+
+```json
+{"resolved": true, "score": 0.0, "reason": "Mandatory specifications passed."}
 ```
-S_A = clip((A_ref - A)/(A_ref - A_goal), 0, 1)
-S_T = clip((T_eff - T_req)/(T_goal - T_req), 0, 1)
-S_L = clip((300 - max_first_output_cycles)/(300 - L_goal_cycles), 0, 1)
-score = 0.6*S_A + 0.3*S_T + 0.1*S_L
-```
 
-`A_ref` 为同后端准确校准设计中最小完整面积，`A_goal=0.5*A_ref`。`T_req=1e9/(384*10)` FFT/s，`T_goal` 为准确校准最大实测吞吐的两倍。`L_goal` 为最短准确首输出延迟的一半，并不低于 63 cycles。目标比例、权重和输入规模在本轮候选评测前冻结，见 `profiles/policy.json` 与 `PRE_REGISTERED.json`。
+The example illustrates that **a zero score can still be feasible**, not an actual candidate result. Detailed measurements, backend identity, calibration fingerprint, per-frame errors, timing certificates, and cache identities are stored in the private evaluation output. Absence of calibrated tools or an interrupted run must be treated as **unscored infrastructure**, not a valid zero-performance design.
 
-`T_eff=1e9/(certified_period_ns * measured_II)`。在同一 mapped netlist 上重新施加时钟并更新 STA，使用 setup/hold 通过端点，失败/通过周期区间不超过 0.01 ns；不从单点 slack 推断 Fmax。商业和开源后端分别认证、分别校准。所有频率都是 pre-layout ideal-interconnect STA 估计。
-
-II=64…384 的每个整数点至少测试 1,024 个连续帧。评分采用通过长测试及代表性映射一致性验证的最小 II。提交中的 `frame_ii_cycles` 可作说明，但不决定正式分数。可选较短 II 失败不导致满足 384-cycle 必选服务的设计被否决。所有失败点保留。
-
-Latency 是连续测试中每帧首输出延迟的最大值，包含最后一帧；完成时间也逐帧检查。延迟项使用共同 10 ns 时钟，避免通过吞吐和延迟重复奖励频率。
-
-Hidden numerical 至少 8,192 个独立非零随机帧，另加 directed cases；Public numerical 至少 1,024 个。FFT length 固定为 64。每个非零帧必须 SQNR≥50dB，所有适用测试的最小 SQNR 决定可行性；零帧精确输出零。更高 SQNR 不加分。映射仿真用代表性数值/协议子集，不能把该子集冒充 8,192 帧完整隐藏数值测试。
-
-`resolved` 只取决于必选数值、协议、复位、时序和 RTL/mapped 一致性规格。硬件分数低或为零不影响通过。工具、校准或未完成测量不产生正式分数。`--profile area` 仅为开发诊断保留，不能与正式组合分数混排。
-
-这是有限样本验证，不是 formal worst-case error guarantee。历史 v0.2–v0.4 结果未按新规范重标，保存在出题方历史归档中。
+Submission completeness is reported separately in `submission_completeness.json`. Missing design notes or a measurement table does not alter measured hardware feasibility or the hardware score. A warning records an invalid optional II hint; throughput remains measured.

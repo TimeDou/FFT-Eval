@@ -1,4 +1,4 @@
-"""PDF protocol changes: frame cardinality, worst-frame extrema, optional II."""
+"""FFT protocol: frame cardinality, worst-frame extrema, optional II."""
 from pathlib import Path
 import sys,tempfile,unittest,copy
 from unittest.mock import patch

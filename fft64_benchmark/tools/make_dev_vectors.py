@@ -46,7 +46,7 @@ def main():
     for i in range(8):
         z=(2*r.integers(0,2,N)-1)+1j*(2*r.integers(0,2,N)-1)
         cases[f'qpsk_{i:02d}']=0.18*z
-    out={'schema':'fft64_inputs_v1','reference':'float64_fft_of_same_quantized_input','frames':[]}
+    out={'schema':'fft64_inputs','reference':'float64_fft_of_same_quantized_input','frames':[]}
     for name,z in cases.items():
         out['frames'].append({'id':name,'inputs_iq':valid_or_raise(z)})
     p=Path(args.out);p.parent.mkdir(parents=True,exist_ok=True)

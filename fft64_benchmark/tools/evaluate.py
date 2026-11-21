@@ -10,7 +10,9 @@ import time
 import traceback
 import numpy as np
 
-from common import ROOT, TECH, COMB, SEQ, flow_identity, read, save, sha
+from common import (ROOT, TECH, COMB, SEQ, flow_identity, read, save, sha, lock,
+                    DesignInvalidError, InfrastructureError, CacheIdentityError, failure_status)
+from cache import runtime_identity, bind_directory, digest
 from model import make_frames, quality, reference as fft_reference
 from simulate import schedule, simulate, decode
 from toolchain import activate, probe, select_backend
@@ -19,21 +21,27 @@ from scoring import score_result, profile_policy
 
 def assemble(submission):
     directory = Path(submission).resolve()
-    config = read(directory/'design_config.json') if (directory/'design_config.json').exists() else {}
+    try:
+        config = read(directory/'design_config.json') if (directory/'design_config.json').exists() else {}
+    except ValueError as exc:
+        raise DesignInvalidError('Malformed design_config.json: '+str(exc)) from exc
+    if not isinstance(config,dict):raise DesignInvalidError('design_config.json must be an object')
     sources = config.get('rtl')
+    if sources is not None and (not isinstance(sources,list) or not all(isinstance(x,str)for x in sources)):
+        raise DesignInvalidError('design_config.json:rtl must be a list of source paths')
     if sources is None:
         sources = sorted(str(p.relative_to(directory)) for p in (directory/'rtl').rglob('*')
                          if p.suffix in {'.sv', '.v'})
     if not sources:
-        raise ValueError('Place synthesizable sources under rtl/ or list them in design_config.json:rtl')
+        raise DesignInvalidError('Place synthesizable sources under rtl/ or list them in design_config.json:rtl')
     files = {}
 
     def expand(path, stack=()):
         path = path.resolve()
         if not path.is_relative_to(directory) or not path.is_file():
-            raise ValueError('Source file is missing from the submission: '+str(path))
+            raise DesignInvalidError('Source file is missing from the submission: '+str(path))
         if path in stack:
-            raise ValueError('Recursive RTL include: '+str(path))
+            raise DesignInvalidError('Recursive RTL include: '+str(path))
         text = path.read_text()
         files[str(path.relative_to(directory))] = sha(path)
         return re.sub(r'(?m)^\s*`include\s+"([^"]+)"[^\n]*',
@@ -45,15 +53,27 @@ def assemble(submission):
                     r'\b(?:real|shortreal|DPI|force|release)\b',
                     r'`(?:ifn?def|elsif)\s+(?:SYNTHESIS|VERILATOR|VCS)', r'translate_off']:
         if re.search(pattern, code):
-            raise ValueError('Use a synthesizable, self-contained hardware implementation: '+pattern)
+            raise DesignInvalidError('Use a synthesizable, self-contained hardware implementation: '+pattern)
     if re.search(r'\bnegedge\b', code) or any(
             name != 'clk' for name in re.findall(r'\bposedge\s+(\w+)', code)):
-        raise ValueError('Use only the specified positive-edge clk')
+        raise DesignInvalidError('Use only the specified positive-edge clk')
     # The declaration is only a scheduling hint; capacity is measured.
     hint=config.get('frame_ii_cycles',384)
-    if type(hint)is not int or not 64<=hint<=384:hint=384
+    warnings=[]
+    if type(hint)is not int or not 64<=hint<=384:
+        warnings.append('Invalid frame_ii_cycles hint ignored; measured capacity determines scoring.')
+        hint=384
     return text, dict(top='fft64_top', files=files, frame_ii_cycles=hint,
-                      source_sha256=hashlib.sha256(text.encode()).hexdigest())
+                      warnings=warnings,source_sha256=hashlib.sha256(text.encode()).hexdigest())
+
+
+def submission_completeness(submission):
+    directory=Path(submission)
+    required=read(ROOT/'SPEC.json')['required_submission']
+    missing=[name for name in required if not (directory/name).exists()]
+    empty=[name for name in required if (directory/name).is_file() and not (directory/name).stat().st_size]
+    return dict(status='COMPLETE'if not missing and not empty else'INCOMPLETE',
+                missing=missing,empty=empty,affects_hardware_score=False)
 
 
 def used_cell_models(mapped):
@@ -85,6 +105,13 @@ def compact(result):
 def evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
              calibration=None, quick=False, formal=False, profile='architecture', auto_ii=True,
              audience='public'):
+    with lock(Path(outdir)/'evaluation.lock'):
+        return _evaluate(submission,outdir,backend,seed,scale,calibration,quick,formal,profile,auto_ii,audience)
+
+
+def _evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
+             calibration=None, quick=False, formal=False, profile='architecture', auto_ii=True,
+             audience='public'):
     from model import evaluation_frames,quality_union
     from throughput import stream_schedule,verify
     from scoring import POLICY
@@ -106,11 +133,21 @@ def evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
     try:
         activate();backend,why=select_backend(probe(quick),backend,calibration)
         result.update(backend=backend,selection_reason=why)
+        source,info=assemble(submission)
+        identity=dict(source_sha256=info['source_sha256'],frame_ii_hint=info['frame_ii_cycles'],
+                      seed=seed,scale=scale,profile=profile,audience=audience,quick=quick,formal=formal,
+                      runtime=runtime_identity(backend))
+        bind_directory(directory,identity,artifacts=['result.json','checkpoint.json','rtl_sim','asic','throughput'])
+        result.update(source=info,evaluation_identity=identity,
+                      submission_completeness=submission_completeness(submission))
+        from scoring import measurement_context
+        result['measurement_context']=measurement_context(result)
+        save(directory/'submission_completeness.json',result['submission_completeness'])
         if backend=='commercial'and not quick:
             from commercial import preflight
             environment=preflight();save(directory/'environment.json',environment)
             if not environment['ready']:raise EnvironmentError('VCS/DC/PrimeTime or matching libraries unavailable')
-        source,info=assemble(submission);result['source']=info;save(directory/'source.json',info)
+        save(directory/'source.json',info)
         count=POLICY['evaluation'][audience+'_random_nonzero_frames']*scale
         frames,labels=evaluation_frames(seed,count)
         result.update(dataset_frames=len(frames),independent_random_nonzero_frames=count,fft_length=64)
@@ -163,7 +200,7 @@ def evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
                 mapped_q=quality(inputs,ro)
                 result['quality']=quality_union(result['quality'],mapped_q)
                 result['latency']=merge_latency(result['latency'],mapped_lat)
-                if not mapped_q['feasible']:raise ValueError('Mapped representative subset violates SQNR')
+                if not mapped_q['feasible']:raise DesignInvalidError('Mapped representative subset violates SQNR')
                 modes=[0,1,20261121]if backend=='commercial'else[None]
                 for mode in modes:
                     opts=dict(initialization=mode)if mode is not None else{}
@@ -193,8 +230,11 @@ def evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
                 if result['status']=='RUNNING':result['status']='COMPLETE'
                 checkpoint('MEASUREMENTS_FINISHED')
     except Exception as exc:
-        result.update(status='ENVIRONMENT_ERROR'if isinstance(exc,(EnvironmentError,FileNotFoundError))else'FAILED',
-                      failure=str(exc),traceback=traceback.format_exc())
+        result.update(status=failure_status(exc),failure=str(exc),traceback=traceback.format_exc())
+        if isinstance(exc,CacheIdentityError):
+            result['seconds']=time.monotonic()-started;result['grade']=score_result(result,calibration)
+            save(directory/'rejected_attempts'/(str(time.time_ns())+'.json'),result)
+            return result
     result['seconds']=time.monotonic()-started;result['grade']=score_result(result,calibration)
     save(directory/'result.json',result);save(directory/'summary.json',compact(result));return result
 

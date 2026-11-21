@@ -1,4 +1,4 @@
-# Innovus19.1 legacy-flow template. Exported, NOT locally executed.
+# Optional Innovus P&R template; outside the scored synthesis/STA flow.
 source [file join [file dirname [info script]] paths.tcl]
 if {![info exists ::env(FFT_PNR_CONFIG)]} {error "Set FFT_PNR_CONFIG to a completed, matched ASAP7 physical configuration"}
 source $::env(FFT_PNR_CONFIG)

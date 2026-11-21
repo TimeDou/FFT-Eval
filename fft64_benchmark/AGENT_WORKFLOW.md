@@ -1,20 +1,17 @@
-# Lightweight design loop for the agent
+# Evidence-Driven FFT Design Workflow
 
-The purpose is to test engineering judgment and iterative hardware optimization, **not documentation volume**.
+The benchmark evaluates a **working circuit and its measured hardware quality**, not the length of the design diary. Use the supplied tools and record the decisions that materially changed the design.
 
-Use the supplied environment first. Run `bash setup.sh --check-only`; `setup.sh` and `run_preview.sh` load DSBench's EDA profile and prefer installed VCS/DC/PrimeTime. Installed open-source tools are the next choice; source builds are only a last fallback for missing components. Do not start by rebuilding Yosys or Icarus. `--no-build` restricts preview to existing EDA tools.
+1. **Understand the contract.** Read `TASK_EN.md` or `TASK_ZH.md`, `SPEC.json`, and `INTERFACE.md`. Distinguish mandatory II=384 from optional faster service.
+2. **Compare candidate architectures.** Read `ARCHITECTURE_GUIDE.md`; propose at least two different organizations and explain the expected area/throughput/latency trade-off.
+3. **Establish a correct baseline.** Implement synthesizable RTL, pass the public numerical/protocol checks, then obtain mapped area and timing in one fixed backend.
+4. **Make one measurable change.** Adjust a structure or explicit quantization choice; predict the expected effect on area, SQNR, II, or latency.
+5. **Evaluate and decide.** Run quick tests first, then hardware/throughput checks when worthwhile. Record a rejected result as well as an accepted one; never label a model estimate as a measured PPA result.
+6. **Revise the plan.** Update `DESIGN_PLAN.md` only when an experiment changes a decision. Record the actual candidate data in `measurements.csv`.
+7. **Freeze the final candidate.** Submit the self-contained RTL and concise trace. Do not change the RTL after private evaluation feedback.
 
-1. **Read:** `TASK_EN.md` or `TASK_ZH.md`, `SPEC.json`, `ARCHITECTURE_GUIDE.md`, `INTERFACE.md`.
-2. **Plan:** create `DESIGN_PLAN.md` yourself; identify at least two plausible architecture families and measurable hypotheses. Treat the guide as background, not as a required prescribed design.
-3. **Build a correct baseline:** run functional, protocol, synthesis and STA checks in the supplied EDA environment. Establish a measured area reference for your own comparison.
-4. **Choose one experiment:** make a structural or precision change. Run quick public numeric tests first, then the full preview evaluator for promising candidates.
-5. **Update the plan:** record one row with the actual results and why you accepted or rejected the change; adjust the *next* hypothesis. `measurements.csv` may be the source of detailed numbers; the plan should contain decisions only.
-6. **Freeze final candidate:** no switching after official hidden feedback. Submit synthesizable RTL and enough configuration data to repeat it.
+## Recommended measurement columns
 
-Prefer a short, evidence-driven design plan over large integrity reports. A failed experiment that motivates a useful revision demonstrates good design reasoning. Documentation is only a supporting trace; the actual RTL and measured QoR determine success.
+`id,architecture,precision_policy,source_hash,backend,library_id,area_um2,worst_sqnr_db,verified_ii_cycles,certified_period_ns,maximum_first_cycles,maximum_completion_cycles,timing_pass,protocol_pass,status,notes`
 
-## Suggested `measurements.csv` columns
-
-`id,architecture,precision_policy,rtl_commit,area_um2,area_ratio,worst_frame_sqnr_db,first_cycle,last_cycle,timing_pass,protocol_pass,status,notes`
-
-Use blank/unmeasured rather than fabricated zeros. Only values from the frozen official mapped flow count as final score.
+Use empty fields for unavailable results, not `0`. A locally mapped area cannot be combined with a commercial reference area; official scores require a matching backend and frozen calibration. `frame_ii_cycles` in an optional config is a hint only; the evaluator measures capacity independently.

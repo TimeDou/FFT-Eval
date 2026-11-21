@@ -1,18 +1,36 @@
-# 出题方部署
+# FFT64-Quant: Private Operator Instructions
 
-出题方在私有评测仓库调用根目录 `run_synopsys.sh`、`run_synopsys_docker.sh` 或 `run_evaluation.sh`。不要将准确校准 RTL、隐藏协议状态、Agent 结果及 Git 凭据交给受测 Agent。公开包只包含题面、接口、库和公开开发工具。
+**This file belongs in FFT-Eval, not the public FFT-Bench checkout.** Keep accurate baseline RTL, scoring calibration, hidden seeds, private grader and agent results inaccessible to the evaluated agent.
 
-每个后端先对准确基线执行同一长帧规范，冻结校准后再评价候选。默认正式目标为 `architecture`，按文档 60/30/10 计算。参数在 `profiles/policy.json`，不是旧版吞吐/面积比评分。
+## Freeze before scoring
 
-Hidden numerical 为 8,192 个独立非零帧加 directed cases；必选连续服务和每个被测 II 均为 1,024 帧。映射使用代表性子集。最小非零帧 SQNR 与最大逐帧延迟决定质量和协议可行性。
+1. Choose the **default `architecture` profile** (or deliberately run a separate `area` diagnostic).
+2. Select one backend (`commercial` when its tools and licenses are usable, otherwise `local`) and freeze its tool executables, cell library, constraints and score policy.
+3. Freeze the input protocol/seed and generated frame family. Public numerical ≥1,024 nonzero random frames; hidden ≥8,192, both with directed cases. The mandatory 384-cycle service and each tested integer II use ≥1,024 consecutive frames.
+4. Calibrate the accurate SDF and folded radix-2 baselines with **the same backend and current hold-repaired physical flow**. Store exact source/library/tool hashes and raw results.
+5. Only after successful calibration, evaluate agent submissions and publish scores.
 
-DSBench Code Grade 在对应后端完成校准后生成：
+## Evaluator use
+
+From the private repository root:
 
 ```bash
-python3 grading/make_grader.py --profile architecture --out /private/grading_files \
-  --calibration /private/evaluation/calibration.json
+bash run_evaluation.sh /absolute/path/to/submission \
+  --backend auto --profile architecture --out /absolute/path/to/evaluation
 ```
 
-打包脚本绑定校准所用输入种子及规模。校准文件保留兼容名称 `area_reference.json`，内容是所选 profile 的完整参数，不代表只按面积评分。附件只交给评分端，不放入 Agent checkout。
+A complete `architecture` run tests all integer IIs 64–384 with long RTL streams and validates the selected minimum on a representative mapped subset. Verified II is **measured**, not taken from the agent's `frame_ii_cycles` hint. Highest-frequency credit comes from a passing setup/hold STA clock-scan endpoint; first-output latency uses the worst observed value at the common 10 ns clock. SQNR feasibility uses the **minimum** across applicable nonzero input frames. Optional faster-II failures do not negate the mandatory service contract.
 
-所有结果属于 pre-layout synthesis / ideal-interconnect STA；没有 P&R、功耗或 formal worst-case 数值保证。工具或许可证故障标记为未评分，不将其当成有效零分。
+## DSBench attachment
+
+Generate a commercial-only private attachment with a calibration that matches the chosen profile and input protocol:
+
+```bash
+python3 fft64_benchmark/grading/make_grader.py \
+  --profile architecture --calibration /private/calibration.json \
+  --out /private/grading_files
+```
+
+Deliver the grader and calibrated reference **only to the grading environment**. The file named `area_reference.json` may contain architecture-profile anchors; inspect its embedded `profile` and policy hash. The interface exports exactly `resolved`, `score`, `reason`; retain additional private logs that distinguish invalid designs from infrastructure failures.
+
+Measurements establish finite-sample functional and numerical behavior, pre-layout mapped area and ideal-interconnect timing. Report only the evidence produced by the selected flow.

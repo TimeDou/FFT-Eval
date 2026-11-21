@@ -1,28 +1,34 @@
-# DESIGN_PLAN.md — agent-generated and updated during the run
+# DESIGN_PLAN.md — agent-maintained design record
 
-**Do not submit this template unchanged.** Create `DESIGN_PLAN.md` in your workspace, replace the prompts with your own hypotheses, and update it only after a material design decision or experiment. Keep it concise (about 1–2 pages plus a compact experiment table).
+*Create your own copy; do not submit this template unchanged. Keep decisions concise. Put detailed measurements in `measurements.csv`.*
 
-## Goal / baseline
-- Constraint profile and measured exact reference:
-- Chosen design assumptions and numerical format:
-- Candidate architectures to compare (at least two) and why:
+## Goal and constraints
 
-## Current design hypothesis
-- Current architecture and quantization policy:
-- Expected area benefit, impact on SQNR and timing:
-- Risk and one targeted test:
+- Task/profile, clock and numerical specification:
+- Candidate architectures and hypotheses (at least two):
+- Selected RTL files and baseline measurement/backend:
 
-## Experiment decisions (append concise rows)
-| ID | Change / hypothesis | Area or area ratio | Worst-frame SQNR | First/last output cycles | Timing pass? | Decision / next step |
-|---|---|---:|---:|---|---|---|
-| E001 | ... | ... | ... | ... | ... | ... |
+## Current candidate
 
-## Current best validated design
-- Candidate ID and RTL path:
-- Actual measured quality, area, timing, throughput and input-set version:
-- Why selected over alternatives:
+- Architecture, data organization and fixed-point policy:
+- Bottleneck or limitation observed:
+- Proposed next modification and expected effect on area, SQNR, II, latency:
+- One focused validation to test the hypothesis:
 
-## Next experiment / stopping reason
-- The single highest-value next change and why; OR reason for stopping:
+## Measured decisions
 
-**Important:** Change this plan when the evidence changes. Do not preserve an initial hypothesis as a conclusion after experiments disprove it. Do not report estimates as measured results.
+| ID | Hypothesis / change | Observation (measured, not estimated) | Accept / reject and reason | Next step |
+|---|---|---|---|---|
+| E001 | ... | ... | ... | ... |
+
+## Best measured design
+
+- Candidate ID, RTL source hash and backend:
+- Worst-frame SQNR, full mapped area, verified II, certified period, worst first/last output:
+- Which competitor(s) were considered and why this design was selected:
+
+## Next action or stopping criterion
+
+- Action, measurement to obtain, or reason further exploration is not worthwhile:
+
+**Never confuse partial public results, locally mapped results, or unverified claims with a frozen official score.** A negative experiment is useful if it changes the design hypothesis.

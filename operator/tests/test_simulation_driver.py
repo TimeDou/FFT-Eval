@@ -9,7 +9,7 @@ import numpy as np
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'fft64_benchmark/tools'))
 import simulate as simulation
-from common import read
+from common import read,DesignInvalidError
 
 
 class SimulationDriverTests(unittest.TestCase):
@@ -52,7 +52,7 @@ class SimulationDriverTests(unittest.TestCase):
     def test_zero_exit_fatal_is_reported_before_truncated_output_is_parsed(self):
         self.message='Fatal: tb: X control cycle411\n'
         with patch.object(simulation,'run',side_effect=self.fake_run):
-            with self.assertRaisesRegex(RuntimeError,'X control cycle411'):
+            with self.assertRaisesRegex(DesignInvalidError,'X control cycle411'):
                 simulation.simulate('module fixture; endmodule',self.events,self.root/'run','vcs')
 
     def test_ignored_initialization_flag_cannot_be_marked_verified(self):

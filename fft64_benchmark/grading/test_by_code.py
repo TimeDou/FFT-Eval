@@ -9,7 +9,7 @@ import zipfile
 def main():
     out = Path('/eval')
     out.mkdir(exist_ok=True)
-    code = dict(resolved=False,score=0.0,reason='Evaluation did not finish.')
+    code = dict(resolved=False,score=0.0,reason='INCOMPLETE: Evaluation did not finish.')
     try:
         calibration = json.loads(Path('/test_files/area_reference.json').read_text())
         if calibration.get('backend')!='commercial':
@@ -30,10 +30,8 @@ def main():
                               profile=settings.get('profile','architecture'),audience='hidden')
             grade = result['grade']
             code = {key:grade[key] for key in ['resolved','score','reason']}
-            if result['status']=='ENVIRONMENT_ERROR':
-                code['reason']='Environment error: '+result.get('failure','')
     except Exception as exc:
-        code = dict(resolved=False,score=0.0,reason=str(exc))
+        code = dict(resolved=False,score=0.0,reason='UNSCORED_INFRASTRUCTURE: '+str(exc))
     (out/'code_result.json').write_text(json.dumps(code,indent=2)+'\n')
 
 if __name__=='__main__':

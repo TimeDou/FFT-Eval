@@ -67,7 +67,7 @@ def main():
         (target/'scored_with_complete_calibration.json').write_text(json.dumps(g,indent=2)+'\n')
     with(out/'measurements.csv').open('w',newline='')as f:
         w=csv.DictWriter(f,list(rows[0]));w.writeheader();w.writerows(rows)
-    report=dict(status='COMPLETE',profile=profile,scoring_version=cal['scoring_version'],policy_sha256=POLICY_SHA256,
+    report=dict(status='COMPLETE',profile=profile,scoring_policy_id=cal['scoring_policy_id'],policy_sha256=POLICY_SHA256,
         measurements=rows,measurement_scope='Native VCS/DC/PrimeTime; synthesis cell area and ideal-interconnect STA; no post-route or power claim',raw_evaluation_directory=str(evaluation))
     (out/'results.json').write_text(json.dumps(report,indent=2)+'\n')
     labels={'sdf':'Accurate frame-isolated R2SDF','iterative':'Accurate folded radix-2','fft64_solution':'Quantized banked radix-2 reference'}
@@ -75,7 +75,7 @@ def main():
     table=['| Design | Area µm² | Certified period ns | Verified II | FFT/s | First-output ns @10ns | Min SQNR dB | Score | Specs |','|---|---:|---:|---:|---:|---:|---:|---:|---|']
     for r in rows:
         table.append(f"| {labels.get(r['design'],r['design'])} | {fmt(r['area_um2'],2)} | {fmt(r['certified_period_ns'],6)} | {fmt(r['verified_frame_II_cycles'],0)} | {fmt(r['effective_throughput_ffts_per_second'],1)} | {fmt(r['first_output_ns'],0)} | {fmt(r['minimum_sqnr_db'],2)} | {r['score']:.6f} | {'PASS'if r['resolved']else'FAIL'} |")
-    text=f'''# FFT64-Quant v0.5: {profile} profile
+    text=f'''# FFT64-Quant: {profile} profile
 
 N=64, P_in=P_out=1, ASAP7 RVT/TT, 10ns common target, complete RTL and mapped VCS tests; pre-layout synthesis / ideal-interconnect STA.
 

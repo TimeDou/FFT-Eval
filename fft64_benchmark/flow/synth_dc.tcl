@@ -48,8 +48,8 @@ foreach_in_collection c [get_cells -hierarchical *] {
     if {[regexp {^DFF} $ref]} {
         set seq_area [expr {$seq_area+$cell_area}]
         set clknet [get_nets -of_objects [get_pins [get_object_name $c]/CLK]]
-        if {[sizeof_collection $clknet] != 1 || [get_object_name $clknet] != "clk"} {error "Only the direct top-level positive-edge clk is permitted"}
-    } elseif {[regexp {^(LH|ICG)} $ref]} {error "Latch/derived clock not permitted"}
+        if {[sizeof_collection $clknet] != 1 || [get_object_name $clknet] != "clk"} {error "TASK_DESIGN_INVALID: Only the direct top-level positive-edge clk is permitted"}
+    } elseif {[regexp {^(LH|ICG)} $ref]} {error "TASK_DESIGN_INVALID: Latch/derived clock not permitted"}
 }
 if {$leaf_count == 0 || $ar <= 0.0 || $ar >= Inf} {error "No finite positive mapped cell area"}
 redirect [file join $WORK dc_check.rpt] {check_design}

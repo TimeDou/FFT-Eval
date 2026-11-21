@@ -1,28 +1,34 @@
-# FFT64-Quant public benchmark
+# FFT64-Quant: Public Task Package
 
-Implement a 64-point fixed-point complex FFT and optimize architecture, precision, quantization, constant arithmetic, buffering and pipelining. Read TASK_ZH.md or TASK_EN.md, SPEC.json, INTERFACE.md and ARCHITECTURE_GUIDE.md. No finished RTL is supplied.
+**Purpose.** Design and improve a complete, synthesizable 64-point fixed-point complex FFT. This is an **open-design** task: the package provides a contract, interface declaration, architecture guidance, and test tools, but **no working FFT RTL**.
 
-```bash
-bash setup.sh --check-only
-bash run_preview.sh /workspace/submission /workspace/runs/numerical --quick --no-build
-bash run_preview.sh /workspace/submission /workspace/runs/ppa --no-build
-```
+## Documents
 
-Use installed Synopsys tools first; otherwise use installed open-source tools. Setup builds missing open-source dependencies only when allowed; --no-build disables this. Override tool paths with FFT_VCS, FFT_DC, FFT_PT, FFT_STA, FFT_ABC and FFT_PYTHON as needed.
+- [TASK_EN.md](TASK_EN.md) / [TASK_ZH.md](TASK_ZH.md): the agent-facing task in English / Chinese
+- [SPEC.json](SPEC.json): machine-readable functional and measurement contract
+- [INTERFACE.md](INTERFACE.md): cycle-accurate RTL interface and reset semantics
+- [ARCHITECTURE_GUIDE.md](ARCHITECTURE_GUIDE.md): design alternatives, not a solution
+- [AGENT_WORKFLOW.md](AGENT_WORKFLOW.md) / [DESIGN_PLAN_TEMPLATE.md](DESIGN_PLAN_TEMPLATE.md): evidence-based design loop
+- [SCORING.md](SCORING.md) / [EVALUATION.md](EVALUATION.md): feasibility, score, and verification stages
 
-Public numerical testing has >=1,024 independent nonzero frames plus directed cases. FFT length remains 64. The quick command also checks >=1,024 consecutive mandatory-service frames; it skips ASIC measurement. Complete evaluation measures area, clock-scan timing and long-frame service. The official combined objective is 60/30/10 area/throughput/latency. A public run without the operator's matching calibration provides hardware feedback with score_valid=false. Hidden inputs and official scoring are evaluated separately. See SCORING.md.
-
-Submit rtl/, design_config.json, DESIGN_PLAN.md and measurements.csv. The small public_data examples are interface examples, not the full numerical evaluation workload.
-
-## NumPy dependency
-
-Reuse NumPy already available to the selected Python interpreter. If it is missing, setup installs `numpy==2.2.6` from a compatible binary wheel using pip. No wheel binary is stored in this repository and setup does not compile NumPy from source. The pinned release requires Python >=3.10 and an available wheel compatible with the target interpreter/platform. Existing NumPy is not upgraded; the official evaluator records its runtime version.
-
-Standard pip configuration is respected, including `PIP_INDEX_URL`, `PIP_FIND_LINKS`, `PIP_NO_INDEX` and the pip cache. For an offline target, download the wheel in an environment matching the target Python/platform into a directory outside the repository:
+## Run from the repository root
 
 ```bash
-python3 -m pip download --only-binary=:all: -r fft64_benchmark/requirements.txt -d /path/to/wheelhouse
-PIP_NO_INDEX=1 PIP_FIND_LINKS=/path/to/wheelhouse bash fft64_benchmark/setup.sh --no-build
+bash fft64_benchmark/setup.sh --check-only
+bash fft64_benchmark/run_preview.sh submission runs/quick --quick --no-build
+bash fft64_benchmark/run_preview.sh submission runs/full --no-build
 ```
 
-These commands are run from the repository root. A missing offline wheel is reported as a dependency setup error; it does not produce a hardware score.
+The `--quick` mode performs public numerical and mandatory sustained-protocol checks; the full mode additionally performs mapping, STA, mapped simulation, and the architecture-profile II/frequency measurements. **Quick PASS is not full hardware feasibility.** The full architecture search may be costly: it tests every integer frame interval from 64 to 384 using 1,024 consecutive frames per interval before representative mapped confirmation.
+
+The evaluation selects available commercial tools first (VCS/DC/PrimeTime). Otherwise it uses installed open-source tools (Icarus/Verilator, Yosys/ABC, OpenSTA). The latter is a **pre-layout mapping and STA fallback**, not a post-route OpenROAD result. Do not compare raw results or calibrated scores across backend identities.
+
+## Passing, scoring, and submission
+
+Feasibility requires valid FFT behavior, per-frame SQNR ≥ 50 dB, protocol and reset correctness, 10 ns timing, and mapped-netlist consistency. The default `architecture` score combines area (60%), verified throughput (30%), and worst first-output latency (10%). A feasible design can receive zero score. Hidden calibration and input seeds are not part of this repository.
+
+Submit `rtl/`, `DESIGN_PLAN.md`, and `measurements.csv`; `design_config.json` is optional. Its `frame_ii_cycles` is a scheduling hint only, not the official throughput measurement.
+
+## NumPy and EDA dependencies
+
+The default runtime reuses the selected Python interpreter's NumPy. If absent, setup installs the binary-only pinned version from the configured pip source or external offline wheel cache. `--no-build` prevents building missing EDA tools; it does not guarantee that a missing NumPy wheel can be installed offline. Verify the environment before the timed agent run. Use [requirements.txt](requirements.txt) for the pinned NumPy version.

@@ -1,7 +1,9 @@
-# FFT64-Quant architecture and precision optimization
+# Architecture Scoring Profile — Task Addendum
 
-Follow TASK_EN.md. In v0.5 the default task already uses the paper's 60% area / 30% measured sustained throughput / 10% maximum first-output latency objective.
+The **default** FFT64-Quant task in [TASK_EN.md](TASK_EN.md) uses the `architecture` profile. This file is only a short entrypoint, not a separate benchmark with different specifications.
 
-Every FFT remains 64 points. Public numerical tests use at least 1,024 independent nonzero frames; every officially tested II uses at least 1,024 consecutive frames. Capacity comes from measured passing intervals, not a design_config declaration. Failure at an optional shorter II does not invalidate mandatory II=384 service.
+Feasibility requires SQNR ≥ 50 dB per tested nonzero frame, correct FFT/protocol/reset behavior, mandatory II=384 service, 10 ns timing, and mapped consistency. A feasible design can score 0.
 
-Use public numerical and sustained-protocol validation, then hardware measurements, and update the design plan from actual results. See SCORING.md.
+The continuous score weights **complete mapped area 60%**, **verified effective throughput 30%**, and **maximum observed first-output latency 10%**. Each integer II 64–384 is measured with ≥1,024 consecutive RTL frames; the shortest passing interval is confirmed on a mapped representative subset. An II declared in `design_config.json` is only a hint, not a scoring authority.
+
+See [SCORING.md](SCORING.md) for exact reference normalization, and [EVALUATION.md](EVALUATION.md) for the public and hidden test stages.

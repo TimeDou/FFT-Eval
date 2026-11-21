@@ -1,6 +1,6 @@
-# RTL interface and cycle semantics
+# FFT64 RTL Interface and Cycle Contract
 
-The top-level module is **`fft64_top`** with the following fixed ports. A header is supplied in `interface/fft64_top.sv`.
+The submission must include the synthesizable top-level module `fft64_top` with the fixed ports below. A declaration-only template is supplied in `interface/fft64_top.sv`; it is **not** a functional FFT.
 
 ```systemverilog
 module fft64_top (
@@ -15,20 +15,27 @@ module fft64_top (
     output wire signed [23:0] out_re,
     output wire signed [23:0] out_im
 );
-    // Implement the FFT.
+    // Design implementation goes here.
 endmodule
 ```
 
-Inputs are stable before a rising edge. The evaluator observes outputs after that edge, including nonblocking assignments. For a frame whose first input is captured at cycle 0, the remaining inputs are captured at cycles 1–63.
+## Input transactions
 
-- `rst` is synchronous and active high. At a reset edge, `out_valid=out_start=0`; unfinished pre-reset work is discarded. Outputs emitted before a mid-output reset need not be retracted. New frames after reset must compute correctly.
-- `frame_start=1` only on the first of 64 consecutive `in_valid=1` edges. There is no `ready`; the circuit accepts every legal offered frame.
-- Mandatory-service frames start at least 384 cycles apart. Optional throughput tests use shorter integer intervals down to 64; failure there only limits measured capacity. Longer idle intervals, including beyond a 16-bit counter range, remain legal.
-- Each output frame contains 64 consecutive valid edges. `out_start=1` only on its first valid edge; it is zero when `out_valid=0`.
-- First output is between cycles 63 and 300 inclusive. The last output is no later than cycle 364. Natural frequency order is required.
-- Payload outside `out_valid` is don't-care. Valid output payload and control must be known in four-state simulation.
-- There is only one positive-edge `clk`. All memories, buffers and ordering logic are part of the implementation.
+- Inputs are stable before the rising edge; outputs are observed after that edge, including nonblocking assignment updates.
+- A frame begins when `in_valid=1` and `frame_start=1`, then provides **64 consecutive valid complex samples**. The first sample is cycle 0, the last cycle 63.
+- The mandatory service interval between frame starts is **at least 384 cycles**, with no input backpressure. Longer and variable gaps are legal, including long intervals beyond a 16-bit counter range.
+- Optional throughput tests use 64–383-cycle intervals to find additional *verified* capacity. Failure at an optional faster interval does not invalidate the mandatory service requirement.
 
-The two's-complement input/output integer codes have 15 fractional bits. Internal representation is a design choice. If internal scaling changes, restore the declared external FFT gain before output.
+## Output transactions and latency
 
-Output latency may depend on the frame as long as all deadlines and the offered service load are met. The service requirement does not require identical output-start intervals for variable-latency implementations.
+- Each completed frame produces **64 consecutive `out_valid=1` cycles** in natural frequency order.
+- Exactly the first output of each frame asserts `out_start=1`; `out_start=0` whenever `out_valid=0`.
+- The first output must occur after the last required input, between cycles 63 and 300 inclusive. The last output must occur by cycle 364.
+- The grader measures the **maximum per-frame** first-output and completion latency over the tested frames. Latency need not be constant across legal frames.
+- Output payload is don't-care outside `out_valid`; inside valid cycles, all output data and control must be known under four-state simulation.
+
+## Reset and hardware restrictions
+
+Synchronous active-high `rst` aborts unfinished frames. An output prefix emitted before a reset need not be retracted, but no unfinished frame may reappear after reset. New frames following reset must be correct. Use only the specified positive-edge `clk`; storage, buffering, ordering logic and control must all be accounted for in the synthesized design. No uncounted SRAM, testbench-dependent lookup, or second clock is allowed.
+
+Input/output real and imaginary fields are two's-complement with **15 fractional bits**. Intermediate representation may change, but the external FFT gain, scale and order may not.

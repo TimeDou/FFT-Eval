@@ -8,7 +8,7 @@ import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-TOOLS = ['common.py','model.py','simulate.py','evaluate.py','scoring.py','local_asic.py','commercial.py','toolchain.py','frequency.py','throughput.py','local_frequency.py']
+TOOLS = ['common.py','cache.py','model.py','numeric_io.py','simulate.py','evaluate.py','scoring.py','local_asic.py','commercial.py','toolchain.py','frequency.py','throughput.py','local_frequency.py']
 
 def main():
     parser = argparse.ArgumentParser()
@@ -36,6 +36,12 @@ def main():
                 seed,scale=next(iter(pairs));protocol=dict(seed=seed,scale=scale)
         if not protocol or type(protocol.get('seed'))is not int or type(protocol.get('scale'))is not int or protocol['scale']<1:
             raise SystemExit('Calibration needs its original input seed/scale; generate it with the current operator or calibrate.py.')
+        definition=dict(specification_sha256=hashlib.sha256((ROOT/'SPEC.json').read_bytes()).hexdigest(),
+                        generator_sha256=hashlib.sha256((ROOT/'tools/model.py').read_bytes()).hexdigest(),
+                        seed=protocol['seed'],scale=protocol['scale'],audience='hidden')
+        fingerprint=hashlib.sha256(json.dumps(definition,sort_keys=True,separators=(',', ':')).encode()).hexdigest()
+        if reference_data.get('measurement_context',{}).get('protocol_fingerprint')!=fingerprint:
+            raise SystemExit('DSBench requires a matching hidden-data calibration from the private operator runner; a public-preview reference cannot score hidden inputs.')
         expected_settings=dict(seed=protocol['seed'],scale=protocol['scale'],profile=args.profile)
         shutil.copy2(reference, out/'area_reference.json')
     settings = out/'settings.json'

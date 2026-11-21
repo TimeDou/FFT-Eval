@@ -1,7 +1,7 @@
-"""Counted-register ASAP7 mapping/STA; no historical area denominators."""
+"""Counted-register ASAP7 mapping and ideal-interconnect STA."""
 from pathlib import Path
 import re,shutil,os,time
-from common import ROOT,COMB,SEQ,run,save,read,sha,lock,executable
+from common import ROOT,COMB,SEQ,run,save,read,sha,lock,executable,CacheIdentityError,InfrastructureError
 
 ABC=executable('FFT_ABC', ['yosys-abc','abc','berkeley-abc'])
 STA=executable('FFT_STA', ['sta','opensta'])
@@ -21,9 +21,10 @@ set_false_path -from [get_ports rst]
 def measure(source,outdir):
  d=Path(outdir).resolve();d.mkdir(parents=True,exist_ok=True)
  if not ABC.is_file() or not STA.is_file() or not shutil.which('yosys'):raise EnvironmentError('Install Yosys and set FFT_ABC/FFT_STA to ABC/OpenSTA executables')
- sig=dict(source=__import__('hashlib').sha256(source.encode()).hexdigest(),comb=sha(COMB),seq=sha(SEQ),abc=sha(ABC),sta=sha(STA),yosys=sha(shutil.which('yosys')),flow_sha256=sha(__file__),flow='yosys-flatten-dfflibmap-abc-scalarSTA-v4',constraints=setup_sdc())
+ sig=dict(source=__import__('hashlib').sha256(source.encode()).hexdigest(),comb=sha(COMB),seq=sha(SEQ),abc=sha(ABC),sta=sha(STA),yosys=sha(shutil.which('yosys')),flow_sha256=sha(__file__),flow='yosys-flatten-dfflibmap-abc-scalarSTA',constraints=setup_sdc())
  with lock(d/'lock'):
-  if(d/'signature.json').exists():assert read(d/'signature.json')==sig,'New ASIC inputs require a new directory'
+  if(d/'signature.json').exists():
+   if read(d/'signature.json')!=sig:raise CacheIdentityError('New ASIC inputs require a new directory')
   else:save(d/'signature.json',sig)
   if(d/'metrics.json').exists():return read(d/'metrics.json')
   start=time.monotonic();(d/'source.sv').write_text(source)
@@ -36,14 +37,15 @@ def measure(source,outdir):
    txt=lib.read_text();entries=dict((n,float(a))for n,a in re.findall(r'cell\s*\(([^)]+)\)\s*\{\s*area\s*:\s*([\d.]+)',txt))
    aa.update(entries)
    if lib==SEQ:ss.update(entries)
-  bad=sorted(set(c['type']for c in cells.values())-set(aa));assert not bad,('Unmapped/blackbox cells',bad)
+  bad=sorted(set(c['type']for c in cells.values())-set(aa))
+  if bad:raise InfrastructureError('Unmapped/blackbox cells: '+str(bad))
   for c in cells.values():
    if c['type']in ss:
     assert c['type'].startswith('DFF'),'Latches/clock-gating cells are outside this task'
     assert c['connections'].get('CLK')==top['ports']['clk']['bits'],'Derived/inverted/secondary clock rejected'
   area=sum(aa[c['type']]for c in cells.values());storage=sum(aa[c['type']]for c in cells.values()if c['type']in ss)
   assert storage>0,'Sequential FFT needs counted storage'
-  # Old OpenSTA cannot parse concatenated assignment LHS emitted for aliases.
+  # OpenSTA requires scalar assignment LHS for these emitted aliases.
   # Split the SAME mapped JSON connectivity into scalar nets for STA only.
   # Cell types/counts are unchanged; functional simulation uses mapped.v.
   scalar=f'read_json {d}/mapped.json\nsplitnets -ports\nwrite_verilog -noattr -noexpr {d}/timing_netlist.v\n'
@@ -51,8 +53,9 @@ def measure(source,outdir):
   (d/'constraints.sdc').write_text(setup_sdc())
   timing=f'read_liberty {COMB}\nread_liberty {SEQ}\nread_verilog {d}/timing_netlist.v\nlink_design fft64_top\nsource {d}/constraints.sdc\ncheck_setup -verbose\nreport_checks -path_delay max -format full_clock_expanded -digits 4\nreport_worst_slack -digits 4\nputs \"FFT_HOLD_SLACK_PS [sta::worst_slack -min]\"\nexit\n'
   (d/'timing.tcl').write_text(timing);run([STA,'-exit',d/'timing.tcl'],d/'timing.log',300)
-  log=(d/'timing.log').read_text();assert not re.search(r'^Error',log,re.M),log[-2000:]
-  assert not re.search(r'missing set_input_delay|missing set_output_delay|unconstrained endpoints',log,re.I),'Incomplete timing constraints'
+  log=(d/'timing.log').read_text()
+  if re.search(r'^Error',log,re.M):raise InfrastructureError(log[-2000:])
+  if re.search(r'missing set_input_delay|missing set_output_delay|unconstrained endpoints',log,re.I):raise InfrastructureError('Incomplete timing constraints')
   hold=float(re.search(r'FFT_HOLD_SLACK_PS\s+([\d.eE+-]+)',log)[1]);slack=float(re.search(r'worst slack\s+([\d.+-]+)',log)[1]);period=(10000-slack)/1000
   out=dict(area_um2=area,register_area_um2=storage,arithmetic_control_mux_other_area_um2=area-storage,cells=len(cells),register_cells=sum(c['type']in ss for c in cells.values()),clock_period_ns=10,setup_uncertainty_ns=.1,worst_setup_slack_ns=slack/1000,effective_required_period_ns=period,worst_hold_slack_ns=hold/1000,timing_pass=slack>=0 and hold>=0,prelayout_fmax_estimate_MHz=1000/period,flow='Yosys/ABC;ASAP7RVT/TT comb+sequential;countedFF storage;OpenSTA ideal-interconnect;not DC/PrimeTime or postroute',source_sha256=sig['source'],mapped_sha256=sha(d/'mapped.v'),comb_sha256=sig['comb'],seq_sha256=sig['seq'],mapping_wall_seconds=time.monotonic()-start)
   save(d/'metrics.json',out);return out

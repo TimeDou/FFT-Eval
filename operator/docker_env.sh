@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Optional profile for the local legacy Synopsys container. Existing explicit
+# Optional profile for the local Synopsys container. Existing explicit
 # environment choices take precedence. No license files or credentials are copied.
 export FFT_CONTAINER_SHARE="${FFT_CONTAINER_SHARE:-/mnt/mydata}"
 export VCS_HOME="${VCS_HOME:-/usr/synopsys/vcs-L-2016.06}"

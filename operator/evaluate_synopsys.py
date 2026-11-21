@@ -238,6 +238,7 @@ def feedback(out):
 
 def execute(args):
     entries=inputs(args)
+    selected_backend=getattr(args,'backend','commercial')
     stamp=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y%m%d_%H%M%S')
     out=Path(args.out or ROOT/'synopsys_results'/stamp).resolve();out.mkdir(parents=True,exist_ok=True)
     state=Path(args.state_dir or ROOT/'.eval_state').resolve()
@@ -252,6 +253,7 @@ def execute(args):
         save(out/'status.json',dict(status='PREPARING',started_utc=utc()))
         # This entry never selects local tools or builds an open-source EDA stack.
         environment=prepare(getattr(args,'backend','commercial'),check_only=args.check_only,allow_build=False)
+        selected_backend=environment.get('selected_backend',selected_backend)
         save(out/'environment.json',environment)
         # Preparation can fail before calibration starts. Keep the actual
         # compiler output and argv receipt in the feedback archive as well.
@@ -263,21 +265,21 @@ def execute(args):
         if not environment['ready'] or args.check_only:
             status='ENVIRONMENT_READY'if environment['ready']else'ENVIRONMENT_NOT_READY'
             reason='Environment check only; no design was scored.'if environment['ready']else'Synopsys tools/libraries are not ready; see environment.json. No local fallback or valid score.'
-            save(out/'status.json',dict(status=status,backend='commercial',reason=reason))
-            save(out/'summary.json',dict(status=status,backend='commercial',submissions=[],reason=reason))
+            save(out/'status.json',dict(status=status,backend=selected_backend,reason=reason))
+            save(out/'summary.json',dict(status=status,backend=selected_backend,submissions=[],reason=reason))
             save(out/'code_result.json',dict(resolved=False,score=0.0,reason=reason))
-            print(json.dumps(dict(status=status,backend='commercial',output=str(out),feedback=str(feedback(out))),indent=2))
+            print(json.dumps(dict(status=status,backend=selected_backend,output=str(out),feedback=str(feedback(out))),indent=2))
             return 0 if environment['ready'] else 2
         try:
             settings=protocol(args,state)
             settings['measurement_backend']=environment.get('selected_backend','commercial')
             save(out/'protocol.json',settings)
             identity=platform_identity(environment);save(out/'platform_identity.json',identity)
-            save(out/'status.json',dict(status='CALIBRATING',backend='commercial',profile=getattr(args,'profile','area'),started_utc=utc()))
+            save(out/'status.json',dict(status='CALIBRATING',backend=selected_backend,profile=getattr(args,'profile','area'),started_utc=utc()))
             reference,reference_dir=calibration(args,state,identity,settings,out/'calibration_location.json')
             save(out/'calibration.json',reference)
             save(out/'calibration_location.json',dict(directory=str(reference_dir)))
-            save(out/'status.json',dict(status='RUNNING',backend='commercial',profile=reference['profile'],
+            save(out/'status.json',dict(status='RUNNING',backend=selected_backend,profile=reference['profile'],
                                        completed=0,total=len(entries),calibration_complete=True))
             tasks=[(entry,str(out),settings,reference,identity,args.formal)for entry in entries]
             if args.jobs==1:
@@ -297,15 +299,15 @@ def execute(args):
             with (out/'scores.csv').open('w',newline='')as stream:
                 writer=csv.DictWriter(stream,list(rows[0]));writer.writeheader();writer.writerows(rows)
             status='PARTIAL_INFRASTRUCTURE_ERROR'if any(r['state']=='UNSCORED_INFRASTRUCTURE'for r in rows)else'COMPLETE'
-            save(out/'summary.json',dict(status=status,backend='commercial',reference_area_um2=reference['reference_area_um2'],
+            save(out/'summary.json',dict(status=status,backend=selected_backend,reference_area_um2=reference['reference_area_um2'],
                                         protocol=settings,submissions=rows))
-            save(out/'status.json',dict(status=status,backend='commercial',completed=len(rows),total=len(entries),finished_utc=utc()))
-            print(json.dumps(dict(status=status,backend='commercial',reference_area_um2=reference['reference_area_um2'],
+            save(out/'status.json',dict(status=status,backend=selected_backend,completed=len(rows),total=len(entries),finished_utc=utc()))
+            print(json.dumps(dict(status=status,backend=selected_backend,reference_area_um2=reference['reference_area_um2'],
                                   submissions=rows,feedback=str(feedback(out))),indent=2))
             return 2 if status!='COMPLETE'else 0
         except Exception as exc:
-            save(out/'status.json',dict(status='INCOMPLETE',backend='commercial',failure=str(exc),finished_utc=utc()))
-            save(out/'summary.json',dict(status='INCOMPLETE',backend='commercial',submissions=rows,failure=str(exc)))
+            save(out/'status.json',dict(status='INCOMPLETE',backend=selected_backend,failure=str(exc),finished_utc=utc()))
+            save(out/'summary.json',dict(status='INCOMPLETE',backend=selected_backend,submissions=rows,failure=str(exc)))
             if len(entries)<=1:save(out/'code_result.json',dict(resolved=False,score=0.0,reason='Evaluation incomplete; no valid score: '+str(exc)))
             print(json.dumps(dict(status='INCOMPLETE',failure=str(exc),feedback=str(feedback(out))),indent=2))
             return 2

@@ -12,4 +12,6 @@ python3 -m unittest discover -s operator/tests -v
 
 其中商业流程控制测试使用模拟结果，不产生真实商业 PPA。实际商业工具结果只由 `run_synopsys.sh` 在有许可证的目标平台测得。
 
-本机 SSH Docker 可使用宿主机入口 `run_synopsys_docker.sh`。已完成的商业验证、评分 v0.3、原始数据和复现方法见 [LOCAL_SYNOPSYS.md](LOCAL_SYNOPSYS.md)。
+本机 SSH Docker 可使用宿主机入口 `run_synopsys_docker.sh`。已完成的商业验证、历史评分 v0.3、原始数据和复现方法见 [LOCAL_SYNOPSYS.md](LOCAL_SYNOPSYS.md)。
+
+当前评分为 v0.4：默认 `--profile area`，可选 `--profile architecture`。见 [双模式评分定义](../fft64_benchmark/SCORING.md)，新旧分数不可混用。

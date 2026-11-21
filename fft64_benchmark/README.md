@@ -57,7 +57,7 @@ bash run_preview.sh /workspace/submission /workspace/run_local --backend local
 
 ## 评分与平台使用
 
-通过全部硬件约束即 `resolved=true`，没有最低面积降幅或分数门槛。连续得分按相对吞吐量/面积效率 `E` 计算为 `E/(1+E)`，准确参考点为 0.5。频率通过吞吐量计入一次；当前 II 取共同测试负载 384 cycles，不推断未验证的固有 II。详见 [SCORING.md](SCORING.md)。
+通过全部所选模式的硬件约束即 `resolved=true`，没有分数门槛。默认 `area` 只按完整映射面积评分；`--profile architecture` 使用 60% 面积、30% 经连续帧和时钟扫描验证的吞吐量、10% 首输出延迟。两个模式的标尺独立冻结，SQNR 达标不加分。详见 [SCORING.md](SCORING.md)。
 
 出题人部署、校准和 DSBench Code Grade 的操作见 [OPERATOR.md](OPERATOR.md)。本题采用 pre-layout 标准单元面积和理想互连 STA；P&R 模板是可选扩展，不参与当前评分。
 

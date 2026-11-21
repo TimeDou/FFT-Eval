@@ -1,45 +1,86 @@
-# 通过条件与连续 PPA 评分
+# FFT64 v0.4：通过条件与两个独立评分模式
 
-`resolved` 只表示设计是否满足题目的硬件规格：RTL 可综合，FFT 数值误差、自然输出顺序、复位、384-cycle 帧服务、输出截止时间、10 ns 时序和映射网表对照全部通过。**没有最低分数或面积降幅门槛。**
+通过与排名分开。`resolved=true` 表示所选模式的基本规格全部通过，**不设最低分数或最低面积降幅**。可行设计可得 0 分。SQNR 是硬约束，超过 50 dB 不加分；协议、复位、自然输出顺序、输出截止时间、完整 RTL/映射对照及 10 ns setup/hold 时序仍必须通过。
 
-可行设计再按吞吐量/面积效率排名。设：
+规则见 [profiles/policy.json](profiles/policy.json)。其权重、目标比例和扫描设置在新实验前已冻结，时间及 SHA-256 见 [PRE_REGISTERED.json](profiles/PRE_REGISTERED.json)。准确基线先在本平台校准，再评价候选；目标不随候选或 agent 结果调整。两种模式的分数不能相互排名。
 
-- `A`：完整 FFT 的映射标准单元面积，含所有寄存器、控制和存储。
-- `II`：完整 RTL 和映射网表测试已正确服务的输入帧间隔，当前共同负载为 384 cycles。
-- `T`：固定约束下 STA 得到的 `effective_required_period_ns`，包含 setup uncertainty。
+## 默认模式：Area Profile
 
-STA 支持的频率估计为 `F = 1/T`，在这个已验证 II 下的吞吐量估计为 `R = 64/(II*T)`。定义：
+适合原有每 384 cycles 输入一帧的固定服务任务：
 
-```text
-E = (R/A) / (R_ref/A_ref)
-  = (A_ref/A) * (II_ref/II) * (T_ref/T)
+\[
+S_A=\mathrm{clip}\left(\frac{A_{ref}-A}{A_{ref}-A_{target}},0,1\right),\quad
+A_{target}=0.5A_{ref},\quad S=V S_A.
+\]
 
-score = E / (1+E)
+`A` 为完整顶层 mapped cell area，含存储、控制、重排及寄存器。`A_ref` 为同一技术库和流程下，通过全部检查的两份准确定点基线中较小的面积。`V` 表示基本规格通过。
+
+| 相对面积 | 分数 | 规格已满足时 resolved |
+|---:|---:|---|
+| 1.10 | 0.00 | true |
+| 1.00 | 0.00 | true |
+| 0.90 | 0.20 | true |
+| 0.75 | 0.50 | true |
+| 0.50 或更小 | 1.00 | true |
+
+面积模式不奖励时序余量，不把单次 10 ns STA 的 slack 换算成 Fmax。频率在此模式只通过 10 ns 时序这个基本约束起作用。默认运行方式不变，也可显式指定：
+
+```bash
+bash run_synopsys.sh submission --profile area --out /workspace/eval/area
 ```
 
-参考点由同一平台、相同完整测试的准确实现中，吞吐量/面积效率最高的**某一份真实设计**提供。其面积、period 和 II 均来自该设计，不拼接不同实现各自最好的指标。
+## 架构模式：Architecture–Throughput Profile
 
-| 情况 | resolved | score |
-|---|---|---:|
-| 与准确参考点相同的 PPA | true | 0.5000 |
-| 同样吞吐量、面积减半 | true | 0.6667 |
-| 同样面积、STA 支持的频率翻倍 | true | 0.6667 |
-| 同样吞吐量、面积翻倍，仍满足全部规格 | true | 0.3333 |
-| SQNR、RTL/映射对照或其他必需规格失败 | false | 0 |
+```bash
+bash run_synopsys.sh submission --profile architecture --out /workspace/eval/architecture
+```
 
-频率只通过 `R` 进入一次，不再单独乘一个 Fmax 奖励。延迟仍是共同的硬性规格，并单独报告 cycles/ns，不额外设置任意权重。
+在提交目录的 `design_config.json` 中声明可持续输入帧间隔：
 
-输出同时报告两种速率：
+```json
+{"top":"fft64_top", "rtl":["rtl/fft64_top.sv"], "frame_ii_cycles":320}
+```
 
-1. `target_clock_samples_per_second`：在规定 10 ns 下已验证的服务速率；当前为 16.6667 M complex samples/s。
-2. `sta_throughput_samples_per_second`：同一已验证帧 II、按 STA 限制周期计算的速率估计，用于连续排名。
+范围为整数 64–384，省略时为 384。每帧仍连续输入 64 个复样本；无需调整顶层接口，也没有输出 backpressure。原有 384-cycle 工作负载始终测试。平台另在声明间隔下连续发送完整独立测试集，并增加混合间隔、长空闲和密集流复位测试。三种时刻零状态的 mapped 仿真均须与 RTL 对应。只声明较短 II 而无法持续服务，将不通过；有限测试证明的是**已验证的可达 II**，不是任意输入下的形式化最小 II。
 
-当前测试不搜索架构的最小固有 II。不能将周期延迟当作 II，也不能把未验证的更短帧间隔用于打分。后续若扩展高负载协议，需要统一增加测试并发布新版本。
+准确基线的校准先用 16 帧探测 64–384 的每个整数 II，记录所有成功与失败间隔，再对最小可行候选做完整数据和映射验证；完整验证失败则继续尝试。候选正式评测使用其声明的 II。开发者可用 `tools/evaluate.py --profile architecture --auto-ii` 做同样的经验搜索。
 
-面积和频率来自 pre-layout synthesis / ideal-interconnect STA，第二种吞吐量也按该估计口径报告，不等同于 post-route 或芯片实测速率。
+对同一份映射网表，PrimeTime 在 0.25–10 ns 范围重新施加时钟并逐点更新 STA，以不超过 0.01 ns 的失败/通过区间定位 setup 边界。评分使用**实测 setup/hold 都通过的周期端点**，不使用负 slack 点，也不从固定时钟 slack 推算最高频率。如果 0.25 ns 也通过，仅报告达到扫描上限，不能声称找到真正峰值。证书与 mapped netlist hash 绑定，逐点 trace 保留。最高频率仍是本 pre-layout 模型下的认证可达频率估计，非 post-route 或芯片实测。
 
-映射网表使用 VCS 四态逻辑，从全 0、全 1 和固定随机种子三种时刻零寄存器状态运行完整测试；与普通四态 RTL 逐周期、逐有效样本比较。初始状态只在时刻零设置，不在运行中强制修补信号。这样可以检查多个实际 0/1 初态下的复位恢复，避免将复位重汇合导致的 X 悲观性当作电路故障。
+\[
+T=F_{certified}/II_{verified}\quad (\mathrm{FFTs/s}),
+\qquad T_{samples}=64T.
+\]
 
-基础规格已满足、但没有匹配的新版本校准时，报告 `resolved=true, score_valid=false`；此时 `score=0` 是未评分占位值。正式入口会先自动完成校准，不将旧的 area-only 校准混入新评分。工具或许可证故障同样标为未评分。
+\[
+S=V(0.6S_A+0.3S_T+0.1S_L),
+\]
 
-本规则版本为 `verified_workload_throughput_per_area_v1`，对应 benchmark v0.3。历史 v0.2 的面积相对节省分数和 0.80 面积比例目标保留在历史记录中，不与本版本混用。
+\[
+S_A=\mathrm{clip}\frac{A_{ref}-A}{A_{ref}-A_{target}},\quad
+S_T=\mathrm{clip}\frac{T-T_{ref}}{T_{target}-T_{ref}},\quad
+S_L=\mathrm{clip}\frac{L_{ref}-L}{L_{ref}-L_{target}}.
+\]
+
+每项 clip 到 [0,1]。频率只经吞吐量计分，不另设 Fmax 项。`L` 是包括密集流在内的最坏首输出 cycles 乘**共同的 10 ns 工作时钟**，避免再次奖励同一次频率提高。另报告在认证时钟下的物理延迟，二者明确区分。
+
+架构模式有独立标尺。准确基线提供以下分量参考向量，它不冒充某一份真实电路：
+
+| 项目 | 0 分参考 | 1 分目标 |
+|---|---|---|
+| Area | 准确基线的最大面积 | 准确基线最小面积的 50% |
+| Throughput | 准确基线的最小已验证吞吐量 | 准确基线最大已验证吞吐量的 2 倍 |
+| First-output latency @10 ns | 准确基线的最大首输出延迟 | `max(0.5 × 最小准确延迟, 630 ns)` |
+
+采用分量参考使准确架构本身的面积/吞吐/延迟取舍也能得到不同分数；不会把所有准确候选都截成 0。两个模式可复用完全相同的原始物理测量，但校准文件、目标和评分缓存分开。target 是本版本的工程标尺，不是已证明可达的全局最优结果。
+
+## 验证、缓存及测量口径
+
+- 同一技术库、corner、10 ns 约束、I/O 和 hold 修复流程用于全部准确基线及候选。DC 总面积按每个 leaf cell 的 library area 累加。
+- 普通四态 RTL；mapped VCS 从全 0、全 1 和种子 20261121 三种时刻零寄存器初态运行。不得在运行中 force 或修补信号。此方法与经验局限见既有验证记录。
+- `scoring_version/profile/policy_sha256`、协议、工具、源码和 declared II 均参与相应缓存身份。修改 declared II 不会复用旧候选得分。准确基线和候选必须来自同一 flow。
+- 未完成扫描、工具或许可证错误标记为未评分，不当作有效零收益。缺匹配校准时，硬件可行性单独报告，`score_valid=false`；正式入口自动校准。
+- 开源环境可运行默认面积 preview；当前 architecture 正式认证依赖 PrimeTime，不会使用 OpenSTA 的单点 slack 冒充等价频率扫描。
+- 所有面积、认证频率、吞吐量为 synthesis / ideal-interconnect STA 口径；没有 post-route、功耗或能量结论。
+
+v0.2/v0.3 原始结果保留。v0.3 的 `E/(1+E)`、0.5 参考分及由单点 slack 推算频率的排名规则已被本版本取代，不与新分数混用。

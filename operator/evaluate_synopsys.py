@@ -6,6 +6,7 @@ import csv
 import datetime
 import hashlib
 import json
+import os
 import re
 import secrets
 import shutil
@@ -18,7 +19,7 @@ BENCHMARK = ROOT/'fft64_benchmark'
 sys.path.insert(0, str(BENCHMARK/'tools'))
 from common import TECH,read, save, sha, lock, flow_identity
 from toolchain import prepare
-from scoring import make_calibration
+from scoring import make_calibration, POLICY_SHA256, SCORING_VERSION
 
 
 def digest(value):
@@ -67,9 +68,14 @@ def protocol(args, state):
         result = dict(**definition, seed=args.seed, scale=args.scale)
     else:
         with lock(state/'protocol.lock'):
-            path = state/'evaluation_protocol.json'
+            # A specification upgrade gets its own immutable protocol. Preserve
+            # an old matching protocol, without overwriting prior experiments.
+            path = state/'protocols'/digest(definition)[:24]/'evaluation_protocol.json'
+            legacy = state/'evaluation_protocol.json'
             if not path.exists():
-                save(path,dict(**definition,seed=secrets.randbits(48),scale=args.scale))
+                prior=read(legacy)if legacy.exists()else{}
+                matching=all(prior.get(k)==v for k,v in definition.items())
+                save(path,prior if matching else dict(**definition,seed=secrets.randbits(48),scale=args.scale))
             result = read(path)
     if any(result.get(key) != value for key,value in definition.items()):
         raise ValueError('Evaluation protocol uses another specification/data generator; choose a matching protocol or a new state directory')
@@ -84,13 +90,13 @@ def platform_identity(environment):
     tools={name:dict(path=environment['tools'][name],sha256=sha(environment['tools'][name]))
            for name in ['vcs','dc_shell','pt_shell']}
     files={name:sha(BENCHMARK/'tools'/name)for name in
-           ['evaluate.py','model.py','simulate.py','common.py','toolchain.py','commercial.py','scoring.py']}
+           ['evaluate.py','model.py','simulate.py','common.py','toolchain.py','commercial.py','scoring.py','throughput.py','frequency.py']}
     baselines={name:assemble(ROOT/'operator/baselines'/name)[1]['source_sha256']for name in ['sdf','iterative']}
     return dict(backend='commercial',flow_id=flow_identity('commercial'),tools=tools,
                 evaluator_files=files,baseline_source_sha256=baselines,
                 numerical_runtime=dict(python_version=sys.version,python_executable=sys.executable,
                                        python_sha256=sha(sys.executable),numpy_version=np.__version__),
-                runner_sha256=sha(__file__))
+                runner_sha256=sha(__file__),scoring_policy_sha256=POLICY_SHA256)
 
 
 def infrastructure_failure(result):
@@ -103,22 +109,24 @@ def infrastructure_failure(result):
                           r'Design Compiler is not enabled|DCSH-1|TimeoutExpired',message,re.I))
 
 
-def cached_evaluate(submission, directory, settings, calibration=None, formal=False):
+def cached_evaluate(submission, directory, settings, calibration=None, formal=False, profile='area', auto_ii=False):
     from evaluate import evaluate, score_result
     path=directory/'result.json'
     if path.exists():
         result=read(path)
-        if result.get('status') in {'COMPLETE','QUALITY_FAILED','FAILED'} and not infrastructure_failure(result):
+        finished='seconds'in result and 'grade'in result
+        if finished and result.get('profile','area')==profile and result.get('status') in {'COMPLETE','QUALITY_FAILED','THROUGHPUT_FAILED','FAILED'} and not infrastructure_failure(result):
             result['grade']=score_result(result,calibration)
             return result,True
     result=evaluate(submission,directory,'commercial',seed=settings['seed'],scale=settings['scale'],
-                    calibration=calibration,formal=formal)
+                    calibration=calibration,formal=formal,profile=profile,auto_ii=auto_ii)
     return result,False
 
 
 def calibration(args,state,identity,settings,location=None):
     fingerprint=digest(identity)
-    key=digest(dict(platform=fingerprint,protocol=settings))[:24]
+    profile=getattr(args,'profile','area')
+    key=digest(dict(platform=fingerprint,protocol=settings,profile=profile,policy=POLICY_SHA256))[:24]
     directory=state/'calibration'/key
     if location:save(location,dict(directory=str(directory)))
     with lock(directory/'lock'):
@@ -132,23 +140,26 @@ def calibration(args,state,identity,settings,location=None):
                 # Both baselines are independent; process isolation also keeps
                 # FFT_WORK and other tool environment variables task-local.
                 with ProcessPoolExecutor(max_workers=min(2,args.jobs))as pool:
-                    futures={pool.submit(cached_evaluate,ROOT/'operator/baselines'/name,directory/name,settings):name
+                    futures={pool.submit(cached_evaluate,ROOT/'operator/baselines'/name,directory/name,settings,
+                                         None,False,profile,profile=='architecture'):name
                              for name in ['sdf','iterative']}
                     for future in as_completed(futures):
                         results[futures[future]]=future.result()[0]
             else:
                 for name in ['sdf','iterative']:
-                    results[name]=cached_evaluate(ROOT/'operator/baselines'/name,directory/name,settings)[0]
+                    results[name]=cached_evaluate(ROOT/'operator/baselines'/name,directory/name,settings,
+                                                 profile=profile,auto_ii=profile=='architecture')[0]
             results={name:results[name]for name in ['sdf','iterative']}
             for name,result in results.items():
                 if result.get('status')!='COMPLETE' or not result.get('ppa',{}).get('timing_pass'):
                     save(directory/'status.json',dict(status='CALIBRATION_INCOMPLETE',baseline=name,result=result))
                     raise EnvironmentError('Accurate '+name+' calibration did not finish successfully; see '+str(directory/name/'result.json'))
-            reference=make_calibration(results,platform_fingerprint=fingerprint,
+            reference=make_calibration(results,profile=profile,platform_fingerprint=fingerprint,
                            protocol_fingerprint=digest(settings),baseline_results=results,created_utc=utc())
             save(directory/'calibration.json',reference)
         expected=dict(backend='commercial',flow_id=identity['flow_id'],platform_fingerprint=fingerprint,
-                      protocol_fingerprint=digest(settings))
+                      protocol_fingerprint=digest(settings),profile=profile,policy_sha256=POLICY_SHA256,
+                      scoring_version=SCORING_VERSION)
         if any(reference.get(key)!=value for key,value in expected.items()):
             raise EnvironmentError('Calibration does not match this Synopsys environment/protocol; omit --calibration to measure a matching reference')
         return reference,directory
@@ -163,17 +174,20 @@ def worker(entry,outdir,settings,reference,identity,formal):
         source_key=info['source_sha256']
     except Exception as exc:
         source_key=digest(dict(submission=entry['submission'],error=str(exc)))
-    key=digest(dict(source=source_key,protocol=settings,platform=digest(identity),formal=formal))[:24]
+    profile=reference.get('profile','area')
+    key=digest(dict(source=source_key,protocol=settings,platform=digest(identity),formal=formal,
+                    profile=profile,frame_ii_cycles=info['frame_ii_cycles']if source is not None else None,
+                    policy=POLICY_SHA256))[:24]
     run=directory/'runs'/key
     evaluated_source=entry['submission']
     if source is not None:
         snapshot=run/'submission'
         (snapshot/'rtl').mkdir(parents=True,exist_ok=True)
         (snapshot/'rtl/fft64_top.sv').write_text(source)
-        save(snapshot/'design_config.json',dict(top='fft64_top',rtl=['rtl/fft64_top.sv']))
+        save(snapshot/'design_config.json',dict(top='fft64_top',rtl=['rtl/fft64_top.sv'],frame_ii_cycles=info['frame_ii_cycles']))
         save(run/'original_source.json',info)
         evaluated_source=snapshot
-    result,reused=cached_evaluate(evaluated_source,run,settings,reference,formal)
+    result,reused=cached_evaluate(evaluated_source,run,settings,reference,formal,profile=profile)
     grade=result['grade']
     unavailable=infrastructure_failure(result)or(grade.get('feasible',False)and not grade.get('score_valid',False))
     code=dict(resolved=False,score=0.0,reason='Environment error; no valid score: '+result.get('failure',''))if unavailable else {k:grade[k]for k in ['resolved','score','reason']}
@@ -184,16 +198,19 @@ def worker(entry,outdir,settings,reference,identity,formal):
     last=max(lat.get('frame_completion_cycles',[]),default=None)
     period=read(BENCHMARK/'SPEC.json')['timing_protocol']['clock_period_ns']
     performance=grade.get('performance',{})
-    row=dict(id=entry['id'],origin=entry['origin'],agent=entry['agent'],backend='commercial',
+    row=dict(id=entry['id'],origin=entry['origin'],agent=entry['agent'],backend='commercial',profile=profile,
              state='UNSCORED_INFRASTRUCTURE'if unavailable else result['status'],resolved=code['resolved'],
              score=None if unavailable else code['score'],area_um2=ppa.get('area_um2'),
              area_ratio=grade.get('area_ratio'),worst_sqnr_db=quality.get('minimum_frame_sqnr_db'),
-             limiting_period_ns=performance.get('limiting_period_ns'),
-             prelayout_fmax_estimate_MHz=performance.get('prelayout_fmax_estimate_MHz'),
-             verified_workload_frame_II_cycles=performance.get('verified_workload_frame_II_cycles'),
-             target_clock_samples_per_second=performance.get('target_clock_samples_per_second'),
-             sta_throughput_samples_per_second=performance.get('sta_throughput_samples_per_second'),
-             relative_throughput_per_area=grade.get('relative_throughput_per_area'),
+             area_component=grade.get('components',{}).get('area'),
+             throughput_component=grade.get('components',{}).get('throughput'),
+             latency_component=grade.get('components',{}).get('latency'),
+             certified_period_ns=performance.get('certified_period_ns'),
+             certified_setup_fmax_MHz=performance.get('certified_setup_fmax_MHz'),
+             verified_frame_II_cycles=performance.get('verified_frame_II_cycles'),
+             effective_throughput_ffts_per_second=performance.get('effective_throughput_ffts_per_second'),
+             effective_throughput_samples_per_second=performance.get('effective_throughput_samples_per_second'),
+             first_output_ns_at_certified_clock=performance.get('first_output_latency_at_certified_clock_ns'),
              worst_slack_ns=ppa.get('worst_setup_slack_ns'),timing_pass=ppa.get('timing_pass'),
              first_output_cycles=first,first_output_ns=first*period if first is not None else None,
              completion_cycles=last,completion_ns=last*period if last is not None else None,
@@ -223,6 +240,7 @@ def execute(args):
     stamp=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime('%Y%m%d_%H%M%S')
     out=Path(args.out or ROOT/'synopsys_results'/stamp).resolve();out.mkdir(parents=True,exist_ok=True)
     state=Path(args.state_dir or ROOT/'.eval_state').resolve()
+    os.environ['FFT_PHYSICAL_CACHE_DIR']=str(state/'physical_cache')
     rows=[]
     with lock(out/'run.lock'):
         history=out/'history'/str(time.time_ns())
@@ -252,10 +270,12 @@ def execute(args):
         try:
             settings=protocol(args,state);save(out/'protocol.json',settings)
             identity=platform_identity(environment);save(out/'platform_identity.json',identity)
-            save(out/'status.json',dict(status='CALIBRATING',backend='commercial',started_utc=utc()))
+            save(out/'status.json',dict(status='CALIBRATING',backend='commercial',profile=getattr(args,'profile','area'),started_utc=utc()))
             reference,reference_dir=calibration(args,state,identity,settings,out/'calibration_location.json')
             save(out/'calibration.json',reference)
             save(out/'calibration_location.json',dict(directory=str(reference_dir)))
+            save(out/'status.json',dict(status='RUNNING',backend='commercial',profile=reference['profile'],
+                                       completed=0,total=len(entries),calibration_complete=True))
             tasks=[(entry,str(out),settings,reference,identity,args.formal)for entry in entries]
             if args.jobs==1:
                 completed=(worker(*task)for task in tasks)
@@ -305,6 +325,7 @@ def main():
     parser.add_argument('--agent',default='unspecified')
     parser.add_argument('--check-only',action='store_true')
     parser.add_argument('--formal',action='store_true')
+    parser.add_argument('--profile',choices=['area','architecture'],default='area',help='Independent frozen scoring profile; default area')
     args=parser.parse_args()
     if sum(bool(x)for x in [args.submission,args.manifest,args.batch])>1:parser.error('Choose one input mode')
     if args.protocol and args.seed is not None:parser.error('Choose --protocol or --seed')

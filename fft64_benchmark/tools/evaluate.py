@@ -14,7 +14,7 @@ from common import ROOT, TECH, COMB, SEQ, flow_identity, read, save, sha
 from model import make_frames, quality, reference as fft_reference
 from simulate import schedule, simulate, decode
 from toolchain import activate, probe, select_backend
-from scoring import score_result
+from scoring import score_result, profile_policy
 
 
 def assemble(submission):
@@ -49,7 +49,10 @@ def assemble(submission):
     if re.search(r'\bnegedge\b', code) or any(
             name != 'clk' for name in re.findall(r'\bposedge\s+(\w+)', code)):
         raise ValueError('Use only the specified positive-edge clk')
-    return text, dict(top='fft64_top', files=files,
+    if 'frame_ii_cycles' in config:
+        from throughput import validate_interval
+        validate_interval(config['frame_ii_cycles'])
+    return text, dict(top='fft64_top', files=files, frame_ii_cycles=config.get('frame_ii_cycles',384),
                       source_sha256=hashlib.sha256(text.encode()).hexdigest())
 
 
@@ -67,7 +70,7 @@ def compact(result):
     quality_result = result.get('quality', {})
     latency = result.get('latency', {})
     ppa = result.get('ppa', {})
-    return dict(status=result['status'], backend=result.get('backend'),
+    return dict(status=result['status'], backend=result.get('backend'), profile=result.get('profile','area'),
                 functional_pass=bool(result.get('protocol_pass') and quality_result.get('feasible')),
                 worst_frame_sqnr_db=quality_result.get('minimum_frame_sqnr_db'),
                 first_output_cycles=latency.get('first_output_latency_cycles'),
@@ -80,11 +83,15 @@ def compact(result):
 
 
 def evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
-             calibration=None, quick=False, formal=False):
+             calibration=None, quick=False, formal=False, profile='area', auto_ii=False):
+    profile_policy(profile)
     directory = Path(outdir).resolve()
     directory.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
-    result = dict(status='RUNNING', backend=backend, seed=seed, scale=scale)
+    result = dict(status='RUNNING', backend=backend, seed=seed, scale=scale, profile=profile)
+    def checkpoint(stage):
+        save(directory/'checkpoint.json',dict(stage=stage,profile=profile,seconds=time.monotonic()-started))
+        save(directory/'result.json',result)
     try:
         activate()
         backend, selection_reason = select_backend(probe(quick), backend, calibration)
@@ -111,6 +118,7 @@ def evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
         save(directory/'dataset.json', dict(seed=seed, scale=scale, labels=labels,
                                            frames=len(frames), frame_starts=metadata['frame_starts']))
         result['dataset_frames'] = len(frames)
+        checkpoint('NOMINAL_RTL')
         raw = simulate(source, events, directory/'rtl_sim', 'iverilog' if backend == 'local' else 'vcs')
         outputs, latency = decode(raw, events, metadata)
         quality_result = quality(frames, outputs)
@@ -128,6 +136,7 @@ def evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
         elif quick:
             result['status'] = 'QUICK_CHECK_PASSED'
         else:
+            checkpoint('ASIC_MAPPING')
             if backend == 'local':
                 from local_asic import measure, try_equivalence
                 ppa = measure(source, directory/'asic')
@@ -137,6 +146,7 @@ def evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
                 from commercial import measure
                 ppa = measure(source, directory/'asic', formal)
             result.update(ppa=ppa, flow_id=flow_identity(backend))
+            checkpoint('NOMINAL_MAPPED')
             mapped_source = used_cell_models((directory/'asic/mapped.v').read_text())+'\n'+(directory/'asic/mapped.v').read_text()
             initializations = [None] if backend == 'local' else [0, 1, 20261121]
             for initialization in initializations:
@@ -154,9 +164,25 @@ def evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
                 rtl_four = simulate(source, tiny_events, directory/'rtl_fourstate', 'iverilog')
                 rtl_outputs, _ = decode(rtl_four, tiny_events, tiny_metadata)
                 assert np.array_equal(four_raw[:, 1:3], rtl_four[:, 1:3]) and np.array_equal(four_outputs, rtl_outputs)
-            result.update(status='COMPLETE', mapped_simulation_pass=True,
+            result.update(mapped_simulation_pass=True,
                           mapped_full_four_state=backend == 'commercial',
                           mapped_initial_state_modes=initializations)
+            if profile=='architecture':
+                if backend!='commercial':
+                    raise EnvironmentError('Architecture scoring requires the calibrated PrimeTime clock scan; local fixed-clock slack is not a frequency certificate. Use the area profile for local preview.')
+                from throughput import verify
+                checkpoint('CONTINUOUS_FRAME_QUALIFICATION')
+                result['throughput_check']=verify(source,mapped_source,frames,directory/'throughput',
+                    claimed_interval=information['frame_ii_cycles'],auto=auto_ii,backend='vcs',seed=seed+31,
+                    rtl_compiled=directory/'rtl_sim',gate_compiled=directory/'mapped_sim')
+                if result['throughput_check']['status']!='PASS':
+                    result.update(status='THROUGHPUT_FAILED',failure='Declared continuous frame interval failed strict RTL/mapped validation')
+                elif ppa['timing_pass']:
+                    from frequency import certify
+                    checkpoint('FREQUENCY_SCAN')
+                    ppa['fmax_certificate']=certify(directory/'asic')[0]
+            if result['status']=='RUNNING':result['status']='COMPLETE'
+            checkpoint('MEASUREMENTS_FINISHED')
     except Exception as exc:
         result.update(status='ENVIRONMENT_ERROR' if isinstance(exc, (EnvironmentError, FileNotFoundError)) else 'FAILED',
                       failure=str(exc), traceback=traceback.format_exc())
@@ -177,10 +203,12 @@ def main():
     parser.add_argument('--calibration')
     parser.add_argument('--quick', action='store_true')
     parser.add_argument('--formal', action='store_true')
+    parser.add_argument('--profile', choices=['area','architecture'], default='area')
+    parser.add_argument('--auto-ii', action='store_true', help='Preview/calibration: qualify the smallest pilot-supported interval instead of a declared interval')
     args = parser.parse_args()
     calibration = read(args.calibration) if args.calibration else None
     result = evaluate(args.submission, args.out, args.backend, args.seed, args.scale,
-                      calibration, args.quick, args.formal)
+                      calibration, args.quick, args.formal, args.profile, args.auto_ii)
     print(json.dumps(compact(result), indent=2))
     return 0 if result['status'] in {'COMPLETE', 'QUICK_CHECK_PASSED'} and result.get('ppa', {}).get('timing_pass', True) else 2
 

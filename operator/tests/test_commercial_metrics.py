@@ -24,9 +24,10 @@ set fixture_areas [dict create ADDx1_ASAP7_75t_R 1.25 DFFHQNx1_ASAP7_75t_R 2.5 M
 if {$::env(FFT_FIXTURE_MODE) eq "empty"} {set fixture_cells {}}
 if {$::env(FFT_FIXTURE_MODE) eq "foreign"} {dict set fixture_refs add0 GTECH_ADD}
 if {$::env(FFT_FIXTURE_MODE) eq "latch"} {dict set fixture_refs add0 LHx1_ASAP7_75t_R}
-foreach command {set_app_var set_host_options define_design_lib set_svf analyze elaborate link uniquify ungroup set_max_area set_fix_multiple_port_nets set_dont_touch_network create_clock set_clock_uncertainty set_clock_transition set_input_delay set_input_transition set_output_delay set_load set_false_path change_names write write_sdc} {
+foreach command {set_app_var set_host_options define_design_lib set_svf analyze elaborate link uniquify ungroup set_max_area set_fix_hold set_fix_multiple_port_nets set_dont_touch_network create_clock set_clock_uncertainty set_clock_transition set_input_delay set_input_transition set_output_delay set_load set_false_path change_names write write_sdc} {
     proc $command {args} {return 1}
 }
+proc compile {args} {return 1}
 proc compile_ultra {args} {
     if {$::env(FFT_FIXTURE_MODE) eq "compile_error"} {error "fixture compile failure"}
     return 1
@@ -153,12 +154,13 @@ class CommercialStageTests(unittest.TestCase):
         else:
             (work/'pt_check.rpt').write_text('fixture only\n')
             (work/'pt_metrics.json').write_text(self.pt_json if self.pt_json is not None else json.dumps(
-                dict(worst_setup_slack_ns=1.0, effective_required_period_ns=9.0)))
+                dict(worst_setup_slack_ns=1.0, worst_hold_slack_ns=.01, clock_period_ns=10.0)))
         return dict(returncode=0)
 
     def measure(self, case='run'):
         with (patch.object(commercial, 'preflight', return_value=dict(ready=True)),
               patch.object(commercial, 'flow_identity', return_value='FIXTURE_ONLY_NOT_MEASURED'),
+              patch.object(commercial, 'mapping_identity', return_value='FIXTURE_ONLY'),
               patch.object(commercial, 'sha', return_value='f'*64),
               patch.object(commercial, 'run', side_effect=self.fake_run)):
             return commercial.measure('module fixture; endmodule', self.root/case)
@@ -197,8 +199,21 @@ class CommercialStageTests(unittest.TestCase):
         self.assertFalse((self.root/'run/metrics.json').exists())
 
     def test_finite_negative_slack_is_a_timing_failure_not_a_tool_failure(self):
-        self.pt_json = '{"worst_setup_slack_ns":-1,"effective_required_period_ns":11}'
+        self.pt_json = '{"worst_setup_slack_ns":-1,"worst_hold_slack_ns":0.01,"clock_period_ns":10}'
         self.assertFalse(self.measure()['timing_pass'])
+
+    def test_hold_violation_fails_even_when_setup_passes(self):
+        self.pt_json = '{"worst_setup_slack_ns":6,"worst_hold_slack_ns":-0.001,"clock_period_ns":10}'
+        self.assertFalse(self.measure()['timing_pass'])
+
+    def test_profiles_reuse_exactly_one_physical_mapping(self):
+        with patch.dict(os.environ,FFT_PHYSICAL_CACHE_DIR=str(self.root/'physical_cache')):
+            first=self.measure('area_profile')
+            second=self.measure('architecture_profile')
+        self.assertEqual(self.calls,['dc_shell','pt_shell'])
+        self.assertEqual(first,second)
+        self.assertEqual((self.root/'area_profile/mapped.v').read_bytes(),
+                         (self.root/'architecture_profile/mapped.v').read_bytes())
 
 
 if __name__ == '__main__':

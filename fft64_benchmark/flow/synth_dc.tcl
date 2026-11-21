@@ -14,12 +14,18 @@ link
 uniquify
 ungroup -all -flatten
 source [file join $TASK_ROOT flow constraints.sdc]
+# The common physical flow repairs minimum-delay violations as well as setup.
+# Both scoring profiles and all accurate baselines use this same setting.
+set_fix_hold [get_clocks clk]
 set_max_area 0
 set_fix_multiple_port_nets -all -buffer_constants
 set_dont_touch_network [get_ports clk]
 # No gating/retiming setting supplied by the candidate. Extra RTL pipeline cuts
 # remain permitted and are verified against the latency/protocol contract.
 compile_ultra -area_high_effort_script
+# compile_ultra area mode does not repair all short input-to-register paths
+# on DC L-2016.03. Run the documented minimum-delay-only incremental pass.
+compile -incremental_mapping -only_hold_time
 change_names -rules verilog -hierarchy
 set leaf_count 0
 set ar 0.0

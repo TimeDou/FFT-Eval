@@ -1,99 +1,142 @@
-"""Separate hardware feasibility from continuous, calibrated PPA ranking."""
+"""Frozen independent area and architecture/throughput scoring profiles."""
+from pathlib import Path
+import hashlib
+import json
 import math
 
-SCORING_VERSION = 'verified_workload_throughput_per_area_v1'
+POLICY_PATH=Path(__file__).resolve().parents[1]/'profiles/policy.json'
+POLICY=json.loads(POLICY_PATH.read_text())
+POLICY_SHA256=hashlib.sha256(POLICY_PATH.read_bytes()).hexdigest()
+SCORING_VERSION='independent_fft_profiles_v1'
+
+
+def profile_policy(profile):
+    if profile not in POLICY['profiles']:raise ValueError('Unknown scoring profile: '+str(profile))
+    return POLICY['profiles'][profile]
 
 
 def hardware_feasible(result):
-    return bool(result.get('status') == 'COMPLETE'
-                and result.get('quality', {}).get('feasible', False)
-                and result.get('protocol_pass', False)
-                and result.get('mapped_simulation_pass', False)
-                and result.get('ppa', {}).get('timing_pass', False)
-                and result.get('ppa', {}).get('formal_status') != 'FAILED')
+    passed=bool(result.get('status')=='COMPLETE'
+                and result.get('quality',{}).get('feasible',False)
+                and result.get('protocol_pass',False)
+                and result.get('mapped_simulation_pass',False)
+                and result.get('ppa',{}).get('timing_pass',False)
+                and result.get('ppa',{}).get('formal_status')!='FAILED')
+    if result.get('profile','area')=='architecture':
+        passed=passed and result.get('throughput_check',{}).get('status')=='PASS'
+    if passed:
+        try:performance(result)
+        except (ValueError,TypeError,KeyError):passed=False
+    return bool(passed)
 
 
-def positive(value, name):
-    if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
+def positive(value,name):
+    if type(value)not in(int,float)or not math.isfinite(value)or value<=0:
         raise ValueError('Missing or invalid measured '+name)
     return value
 
 
-def performance(result):
-    """Use the serviced workload II, never assume a faster intrinsic frame II.
-
-    The capacity at that II uses the pre-layout STA limiting period, including
-    the fixed setup uncertainty. It is an estimate, not post-route Fmax or a
-    measured physical-device rate. Target-clock service is reported separately.
-    """
-    ppa = result.get('ppa', {})
-    latency = result.get('latency', {})
-    area = positive(ppa.get('area_um2'), 'area')
-    period = positive(ppa.get('effective_required_period_ns'), 'STA period')
-    interval = positive(latency.get('offered_frame_II'), 'verified workload frame II')
-    clock = positive(ppa.get('clock_period_ns', latency.get('clock_period_ns')), 'target clock period')
-    rate = 64e9/(interval*period)
-    return dict(area_um2=area, limiting_period_ns=period,
-                prelayout_fmax_estimate_MHz=1000/period,
-                verified_workload_frame_II_cycles=interval,
-                target_clock_samples_per_second=64e9/(interval*clock),
-                sta_throughput_samples_per_second=rate,
-                sta_throughput_per_area=rate/area)
-
-
-def make_calibration(results, **metadata):
-    """Select one real exact design with the best throughput/area as anchor.
-
-    Area, period and II always come from that same implementation; independent
-    best-area and best-frequency numbers are not combined into a fictitious RTL.
-    """
-    if not results or not all(hardware_feasible(r) for r in results.values()):
-        raise ValueError('Every accurate calibration design must pass all hardware checks')
-    if len({(r.get('backend'), r.get('flow_id')) for r in results.values()}) != 1:
-        raise ValueError('Calibration designs must share the same backend and flow')
-    measured = {name: performance(result) for name, result in results.items()}
-    selected = max(measured, key=lambda name: measured[name]['sta_throughput_per_area'])
-    anchor = measured[selected]
-    result = results[selected]
-    return dict(metadata, backend=result['backend'], flow_id=result['flow_id'],
-                scoring_version=SCORING_VERSION, reference_design=selected,
-                reference_area_um2=anchor['area_um2'],
-                reference_period_ns=anchor['limiting_period_ns'],
-                reference_frame_II_cycles=anchor['verified_workload_frame_II_cycles'],
-                reference_performance=anchor, baseline_performance=measured,
-                score='E/(1+E), E=(A_ref/A)*(II_ref/II)*(T_ref/T)')
+def performance(result,profile=None):
+    profile=profile or result.get('profile','area');profile_policy(profile)
+    ppa=result.get('ppa',{});lat=result.get('latency',{})
+    area=positive(ppa.get('area_um2'),'area')
+    clock=positive(ppa.get('clock_period_ns',lat.get('clock_period_ns')),'common clock period')
+    first=lat.get('first_output_latency_cycles',[])
+    first_cycles=positive(max(first)if first else None,'first-output cycles')
+    out=dict(area_um2=area,first_output_cycles=first_cycles,first_output_latency_ns=first_cycles*clock,
+             target_clock_period_ns=clock,base_frame_II_cycles=lat.get('offered_frame_II'),
+             measured_frequency_in_score=False)
+    if profile=='area':return out
+    stream=result.get('throughput_check',{})
+    if stream.get('status')!='PASS' or not stream.get('mapped_pass'):
+        raise ValueError('Continuous-frame RTL and mapped verification is required')
+    interval=positive(stream.get('verified_frame_ii_cycles'),'verified stream frame II')
+    certificate=ppa.get('fmax_certificate',{})
+    if(certificate.get('status')!='CERTIFIED' or not certificate.get('hold_pass')
+       or certificate.get('mapped_sha256')!=ppa.get('mapped_sha256')):
+        raise ValueError('A matching passing clock-scan certificate is required; fixed-clock slack is insufficient')
+    period=positive(certificate.get('passing_period_ns'),'certified passing clock period')
+    resolution=profile_policy('architecture')['fmax_scan']['resolution_ns']
+    if certificate.get('capped_at_minimum_period'):
+        if abs(period-profile_policy('architecture')['fmax_scan']['minimum_period_ns'])>1e-8:
+            raise ValueError('Invalid frequency scan cap')
+    else:
+        failing=positive(certificate.get('failing_period_ns'),'certified failing clock period')
+        if failing>=period:raise ValueError('Invalid frequency scan bracket')
+        if period-failing>resolution+1e-9:raise ValueError('Frequency scan bracket is wider than the frozen resolution')
+    dense_first=stream.get('first_output_latency_cycles',[])
+    if dense_first:first_cycles=max(first_cycles,max(dense_first))
+    return dict(out,first_output_cycles=first_cycles,first_output_latency_ns=first_cycles*clock,
+                certified_period_ns=period,certified_setup_fmax_MHz=1000/period,
+                verified_frame_II_cycles=interval,effective_throughput_ffts_per_second=1e9/(interval*period),
+                effective_throughput_samples_per_second=64e9/(interval*period),
+                first_output_latency_at_certified_clock_ns=first_cycles*period)
 
 
-def score_result(result, calibration=None):
-    feasible = hardware_feasible(result)
-    grade = dict(resolved=feasible, feasible=feasible, score=0.0,
-                 score_valid=not feasible and result.get('status') in {'COMPLETE','QUALITY_FAILED','FAILED'},
-                 scoring_version=SCORING_VERSION, area_ratio=None)
-    if not feasible:
-        return dict(grade, reason='A required functional, quality, protocol, timing or mapped-netlist check did not pass.')
-    try:
-        measured = performance(result)
-    except ValueError as exc:
-        return dict(grade, resolved=False, feasible=False, reason=str(exc))
-    if not calibration:
-        return dict(grade, performance=measured,
-                    reason='Required hardware checks passed; a matching PPA calibration is needed for a valid score.')
-    if (calibration.get('backend') != result.get('backend')
-            or calibration.get('flow_id') != result.get('flow_id')):
-        return dict(grade, reason='Required hardware checks passed; PPA reference uses another backend or flow.')
-    if calibration.get('scoring_version') != SCORING_VERSION:
-        return dict(grade, reason='Required hardware checks passed; recalibrate for the current continuous PPA scoring policy.')
-    try:
-        area_ref = positive(calibration.get('reference_area_um2'), 'reference area')
-        period_ref = positive(calibration.get('reference_period_ns'), 'reference period')
-        interval_ref = positive(calibration.get('reference_frame_II_cycles'), 'reference workload II')
-    except ValueError as exc:
-        return dict(grade, reason=str(exc))
-    area_ratio = measured['area_um2']/area_ref
-    efficiency = ((area_ref/measured['area_um2'])*
-                  (interval_ref/measured['verified_workload_frame_II_cycles'])*
-                  (period_ref/measured['limiting_period_ns']))
-    score = 1.0/(1.0+1.0/efficiency)
-    return dict(grade, score=float(score), score_valid=True, area_ratio=area_ratio,
-                relative_throughput_per_area=efficiency, performance=measured,
-                reason='All required hardware specifications passed; score ranks throughput per area at the verified workload II (reference=0.5).')
+def make_calibration(results,profile='area',**metadata):
+    policy=profile_policy(profile)
+    if not results or not all(hardware_feasible(r)for r in results.values()):
+        raise ValueError('All accurate baselines must pass the selected profile')
+    if len({(r.get('backend'),r.get('flow_id'))for r in results.values()})!=1:
+        raise ValueError('Accurate baselines must share backend and measurement flow')
+    measured={name:performance(r,profile)for name,r in results.items()}
+    best_area=min(measured,key=lambda n:measured[n]['area_um2'])
+    area_best=measured[best_area]['area_um2']
+    first_result=next(iter(results.values()))
+    references=dict(area_um2=area_best);targets=dict(area_um2=area_best*policy['targets']['area_ratio_to_best_accurate'])
+    sources=dict(area_reference=best_area,area_target=best_area)
+    if profile=='architecture':
+        worst_area=max(measured,key=lambda n:measured[n]['area_um2'])
+        slowest=min(measured,key=lambda n:measured[n]['effective_throughput_ffts_per_second'])
+        fastest=max(measured,key=lambda n:measured[n]['effective_throughput_ffts_per_second'])
+        longest=max(measured,key=lambda n:measured[n]['first_output_latency_ns'])
+        shortest=min(measured,key=lambda n:measured[n]['first_output_latency_ns'])
+        references=dict(area_um2=measured[worst_area]['area_um2'],
+                        throughput_ffts_per_second=measured[slowest]['effective_throughput_ffts_per_second'],
+                        first_output_latency_ns=measured[longest]['first_output_latency_ns'])
+        targets.update(throughput_ffts_per_second=measured[fastest]['effective_throughput_ffts_per_second']*policy['targets']['throughput_ratio_to_best_accurate'],
+                       first_output_latency_ns=max(measured[shortest]['first_output_latency_ns']*policy['targets']['latency_ratio_to_best_accurate'],
+                           policy['targets']['latency_physical_floor_cycles']*POLICY['shared_spec']['clock_period_ns']))
+        sources.update(area_reference=worst_area,throughput_reference=slowest,throughput_target=fastest,
+                       latency_reference=longest,latency_target=shortest)
+    return dict(metadata,backend=first_result['backend'],flow_id=first_result['flow_id'],profile=profile,
+                scoring_version=SCORING_VERSION,policy_sha256=POLICY_SHA256,weights=policy['weights'],
+                references=references,targets=targets,anchor_sources=sources,baseline_performance=measured,
+                reference_area_um2=references['area_um2'],reference_design=best_area if profile=='area'else'componentwise_accurate_envelope',
+                normalization='frozen targets relative to accurate baselines only; no candidate adaptation')
+
+
+def normalized(value,reference,target,lower_is_better):
+    span=(reference-target)if lower_is_better else(target-reference)
+    if span<0:raise ValueError('Normalization target is in the wrong direction')
+    if span==0:return float(value<=target)if lower_is_better else float(value>=target)
+    gain=(reference-value)if lower_is_better else(value-reference)
+    return float(min(1,max(0,gain/span)))
+
+
+def score_result(result,calibration=None):
+    profile=result.get('profile','area');profile_policy(profile)
+    feasible=hardware_feasible(result)
+    grade=dict(resolved=feasible,feasible=feasible,score=0.0,
+               score_valid=not feasible and result.get('status')in{'COMPLETE','QUALITY_FAILED','FAILED','THROUGHPUT_FAILED'},
+               scoring_version=SCORING_VERSION,profile=profile,policy_sha256=POLICY_SHA256,area_ratio=None)
+    if not feasible:return dict(grade,reason='A required numerical, protocol, timing, RTL/mapped or declared-throughput check failed.')
+    try:measured=performance(result,profile)
+    except ValueError as exc:return dict(grade,reason=str(exc))
+    if not calibration:return dict(grade,performance=measured,reason='Hardware checks passed; matching frozen profile calibration is required.')
+    expected=dict(backend=result.get('backend'),flow_id=result.get('flow_id'),profile=profile,
+                  scoring_version=SCORING_VERSION,policy_sha256=POLICY_SHA256)
+    if any(calibration.get(k)!=v for k,v in expected.items()):
+        return dict(grade,reason='Calibration belongs to another profile, policy, backend or flow; recalibrate.')
+    policy=profile_policy(profile)
+    if calibration.get('weights')!=policy['weights']:
+        return dict(grade,reason='Calibration weights do not match the frozen policy.')
+    refs=calibration['references'];targets=calibration['targets']
+    components=dict(area=normalized(measured['area_um2'],refs['area_um2'],targets['area_um2'],True),throughput=0.,latency=0.)
+    if profile=='architecture':
+        components.update(throughput=normalized(measured['effective_throughput_ffts_per_second'],refs['throughput_ffts_per_second'],targets['throughput_ffts_per_second'],False),
+                          latency=normalized(measured['first_output_latency_ns'],refs['first_output_latency_ns'],targets['first_output_latency_ns'],True))
+    score=sum(policy['weights'][k]*v for k,v in components.items())
+    return dict(grade,score=float(score),score_valid=True,area_ratio=measured['area_um2']/refs['area_um2'],
+                components=components,weights=policy['weights'],performance=measured,
+                reason='All required profile specifications passed; continuous hardware score has no pass threshold.')

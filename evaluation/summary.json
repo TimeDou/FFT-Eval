@@ -1,0 +1,46 @@
+{
+  "status": "COMPLETE",
+  "backend": "commercial",
+  "reference_area_um2": 2437.28028,
+  "protocol": {
+    "benchmark_id": "fft64_quant_arch_v0.5",
+    "specification_sha256": "7ecea606f9b496387ff268a1e0dc3d8d8b5f4cf838f2f547431db565bc4fa2aa",
+    "data_generator_sha256": "ccfcadaaeb0a2f3fde13935aa95467493fedac9d45905911c2f4e883c2e45fa5",
+    "seed": 2026112105,
+    "scale": 1
+  },
+  "submissions": [
+    {
+      "id": "Codex-GPT-6.1-Sol-Max",
+      "origin": "migrated-author-reference",
+      "agent": "unspecified",
+      "backend": "commercial",
+      "profile": "architecture",
+      "state": "COMPLETE",
+      "resolved": true,
+      "score": 0.504748235981329,
+      "area_um2": 1614.77874,
+      "area_ratio": 0.6625330509792661,
+      "worst_sqnr_db": 55.197422123168465,
+      "area_component": 0.6749338980414678,
+      "throughput_component": 0.2698140469097886,
+      "latency_component": 0.18843683083511778,
+      "certified_period_ns": 3.820556640625,
+      "certified_setup_fmax_MHz": 261.7419643427695,
+      "verified_frame_II_cycles": 320,
+      "effective_throughput_ffts_per_second": 817943.6385711547,
+      "effective_throughput_samples_per_second": 52348392.8685539,
+      "first_output_ns_at_certified_clock": 978.0625,
+      "worst_slack_ns": 6.184986816,
+      "timing_pass": true,
+      "first_output_cycles": 256,
+      "first_output_ns": 2560.0,
+      "completion_cycles": 319,
+      "completion_ns": 3190.0,
+      "mapped_pass": true,
+      "reused": false,
+      "result_directory": "/mnt/mydata/eval/fft_eval_paper_long_r1/candidates/Codex-GPT-6.1-Sol-Max/runs/18d47e043d0ce4229ecd5fda",
+      "source_sha256": "24531ad017e292cfa4371581a81a75d677fa5b0cbfeb63c05222a3c9d2973b06"
+    }
+  ]
+}

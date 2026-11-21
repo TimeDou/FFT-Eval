@@ -1,0 +1,74 @@
+{
+  "status": "PASS",
+  "source_document_sha256": "24ce82e8d7c0c333266737f5cf9feca5287dabc59db2a76812c624db75d6fcb4",
+  "checks": {
+    "sdf": {
+      "hidden_random_frames": 8192,
+      "directed_cases": 192,
+      "mandatory_consecutive_frames": 1024,
+      "tested_intervals": 321,
+      "frames_per_interval": 1024,
+      "total_ii_transactions": 328704,
+      "passed_intervals": 188,
+      "failed_intervals": 133,
+      "verified_ii": 197,
+      "per_frame_latencies_checked": true,
+      "worst_sqnr_db": 70.29175631447471,
+      "max_first_output_cycles": 133,
+      "mapped_mandatory_subset": {
+        "frames": 272,
+        "random_frames": 64,
+        "all_directed": true,
+        "protocol": true
+      },
+      "mapped_best_ii_subset": 128,
+      "score": null
+    },
+    "iterative": {
+      "hidden_random_frames": 8192,
+      "directed_cases": 192,
+      "mandatory_consecutive_frames": 1024,
+      "tested_intervals": 321,
+      "frames_per_interval": 1024,
+      "total_ii_transactions": 328704,
+      "passed_intervals": 65,
+      "failed_intervals": 256,
+      "verified_ii": 320,
+      "per_frame_latencies_checked": true,
+      "worst_sqnr_db": 70.29175631447471,
+      "max_first_output_cycles": 256,
+      "mapped_mandatory_subset": {
+        "frames": 272,
+        "random_frames": 64,
+        "all_directed": true,
+        "protocol": true
+      },
+      "mapped_best_ii_subset": 128,
+      "score": null
+    },
+    "Codex-GPT-6.1-Sol-Max": {
+      "hidden_random_frames": 8192,
+      "directed_cases": 192,
+      "mandatory_consecutive_frames": 1024,
+      "tested_intervals": 321,
+      "frames_per_interval": 1024,
+      "total_ii_transactions": 328704,
+      "passed_intervals": 65,
+      "failed_intervals": 256,
+      "verified_ii": 320,
+      "per_frame_latencies_checked": true,
+      "worst_sqnr_db": 55.197422123168465,
+      "max_first_output_cycles": 256,
+      "mapped_mandatory_subset": {
+        "frames": 272,
+        "random_frames": 64,
+        "all_directed": true,
+        "protocol": true
+      },
+      "mapped_best_ii_subset": 128,
+      "score": 0.504748235981329
+    }
+  },
+  "independence": "8192 independent random numerical frames per design; the same 1024-frame input set is reused across tested IIs for controlled capacity measurement",
+  "scope": "finite input and protocol evidence; no formal worst-case guarantee"
+}

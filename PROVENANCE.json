@@ -1,0 +1,12 @@
+{
+  "record_label": "Codex-GPT-6.1-Sol-Max",
+  "origin": "migrated-author-reference",
+  "not_an_independent_fresh_agent_rollout": true,
+  "parent_design": "archive/fft-bench/fft64-solution",
+  "source_sha256": "24531ad017e292cfa4371581a81a75d677fa5b0cbfeb63c05222a3c9d2973b06",
+  "mapped_sha256": "07670ecd539b9acd684230d8691fe2a35a38ed2a46468a29a284db54a49b1375",
+  "native_evaluation_directory": "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/eval/fft_eval_paper_long_r1",
+  "campaign_command": "bash run_synopsys_docker.sh submission --id Codex-GPT-6.1-Sol-Max --origin migrated-author-reference --seed 2026112105 --scale 1 --profile architecture --jobs 2 --state-dir /mnt/mydata/score_profile_v04 --out /mnt/mydata/eval/fft_eval_paper_long_r1",
+  "measurement_stage": "pre-layout synthesis / ideal-interconnect STA",
+  "physical_mapping_reused_with_matching_source_library_and_physical_flow": true
+}

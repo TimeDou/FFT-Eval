@@ -1,0 +1,30 @@
+{
+  "status": "CERTIFIED",
+  "passing_period_ns": 2.4208984375,
+  "failing_period_ns": 2.411376953125,
+  "hold_pass": true,
+  "passing_setup_slack_ns": 0.00767585997832463,
+  "passing_hold_slack_ns": 0.017025674341227915,
+  "capped_at_minimum_period": false,
+  "trials": 13,
+  "mapped_sha256": "2acfd60c43b11136af64c9ebe62f179bead53b8a5f2436839a02be06f0562bca",
+  "scalar_netlist_sha256": "2fe79f6ab1e309d27b07f5d806e3d49f1e2bcaa5e9e023c7901baeb4f6e1b355",
+  "libraries": {
+    "ASAP7_RVT_TT_nldm_NO_FAHA.lib": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "ASAP7_SEQ_RVT_TT_nldm_220123.lib": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3"
+  },
+  "sta_sha256": "9630070fdbcfd2a92a9d0dc6b6e5480f7be8e216b720f1fb32f447fb4cedc2ff",
+  "script_sha256": "a879a5e2f30a406df9c8850a9ce64e01b06b2a6f1645f81d638eade9ec7ab9c6",
+  "policy_sha256": "b8e72fee23ed31e3bb47eb1074717be5932533f440701da667a860d710768b75",
+  "settings": {
+    "minimum_period_ns": 0.25,
+    "maximum_period_ns": 10.0,
+    "resolution_ns": 0.01,
+    "maximum_iterations": 24,
+    "method": "clock reconstraint and full STA update on the fixed mapped netlist; score uses passing endpoint",
+    "hold": "report min-path slack; certification requires no observed negative hold slack"
+  },
+  "certified_frequency_MHz": 413.06978620411456,
+  "certificate_directory": "/mnt/DATA1/sj/ALS/DP2.0/DSBench/FFT-Eval/.results_local/open_source_public/asic/frequency_certificates/19b775347fe889e5c45b0123",
+  "measurement": "OpenSTA ideal-interconnect fixed-netlist clock scan; local backend only"
+}

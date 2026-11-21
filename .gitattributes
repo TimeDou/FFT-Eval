@@ -6,3 +6,7 @@ fft64_solution/measurements.csv -text -whitespace
 
 # Preserve native tool reports and CSV receipts byte for byte.
 operator/results/** -text -whitespace
+
+# Preserve native evaluation evidence and submission bytes.
+evaluation/** -text -whitespace
+submission/** -text

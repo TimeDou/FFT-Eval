@@ -1,0 +1,27 @@
+{
+  "mapped_sha256": "b8812e3aa89c89d449db6e235f8d63f6edc6b27fd43ba0ad1353587a0e3ecd41",
+  "script_sha256": "42d666491dbcb3ed48717595e3ae596b04dac470c590e67303e3438f15c1022a",
+  "pt_path": "/usr/synopsys/pt-M-2016.12-SP1/bin/pt_shell",
+  "pt_sha256": "4628e991bb7477042adc7b8af31cad457af59054ea4a757d4cd2dbcf9c138e2f",
+  "scan": {
+    "minimum_period_ns": 0.25,
+    "maximum_period_ns": 10.0,
+    "resolution_ns": 0.01,
+    "maximum_iterations": 24,
+    "method": "clock reconstraint and full STA update on the fixed mapped netlist; score uses passing endpoint",
+    "hold": "report min-path slack; certification requires no observed negative hold slack"
+  },
+  "policy_sha256": "b8e72fee23ed31e3bb47eb1074717be5932533f440701da667a860d710768b75",
+  "mapping_signature": {
+    "source": "c342a5dedfec900f97e98ebceb7f71b696d8280a72f83da74f59a90272478943",
+    "comb": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "seq": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+    "db": [
+      "bb9da4b949600abc0365715400a2b67687ed47896cc71529fddfb3a4f7097e38",
+      "51026f0d4c67f909966900a15908f76d2c6d74cf27631f658c4216f00855b08a"
+    ],
+    "flow": "DC-PT-setup-hold-v3",
+    "identity": "735b418c3df404fe2666e9ebc29510055c61b490d1dee3b0ddebfb3ef56e5925",
+    "formal": false
+  }
+}

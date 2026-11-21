@@ -37,3 +37,5 @@ python3 operator/collect_native_results.py /host/shared/eval/run \
 All physical measurements here are synthesis cell area and ideal-interconnect STA, not post-route area/timing, power or silicon Fmax. The provided R2SDF reference is frame-isolated; its measured II must not be presented as a limit of the R2SDF architecture family.
 
 The small DSBench attachment keeps the legacy filename `area_reference.json` for the selected profile calibration. The embedded `profile` and policy hash determine its meaning; an architecture calibration is not an area-profile denominator. Use `grading/make_grader.py --profile architecture --calibration ...` for that task.
+
+Grader packaging reuses the accurate calibration’s original input seed/scale. It rejects existing settings from a different input protocol rather than silently recalibrating after candidate results.

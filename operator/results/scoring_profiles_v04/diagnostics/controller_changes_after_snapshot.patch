@@ -1,0 +1,57 @@
+--- campaign_snapshot/fft64_benchmark/tools/evaluate.py
++++ final_source/fft64_benchmark/tools/evaluate.py
+@@ -164,7 +164,7 @@
+                 rtl_four = simulate(source, tiny_events, directory/'rtl_fourstate', 'iverilog')
+                 rtl_outputs, _ = decode(rtl_four, tiny_events, tiny_metadata)
+                 assert np.array_equal(four_raw[:, 1:3], rtl_four[:, 1:3]) and np.array_equal(four_outputs, rtl_outputs)
+-            result.update(status='COMPLETE', mapped_simulation_pass=True,
++            result.update(mapped_simulation_pass=True,
+                           mapped_full_four_state=backend == 'commercial',
+                           mapped_initial_state_modes=initializations)
+             if profile=='architecture':
+@@ -181,6 +181,7 @@
+                     from frequency import certify
+                     checkpoint('FREQUENCY_SCAN')
+                     ppa['fmax_certificate']=certify(directory/'asic')[0]
++            if result['status']=='RUNNING':result['status']='COMPLETE'
+             checkpoint('MEASUREMENTS_FINISHED')
+     except Exception as exc:
+         result.update(status='ENVIRONMENT_ERROR' if isinstance(exc, (EnvironmentError, FileNotFoundError)) else 'FAILED',
+--- campaign_snapshot/operator/evaluate_synopsys.py
++++ final_source/operator/evaluate_synopsys.py
+@@ -68,9 +68,14 @@
+         result = dict(**definition, seed=args.seed, scale=args.scale)
+     else:
+         with lock(state/'protocol.lock'):
+-            path = state/'evaluation_protocol.json'
++            # A specification upgrade gets its own immutable protocol. Preserve
++            # an old matching protocol, without overwriting prior experiments.
++            path = state/'protocols'/digest(definition)[:24]/'evaluation_protocol.json'
++            legacy = state/'evaluation_protocol.json'
+             if not path.exists():
+-                save(path,dict(**definition,seed=secrets.randbits(48),scale=args.scale))
++                prior=read(legacy)if legacy.exists()else{}
++                matching=all(prior.get(k)==v for k,v in definition.items())
++                save(path,prior if matching else dict(**definition,seed=secrets.randbits(48),scale=args.scale))
+             result = read(path)
+     if any(result.get(key) != value for key,value in definition.items()):
+         raise ValueError('Evaluation protocol uses another specification/data generator; choose a matching protocol or a new state directory')
+@@ -109,7 +114,8 @@
+     path=directory/'result.json'
+     if path.exists():
+         result=read(path)
+-        if result.get('profile','area')==profile and result.get('status') in {'COMPLETE','QUALITY_FAILED','THROUGHPUT_FAILED','FAILED'} and not infrastructure_failure(result):
++        finished='seconds'in result and 'grade'in result
++        if finished and result.get('profile','area')==profile and result.get('status') in {'COMPLETE','QUALITY_FAILED','THROUGHPUT_FAILED','FAILED'} and not infrastructure_failure(result):
+             result['grade']=score_result(result,calibration)
+             return result,True
+     result=evaluate(submission,directory,'commercial',seed=settings['seed'],scale=settings['scale'],
+@@ -268,6 +274,8 @@
+             reference,reference_dir=calibration(args,state,identity,settings,out/'calibration_location.json')
+             save(out/'calibration.json',reference)
+             save(out/'calibration_location.json',dict(directory=str(reference_dir)))
++            save(out/'status.json',dict(status='RUNNING',backend='commercial',profile=reference['profile'],
++                                       completed=0,total=len(entries),calibration_complete=True))
+             tasks=[(entry,str(out),settings,reference,identity,args.formal)for entry in entries]
+             if args.jobs==1:
+                 completed=(worker(*task)for task in tasks)

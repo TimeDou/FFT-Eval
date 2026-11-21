@@ -1,0 +1,21 @@
+{
+  "all_numerical_and_physical_measurement_modules_match": true,
+  "files": {
+    "fft64_benchmark/tools/simulate.py": true,
+    "fft64_benchmark/tools/model.py": true,
+    "fft64_benchmark/tools/scoring.py": true,
+    "fft64_benchmark/tools/common.py": true,
+    "fft64_benchmark/tools/commercial.py": true,
+    "fft64_benchmark/tools/frequency.py": true,
+    "fft64_benchmark/tools/throughput.py": true,
+    "fft64_benchmark/flow/synth_dc.tcl": true,
+    "fft64_benchmark/flow/timing_pt.tcl": true,
+    "fft64_benchmark/flow/fmax_pt.tcl": true,
+    "fft64_benchmark/flow/constraints.sdc": true,
+    "fft64_benchmark/flow/paths.tcl": true,
+    "fft64_benchmark/profiles/policy.json": true
+  },
+  "controller_changes": "completion status, stricter interrupted-checkpoint handling, versioned default protocols and progress reporting; no measurement or scoring formula change",
+  "final_core_commit": "9bc571b",
+  "campaign_source_directory": "/home/sj/ALS/DP2.0/DSBench/Synopsys/jobs/20261121_204819_shscaf48"
+}

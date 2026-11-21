@@ -15,7 +15,7 @@ from check_numeric import check
 from model import reference
 from simulate import schedule,decode
 from evaluate import assemble,score_result
-from scoring import SCORING_VERSION
+from scoring import SCORING_VERSION,make_calibration
 
 def main():
     tests=[]
@@ -68,12 +68,13 @@ def main():
     result=dict(status='FAILED',backend='local',flow_id='sample',protocol_pass=True,
                 quality=dict(feasible=True),mapped_simulation_pass=True,
                 ppa=dict(area_um2=10,timing_pass=True,effective_required_period_ns=9,clock_period_ns=10),
-                latency=dict(offered_frame_II=384))
+                latency=dict(offered_frame_II=384,first_output_latency_cycles=[100]))
     assert score_result(result,reference_area)['score']==0
-    result['status']='COMPLETE';assert score_result(result,reference_area)['resolved']
+    result['status']='COMPLETE';reference_area=make_calibration({'accurate':result})
+    assert score_result(result,reference_area)['resolved']
     result['backend']='commercial';assert score_result(result,reference_area)['area_ratio']is None
     tests.append(dict(name='late_failure_and_mixed_backend_do_not_score',passed=True))
-    save(SOLUTION/'results/regression.json',dict(passed=True,tests=tests))
+    save(SOLUTION/'results/scoring_profiles_v04/regression.json',dict(passed=True,tests=tests))
     print(json.dumps(dict(passed=True,tests=len(tests))))
 
 if __name__=='__main__':main()

@@ -103,14 +103,14 @@ def main():
         measured=[dict(status='COMPLETE',backend='local',flow_id='fixture-flow',source={},
                        protocol_pass=True,mapped_simulation_pass=True,quality=dict(feasible=True),
                        ppa=dict(area_um2=a,timing_pass=True,effective_required_period_ns=9,clock_period_ns=10),
-                       latency=dict(offered_frame_II=384))for a in [100.,90.]]
+                       latency=dict(offered_frame_II=384,first_output_latency_cycles=[256]))for a in [100.,90.]]
         with patch.object(sys,'argv',['calibrate.py','--baseline','a','--baseline','b','--out',str(root/'calibration')]),patch.object(calibrate,'evaluate',side_effect=measured),contextlib.redirect_stdout(io.StringIO()):
             assert calibrate.main()==0
         reference=json.loads((root/'calibration/area_reference.json').read_text())
         assert reference['backend']=='local'and reference['reference_area_um2']==90.
         tests.append(dict(name='auto_calibration_records_actual_backend',passed=True))
     receipt=dict(passed=True,tests=tests,scope='Policy tests with mocked availability plus a shell-profile fixture. No commercial simulation/synthesis/STA or source compilation is claimed.')
-    save(SOLUTION/'results/environment_update/policy_tests.json',receipt)
+    save(SOLUTION/'results/scoring_profiles_v04/environment_policy_tests.json',receipt)
     print(json.dumps(dict(passed=True,tests=len(tests))))
 
 

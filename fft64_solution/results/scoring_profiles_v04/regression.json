@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "tests": [
+    {
+      "name": "public_vector_format_and_reference_output",
+      "passed": true
+    },
+    {
+      "name": "wrong_numerical_output_rejected",
+      "passed": true
+    },
+    {
+      "name": "illegal_input_domain_and_duplicate_ids_rejected",
+      "passed": true
+    },
+    {
+      "name": "legal_variable_latency_service_accepted",
+      "passed": true
+    },
+    {
+      "name": "output_packet_gap_rejected",
+      "passed": true
+    },
+    {
+      "name": "self_contained_rtl_include",
+      "passed": true
+    },
+    {
+      "name": "late_failure_and_mixed_backend_do_not_score",
+      "passed": true
+    }
+  ]
+}

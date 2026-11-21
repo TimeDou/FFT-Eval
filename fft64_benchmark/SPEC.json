@@ -1,0 +1,148 @@
+{
+  "benchmark_id": "fft64_quant",
+  "status": "FIXED_NUMERICAL_SPEC_INDEPENDENT_SCORING_PROFILES",
+  "task_language": [
+    "en",
+    "zh-CN"
+  ],
+  "profile": "architecture (paper combined objective); optional area diagnostic",
+  "fft": {
+    "points": 64,
+    "direction": "forward",
+    "scale": "unscaled",
+    "input_order": "natural",
+    "output_order": "natural"
+  },
+  "numeric": {
+    "input": {
+      "signed_bits_per_component": 16,
+      "fractional_bits": 15,
+      "component_min": -0.5,
+      "component_max": 0.5
+    },
+    "output": {
+      "signed_bits_per_component": 24,
+      "fractional_bits": 15
+    },
+    "nonzero_frame_complex_rms_min": 0.03125,
+    "reference": "float64_fft_of_same_quantized_input",
+    "per_nonzero_frame_sqnr_min_db": 50.0,
+    "per_nonzero_frame_nmse_max": 1e-05,
+    "zero_input_requires_exact_zero_output": true
+  },
+  "timing_protocol": {
+    "clock_period_ns": 10.0,
+    "input_samples_per_frame": 64,
+    "input_valid_cycles_consecutive": true,
+    "min_frame_start_interval_cycles": 384,
+    "output_samples_per_frame": 64,
+    "output_valid_cycles_consecutive": true,
+    "first_output_latest_cycle_from_first_input": 300,
+    "last_output_latest_cycle_from_first_input": 364,
+    "reset": "synchronous_active_high_abort_inflight_frame",
+    "architecture_profile": "Additional measured continuous-frame capacity tests with mixed gaps and dense reset probes; 384-cycle service remains mandatory"
+  },
+  "hardware": {
+    "area_measurement": "full_top_mapped_standard_cell_area_pre_layout",
+    "cell_library": "ASAP7 RVT/TT combinational and sequential cells",
+    "include_registers_muxes_control_reorder_standard_cell_memories": true,
+    "unaccounted_sram_allowed": false,
+    "exact_reference_area_um2": null,
+    "tools": [
+      "VCS",
+      "Design Compiler",
+      "PrimeTime"
+    ],
+    "setup_uncertainty_ns": 0.1,
+    "external_io_delay_ns": 0,
+    "output_load_fF": 1,
+    "clock_transition_ns": 0.02,
+    "liberty_time_unit": "ps",
+    "liberty_capacitance_unit": "fF",
+    "hold_check": "minimum-delay STA must pass; common incremental hold repair after compile_ultra"
+  },
+  "allowed_approximation": [
+    "stage_or_instruction_precision_reduction",
+    "truncation",
+    "round_to_nearest_even",
+    "twiddle_precision_reduction",
+    "quantization_boundary_selection"
+  ],
+  "allowed_exact_optimization": [
+    "architecture_selection",
+    "constant_twiddle_specialization",
+    "resource_sharing",
+    "memory_banking",
+    "legal_retiming",
+    "pipeline_organization"
+  ],
+  "forbidden": [
+    "gate_level_approximate_logic_synthesis",
+    "approximate_gate_pruning",
+    "approximate_compressors",
+    "undeclared_boolean_functional_corruption",
+    "clock_or_output_protocol_changes",
+    "oracle_lookup_or_simulation_only_design"
+  ],
+  "required_submission": [
+    "rtl/",
+    "DESIGN_PLAN.md",
+    "measurements.csv"
+  ],
+  "data_policy": "public_development_and_independent_hidden_cases",
+  "mode": "OPEN",
+  "interface": {
+    "top": "fft64_top",
+    "inputs": [
+      "clk",
+      "rst",
+      "in_valid",
+      "frame_start",
+      "in_re[15:0]",
+      "in_im[15:0]"
+    ],
+    "outputs": [
+      "out_valid",
+      "out_start",
+      "out_re[23:0]",
+      "out_im[23:0]"
+    ],
+    "sampling": "Inputs stable before rising edge; outputs observed after that edge; first input edge is cycle 0."
+  },
+  "scoring": {
+    "policy_file": "profiles/policy.json",
+    "resolved": "all selected-profile numerical, protocol, timing and RTL/mapped requirements pass; independent of score",
+    "area": "clip((A_ref-A)/(A_ref-0.5*A_ref),0,1); A_ref is smallest validated accurate mapped area",
+    "architecture": "0.6*area + 0.3*throughput + 0.1*latency, paper equations (6)-(8)",
+    "frequency": "architecture only: passing setup/hold endpoint from reconstraint and STA clock scan on fixed mapped netlist; 0.01ns bracket",
+    "throughput": "STA-certified frequency divided by smallest measured long-tested integer II; never agent claim",
+    "latency_score": "maximum observed first-output cycles times common 10 ns, reference 300 cycles",
+    "SQNR": "hard constraint only; no bonus above threshold",
+    "missing_calibration": "score_valid=false; hardware feasibility remains separately available",
+    "measurement_stage": "pre-layout synthesis and ideal-interconnect STA; not post-route or silicon Fmax"
+  },
+  "verification": {
+    "rtl": "VCS four-state, ordinary unspecified initial state and synchronous-reset checks",
+    "mapped": "VCS four-state logic, full RTL comparison from three time-zero register initializations: all zero, all one, and seed 20261121",
+    "gate_initialization_modes": [
+      0,
+      1,
+      20261121
+    ],
+    "initialization_scope": "time zero only; no forcing or repair during reset, processing or output",
+    "motivation": "avoid false failures from reconvergent reset X-pessimism while requiring recovery from multiple physical binary initial states",
+    "guarantee": "empirical full-transaction RTL/netlist equivalence; optional formal proof is reported separately"
+  },
+  "evaluation": {
+    "public_random_nonzero_frames": 1024,
+    "hidden_random_nonzero_frames": 8192,
+    "additional_directed_cases": true,
+    "sustained_consecutive_frames": 1024,
+    "frames_per_ii": 1024,
+    "mapped_random_frames": 64,
+    "mapped_includes_directed": true,
+    "mapped_at_best_ii_frames": 128,
+    "ii_search": "all integers 64..384; optional shorter failures do not invalidate mandatory service",
+    "fft_length": 64
+  }
+}

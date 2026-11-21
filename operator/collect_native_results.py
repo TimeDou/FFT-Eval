@@ -75,7 +75,7 @@ def main():
     table=['| Design | Area µm² | Certified period ns | Verified II | FFT/s | First-output ns @10ns | Min SQNR dB | Score | Specs |','|---|---:|---:|---:|---:|---:|---:|---:|---|']
     for r in rows:
         table.append(f"| {labels.get(r['design'],r['design'])} | {fmt(r['area_um2'],2)} | {fmt(r['certified_period_ns'],6)} | {fmt(r['verified_frame_II_cycles'],0)} | {fmt(r['effective_throughput_ffts_per_second'],1)} | {fmt(r['first_output_ns'],0)} | {fmt(r['minimum_sqnr_db'],2)} | {r['score']:.6f} | {'PASS'if r['resolved']else'FAIL'} |")
-    text=f'''# Native FFT64 v0.4: {profile} profile
+    text=f'''# FFT64-Quant v0.5: {profile} profile
 
 N=64, P_in=P_out=1, ASAP7 RVT/TT, 10ns common target, complete RTL and mapped VCS tests; pre-layout synthesis / ideal-interconnect STA.
 

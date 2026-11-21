@@ -125,10 +125,10 @@ class ScoringTests(unittest.TestCase):
             root=Path(d);ref=dict(self.reference,baseline_results={'accurate':dict(seed=12345,scale=2)})
             path=root/'calibration.json';path.write_text(json.dumps(ref))
             out=root/'grader'
-            with patch.object(sys,'argv',['make_grader.py','--out',str(out),'--calibration',str(path)]):make_grader.main()
+            with patch.object(sys,'argv',['make_grader.py','--out',str(out),'--calibration',str(path),'--profile','area']):make_grader.main()
             self.assertEqual(json.loads((out/'settings.json').read_text()),dict(seed=12345,scale=2,profile='area'))
             (out/'settings.json').write_text(json.dumps(dict(seed=7,scale=2,profile='area')))
-            with patch.object(sys,'argv',['make_grader.py','--out',str(out),'--calibration',str(path)]):
+            with patch.object(sys,'argv',['make_grader.py','--out',str(out),'--calibration',str(path),'--profile','area']):
                 with self.assertRaisesRegex(SystemExit,'calibrated protocol'):make_grader.main()
 
 if __name__=='__main__':unittest.main()

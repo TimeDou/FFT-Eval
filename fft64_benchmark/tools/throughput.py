@@ -119,7 +119,8 @@ def qualify(source,mapped_source,frames,outdir,interval,backend='vcs',seed=11,
         modes=[0,1,20261121]if backend=='vcs'else[None]
         for mode in modes:
             options=dict(initialization=mode)if mode is not None else{}
-            gate=simulate(mapped_source,events,out/'mapped',backend,reuse_compiled_from=gate_compiled,**options)
+            mapped_backend='verilator'if backend=='iverilog'else backend
+            gate=simulate(mapped_source,events,out/'mapped',mapped_backend,reuse_compiled_from=gate_compiled if backend=='vcs'else None,**options)
             gout,_=decode(gate,events,metadata)
             assert np.array_equal(gate[:,1:3],raw[:,1:3]),'Stream mapped/RTL control-cycle mismatch'
             assert np.array_equal(gout,outputs),'Stream mapped/RTL payload mismatch'

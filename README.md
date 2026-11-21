@@ -1,106 +1,58 @@
-# FFT-Bench：跨平台生成，统一 Synopsys 复测
+# FFT-Eval：FFT64-Quant 出题方评测仓库
 
-这个仓库支持出题人和实验人员统一复测设计。无论 RTL 是在 Yosys/Icarus/OpenROAD 还是 Synopsys 环境下生成，都用同一套 **VCS → DC → PrimeTime → mapped-netlist simulation** 获得最终分数。
+本仓库用于出题方评测，不放入 Agent 工作区。`main` 保存评测实现、准确校准基线、技术库和复现脚本；各 Agent 的提交及结果由出题方导入独立分支。Agent 只获得公开 FFT-Bench，不能读取本仓库、其 Git 凭据或评测共享目录。分支本身不是访问权限边界。
 
-`fft64_benchmark/` 是 agent 使用的纯题目目录；`operator/` 是复测及准确基线校准资源。给 agent 准备环境时只使用题目目录。默认题面是面积任务；要测跨架构吞吐优化，可将 agent 启动任务指定为 `fft64_benchmark/TASK_ARCHITECTURE_ZH.md`（英文为 `TASK_ARCHITECTURE_EN.md`）。`synopsys-eval` 分支只保留题目与复测资源；优化后的参考解放在 `fft64-solution` 分支。
+规范依据是 [FFT64-Quant.pdf](docs/FFT64-Quant.pdf)，实现版本为 v0.5。FFT 始终为 64 点，增加的是独立输入帧数。
 
-## 一键复测一个设计
+| 测试 | 实际配置 |
+|---|---|
+| Public numerical | 1,024 个独立非零随机帧 + directed cases |
+| Hidden numerical | 8,192 个独立非零随机帧 + directed cases |
+| Mandatory sustained service | 1,024 个连续帧，II=384，另测复位、混合间隔和长空闲 |
+| Throughput | 穷举整数 II=64…384；每个 II 都测 1,024 个连续帧 |
+| Mapped consistency | 64 个随机帧 + 全部 directed cases；最短通过 II 另测 128 帧；商业后端用三种时刻零初态 |
 
-将自包含的 RTL 提交目录同步到 Synopsys 平台，直接运行：
+零输入必须输出精确零。SQNR 使用适用测试中所有非零帧的最小值；每帧与同一量化输入的 double-precision FFT 比较，不修正增益、相位或顺序。Latency 使用各连续测试中所有完成帧的最大首输出延迟。Throughput 使用长时间测试通过的最小 II，不按提交中的理论 II 打分。较短可选 II 失败会保留记录，但不会否决满足 II=384 的设计。
 
-```bash
-git clone --branch synopsys-eval git@github.com:TimeDou/FFT-Bench.git
-cd FFT-Bench
-bash run_synopsys.sh /workspace/submissions/agent_A \
-  --origin open-source --agent agent_A --out /workspace/eval/agent_A
-```
+## 一键评测
 
-在 Synopsys 环境中生成的设计使用同一个命令，只需将来源标为 `--origin synopsys`。两类来源仅作为实验标签，不改变质量测试、面积参考或评分规则。
-
-如果 agent 的结果保存在同仓库另一个分支，可用第二个普通 clone 保持评分器版本固定。这也兼容环境手册中的旧版 Git：
-
-```bash
-git clone --branch agent_A git@github.com:TimeDou/FFT-Bench.git ../agent_A
-bash run_synopsys.sh ../agent_A/submission \
-  --origin open-source --agent agent_A --out /workspace/eval/agent_A
-```
-
-这样可直接读取那个分支的设计，无需将 agent 的工具脚本合并进评分器分支，也不要求平台支持 `git worktree`。参考解分支可用同样方式读取。
-
-提交目录沿用题目格式：`rtl/` 下为完整 RTL，顶层 `fft64_top`。多文件顺序可在 `design_config.json` 的 `rtl` 字段列出。读取的是源 RTL，不导入原平台的 mapped netlist、OpenROAD 面积、时序或自报分数；设计会在目标工具下重新编译和映射。
-
-脚本自动加载平台 EDA profile，使用预装工具和 Python；只准备缺少的 NumPy/ASAP7 DB。**此入口固定使用商业流程，不回退到 Yosys，也不构建开源 EDA 工具。**
-
-首次运行在本平台实测两份准确定点基线，再固定所选模式的校准标尺。默认 `--profile area`：只奖励面积，准确参考面积为 0 分、其 50% 面积为 1 分。可选 `--profile architecture`：60% 面积、30% 已验证持续吞吐、10% 首输出延迟；在 `design_config.json` 声明 `frame_ii_cycles`，平台验证连续服务并逐点扫描 PrimeTime 时钟。满足全部规格即 `resolved=true`，低分或零分也通过，SQNR 不额外加分。两种模式分别校准，详见 [评分定义](fft64_benchmark/SCORING.md)。所有物理数据仍属 pre-layout synthesis / ideal-interconnect STA。
+已有 Synopsys 平台：
 
 ```bash
-bash run_synopsys.sh /workspace/submissions/agent_A --profile architecture \
-  --out /workspace/eval/agent_A_architecture
+bash run_synopsys.sh /workspace/submission --jobs 2 --out /workspace/eval/agent_A
 ```
 
-DC 总面积按映射后每个 leaf instance 对应的 library cell area 累加；同一单元类型出现多次则按实例数计入，层级容器不重复计入。寄存器面积在同一遍历中统计，不依赖部分 DC 版本缺失的顶层 design `area` 属性。原始 `dc_area.rpt` 仍保留；机器结果的 `area_method` 标明统计方式。综合报错或面积/时序数据无效时停止，不生成有效评分。
-
-## 多个 agent / 两组实验
-
-准备 CSV，例如：
-
-```csv
-id,submission,origin,agent
-oss_A,/workspace/submissions/oss_A,open-source,agent_A
-oss_B,/workspace/submissions/oss_B,open-source,agent_B
-syn_A,/workspace/submissions/syn_A,synopsys,agent_A
-```
+本机 SSH Docker（共享目录默认 `/home/sj/ALS/DP2.0/DSBench/Synopsys`，容器挂载 `/mnt/mydata`）：
 
 ```bash
-bash run_synopsys.sh --manifest /workspace/designs.csv \
-  --jobs 2 --out /workspace/eval/comparison
+bash run_synopsys_docker.sh /path/to/submission --jobs 2 --out /mnt/mydata/eval/agent_A
 ```
 
-相对路径按 CSV 所在目录解释。也可用 `--batch /workspace/submissions` 扫描直接子目录。并发默认 1，`--jobs` 最多 8；根据平台许可证与资源调整。
+SSH 密码交互输入，不保存到仓库。该入口使用已有 VCS/DC/PrimeTime/LC，不构建开源工具。不要把评测 Docker 的 SSH 凭据或整个共享挂载交给受测 Agent。
 
-## 输出与恢复
-
-- `scores.csv` / `summary.json`：各设计来源、agent、面积、SQNR、时序、物理延迟、分数和状态。
-- `code_result.json`：单设计的 `resolved/score/reason`；批量运行则放在各候选目录。
-- `candidates/`：实际使用的 RTL 快照、逐帧质量、映射网表、STA、仿真日志。
-- `calibration.json`：本平台的准确参考面积和对应测量。
-- `protocol.json`：本次全部设计共用的质量测试协议。
-- `<输出目录>_feedback.tar.gz`：可回传分析的结果包，含校准诊断日志。
-
-重复同一命令可恢复：成功完成、同源同协议同工具的点直接复用；未完成或基础设施错误的点重试。变更 RTL 会使用独立目录，不覆盖旧点。工具/许可证/库错误标为未评分，不当作已测得的零面积或有效零收益。
-
-评分器或综合脚本更新会改变平台指纹，自动建立新的校准/候选缓存目录，不复用旧版本的失败结果或面积分母。无需删除 `.eval_state/`；旧记录保持可查。
-
-`.eval_state/` 缓存平台校准和默认公共实验协议，不进入 Git。默认协议首次创建后在本平台所有设计间复用。跨服务器同步时显式使用同一 `--protocol /path/protocol.json`；首次也可用 `--seed 12345` 指定可复现的实验种子。实际最终测试协议应由出题人保存，和 agent 的公开开发输入分开。
-
-只检查环境：
+自动选择已安装后端，或显式使用开源环境：
 
 ```bash
-bash run_synopsys.sh --check-only --out /workspace/eval/environment
+bash run_evaluation.sh /path/to/submission --backend auto --jobs 2 --out /path/to/eval
+bash run_evaluation.sh /path/to/submission --backend local --jobs 2 --out /path/to/local_eval
 ```
 
-手册中的平台已有 VCS/DC/PrimeTime，但没有默认工艺库。若缺 DB，可设置 `FFT_LC_BIN`，或提前将匹配的两份 DB 放到 `fft64_benchmark/tech/db/`。脚本会给出实际缺项及反馈包。
+自动选择优先商业工具，其次为已有 Yosys/ABC、Icarus/Verilator、OpenSTA。缺失工具或许可证故障不产生正式分数；可显式选择可用后端重新启动完整评测。一个评测运行内部不混用后端。OpenSTA 使用独立时钟扫描和独立准确校准，不把商业面积当作开源分母。这里仍是综合与 ideal-interconnect STA，没有 post-route/power 结论。
 
-Synopsys 工具入口可能是指向共享 `snps_shell` 的软链接。调用路径必须保留 `lc_shell`、`dc_shell` 等入口名称；不要把 `readlink -f` 的结果设置成工具命令。库编译失败时，反馈包的 `setup/library_compile.log` 和 `.log.json` 保存完整输出及实际 argv。
+官方默认使用文档中的 `architecture` 综合分数：60% Area、30% Throughput、10% First-output latency。`--profile area` 仅保留为诊断模式。SQNR 是硬约束，不额外奖励。通过与分数分离，零分也可 `resolved=true`。
 
-## 分支
+默认隐藏种子由出题方首次运行时生成并保存在本地状态中，之后同平台复用。跨平台同步用 `--protocol protocol.json`；复现实验可显式指定 `--seed`。正式比较前固定协议、准确参考和目标。单次完整 II 搜索覆盖 328,704 帧；运行较久属正常，不能用少量帧搜索冒充完整结果。
 
-- `main`：原始版本，保持不变。
-- `synopsys-eval`：更新后的纯 benchmark、统一商业复测入口及准确校准资源。
-- `fft64-solution`：基于本分支的参考解、重新生成的候选、实测结果与复现脚本。
+## 数据与恢复
 
-源码和小型科学结果通过 Git 同步。许可证、编译后的 DB、工具安装及大型编译缓存保持平台本地。
+输出包括 `code_result.json`、`scores.csv`、逐帧数值误差、连续服务记录、每个 II 的通过/失败和帧延迟、映射报告、时钟扫描及工具/库/源码哈希。大体积逐周期文本留在本地运行目录；反馈包保留概要和可复现元数据，不重复打包全部文本波形。
 
-## 本机 SSH Docker 运行
+每 64 个 II 保存一个检查点。重跑同命令复用完成的校准、映射和长区间结果；未完成的点会重试，不当作零收益。每次 Docker 运行使用独立源码快照。
 
-已为共享挂载方式提供独立入口。宿主机共享目录默认 `/home/sj/ALS/DP2.0/DSBench/Synopsys`，容器内为 `/mnt/mydata`，SSH 为 `root@localhost:1234`：
+## 历史与 Agent 分支
 
-```bash
-bash run_synopsys_docker.sh fft64_solution --origin reference --seed 20261121 --scale 3
-```
+迁移前所有 FFT-Bench 提交均已保留在本仓库主分支的历史中；原分支头另以 `archive/fft-bench/*` 标签保存，核对记录见 [HISTORY_MANIFEST.json](migration/HISTORY_MANIFEST.json)。旧提交只作历史记录，不作为新长帧规范下的实测结果。
 
-SSH 首次会要求输入容器密码，脚本不保存密码。入口复用容器内已安装的 VCS/DC/LC/PT，只准备共享目录下独立 Python 和随题 NumPy wheel，不构建 Yosys/Icarus。每次运行使用独立源码快照，库缓存及匹配的校准跨次复用；默认结果在共享目录的 `eval/` 下。
+Agent 分支例如 `Codex-GPT-6.1-Sol-Max`。该分支中的 `submission/` 是提交，`evaluation/` 是对应新规范的结果。当前参考解由此前作者参考设计迁移，不冒充一次新的独立 Agent rollout。
 
-可用 `--ssh-host`、`--ssh-port`、`--shared-dir`、`--container-share` 配置其他挂载。已有 Python/EDA 配置可通过环境变量覆盖 `operator/docker_env.sh` 中的默认值。直接在新版 DSBench 平台运行时继续使用 `run_synopsys.sh`，无需这个宿主机入口。
-
-本机容器的完整实测结果与修复说明见 [operator/LOCAL_SYNOPSYS.md](operator/LOCAL_SYNOPSYS.md)。历史 v0.3 的 376 帧验证仍保留；其旧分数已被 v0.4 双模式规则取代。新版本结果见 `operator/results/scoring_profiles_v04/`。
+公开仓库重新建立干净单分支历史。旧克隆、缓存的 commit 地址和平台缓存无法靠删除 Git 分支撤回，正式测试应使用全新 clone。GitHub 历史对象的物理回收由托管平台管理；如果需要撤销已经公开的信息，应另建从未承载该信息的公开仓库。

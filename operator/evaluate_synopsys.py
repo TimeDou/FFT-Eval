@@ -87,12 +87,13 @@ def protocol(args, state):
 def platform_identity(environment):
     import numpy as np
     from evaluate import assemble
-    tools={name:dict(path=environment['tools'][name],sha256=sha(environment['tools'][name]))
-           for name in ['vcs','dc_shell','pt_shell']}
+    backend=environment.get('selected_backend','commercial')
+    names=['vcs','dc_shell','pt_shell']if backend=='commercial'else['yosys','abc','sta','iverilog','vvp','verilator']
+    tools={name:dict(path=environment['tools'][name],sha256=sha(environment['tools'][name]))for name in names}
     files={name:sha(BENCHMARK/'tools'/name)for name in
            ['evaluate.py','model.py','simulate.py','common.py','toolchain.py','commercial.py','scoring.py','throughput.py','frequency.py']}
     baselines={name:assemble(ROOT/'operator/baselines'/name)[1]['source_sha256']for name in ['sdf','iterative']}
-    return dict(backend='commercial',flow_id=flow_identity('commercial'),tools=tools,
+    return dict(backend=backend,flow_id=flow_identity(backend),tools=tools,
                 evaluator_files=files,baseline_source_sha256=baselines,
                 numerical_runtime=dict(python_version=sys.version,python_executable=sys.executable,
                                        python_sha256=sha(sys.executable),numpy_version=np.__version__),
@@ -118,7 +119,7 @@ def cached_evaluate(submission, directory, settings, calibration=None, formal=Fa
         if finished and result.get('profile','area')==profile and result.get('status') in {'COMPLETE','QUALITY_FAILED','THROUGHPUT_FAILED','FAILED'} and not infrastructure_failure(result):
             result['grade']=score_result(result,calibration)
             return result,True
-    result=evaluate(submission,directory,'commercial',seed=settings['seed'],scale=settings['scale'],
+    result=evaluate(submission,directory,settings.get('measurement_backend','commercial'),seed=settings['seed'],scale=settings['scale'],
                     calibration=calibration,formal=formal,profile=profile,auto_ii=auto_ii,audience='hidden')
     return result,False
 
@@ -157,7 +158,7 @@ def calibration(args,state,identity,settings,location=None):
             reference=make_calibration(results,profile=profile,platform_fingerprint=fingerprint,
                            protocol_fingerprint=digest(settings),baseline_results=results,created_utc=utc())
             save(directory/'calibration.json',reference)
-        expected=dict(backend='commercial',flow_id=identity['flow_id'],platform_fingerprint=fingerprint,
+        expected=dict(backend=identity['backend'],flow_id=identity['flow_id'],platform_fingerprint=fingerprint,
                       protocol_fingerprint=digest(settings),profile=profile,policy_sha256=POLICY_SHA256,
                       scoring_version=SCORING_VERSION)
         if any(reference.get(key)!=value for key,value in expected.items()):
@@ -198,7 +199,7 @@ def worker(entry,outdir,settings,reference,identity,formal):
     last=max(lat.get('frame_completion_cycles',[]),default=None)
     period=read(BENCHMARK/'SPEC.json')['timing_protocol']['clock_period_ns']
     performance=grade.get('performance',{})
-    row=dict(id=entry['id'],origin=entry['origin'],agent=entry['agent'],backend='commercial',profile=profile,
+    row=dict(id=entry['id'],origin=entry['origin'],agent=entry['agent'],backend=reference['backend'],profile=profile,
              state='UNSCORED_INFRASTRUCTURE'if unavailable else result['status'],resolved=code['resolved'],
              score=None if unavailable else code['score'],area_um2=ppa.get('area_um2'),
              area_ratio=grade.get('area_ratio'),worst_sqnr_db=quality.get('minimum_frame_sqnr_db'),
@@ -230,7 +231,7 @@ def feedback(out):
             if directory.is_dir():directories.append((directory,Path(out.name)/'calibration_diagnostics'))
         for directory,prefix in directories:
             for path in sorted(directory.rglob('*')):
-                if path.is_file() and not any(p in ignored for p in path.parts) and path.name not in {'simv','lock','run.lock'}:
+                if path.is_file() and not any(p in ignored for p in path.parts) and path.name not in {'simv','lock','run.lock','vectors.txt','output.txt'}:
                     tar.add(path,arcname=str(prefix/path.relative_to(directory)),recursive=False)
     return archive
 
@@ -250,7 +251,7 @@ def execute(args):
                 shutil.move(str(out/name),str(history/name))
         save(out/'status.json',dict(status='PREPARING',started_utc=utc()))
         # This entry never selects local tools or builds an open-source EDA stack.
-        environment=prepare('commercial',check_only=args.check_only,allow_build=False)
+        environment=prepare(getattr(args,'backend','commercial'),check_only=args.check_only,allow_build=False)
         save(out/'environment.json',environment)
         # Preparation can fail before calibration starts. Keep the actual
         # compiler output and argv receipt in the feedback archive as well.
@@ -268,7 +269,9 @@ def execute(args):
             print(json.dumps(dict(status=status,backend='commercial',output=str(out),feedback=str(feedback(out))),indent=2))
             return 0 if environment['ready'] else 2
         try:
-            settings=protocol(args,state);save(out/'protocol.json',settings)
+            settings=protocol(args,state)
+            settings['measurement_backend']=environment.get('selected_backend','commercial')
+            save(out/'protocol.json',settings)
             identity=platform_identity(environment);save(out/'platform_identity.json',identity)
             save(out/'status.json',dict(status='CALIBRATING',backend='commercial',profile=getattr(args,'profile','area'),started_utc=utc()))
             reference,reference_dir=calibration(args,state,identity,settings,out/'calibration_location.json')
@@ -320,6 +323,7 @@ def main():
     parser.add_argument('--scale',type=int,default=1)
     parser.add_argument('--calibration',help='A calibration.json produced by this runner in the same environment')
     parser.add_argument('--jobs',type=int,default=1)
+    parser.add_argument('--backend',choices=['auto','commercial','local'],default='commercial')
     parser.add_argument('--id')
     parser.add_argument('--origin',default='unspecified',help='For example open-source or synopsys')
     parser.add_argument('--agent',default='unspecified')

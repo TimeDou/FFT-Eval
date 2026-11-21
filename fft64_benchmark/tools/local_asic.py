@@ -49,12 +49,12 @@ def measure(source,outdir):
   scalar=f'read_json {d}/mapped.json\nsplitnets -ports\nwrite_verilog -noattr -noexpr {d}/timing_netlist.v\n'
   (d/'scalar.ys').write_text(scalar);run(['yosys','-Q','-T','-s',d/'scalar.ys'],d/'scalar.log',120)
   (d/'constraints.sdc').write_text(setup_sdc())
-  timing=f'read_liberty {COMB}\nread_liberty {SEQ}\nread_verilog {d}/timing_netlist.v\nlink_design fft64_top\nsource {d}/constraints.sdc\ncheck_setup -verbose\nreport_checks -path_delay max -format full_clock_expanded -digits 4\nreport_worst_slack -digits 4\nexit\n'
+  timing=f'read_liberty {COMB}\nread_liberty {SEQ}\nread_verilog {d}/timing_netlist.v\nlink_design fft64_top\nsource {d}/constraints.sdc\ncheck_setup -verbose\nreport_checks -path_delay max -format full_clock_expanded -digits 4\nreport_worst_slack -digits 4\nputs \"FFT_HOLD_SLACK_PS [sta::worst_slack -min]\"\nexit\n'
   (d/'timing.tcl').write_text(timing);run([STA,'-exit',d/'timing.tcl'],d/'timing.log',300)
   log=(d/'timing.log').read_text();assert not re.search(r'^Error',log,re.M),log[-2000:]
   assert not re.search(r'missing set_input_delay|missing set_output_delay|unconstrained endpoints',log,re.I),'Incomplete timing constraints'
-  slack=float(re.search(r'worst slack\s+([\d.+-]+)',log)[1]);period=(10000-slack)/1000
-  out=dict(area_um2=area,register_area_um2=storage,arithmetic_control_mux_other_area_um2=area-storage,cells=len(cells),register_cells=sum(c['type']in ss for c in cells.values()),clock_period_ns=10,setup_uncertainty_ns=.1,worst_setup_slack_ns=slack/1000,effective_required_period_ns=period,timing_pass=slack>=0,prelayout_fmax_estimate_MHz=1000/period,flow='Yosys/ABC;ASAP7RVT/TT comb+sequential;countedFF storage;OpenSTA ideal-interconnect;not DC/PrimeTime or postroute',source_sha256=sig['source'],mapped_sha256=sha(d/'mapped.v'),comb_sha256=sig['comb'],seq_sha256=sig['seq'],mapping_wall_seconds=time.monotonic()-start)
+  hold=float(re.search(r'FFT_HOLD_SLACK_PS\s+([\d.eE+-]+)',log)[1]);slack=float(re.search(r'worst slack\s+([\d.+-]+)',log)[1]);period=(10000-slack)/1000
+  out=dict(area_um2=area,register_area_um2=storage,arithmetic_control_mux_other_area_um2=area-storage,cells=len(cells),register_cells=sum(c['type']in ss for c in cells.values()),clock_period_ns=10,setup_uncertainty_ns=.1,worst_setup_slack_ns=slack/1000,effective_required_period_ns=period,worst_hold_slack_ns=hold/1000,timing_pass=slack>=0 and hold>=0,prelayout_fmax_estimate_MHz=1000/period,flow='Yosys/ABC;ASAP7RVT/TT comb+sequential;countedFF storage;OpenSTA ideal-interconnect;not DC/PrimeTime or postroute',source_sha256=sig['source'],mapped_sha256=sha(d/'mapped.v'),comb_sha256=sig['comb'],seq_sha256=sig['seq'],mapping_wall_seconds=time.monotonic()-start)
   save(d/'metrics.json',out);return out
 
 def try_equivalence(source,outdir):

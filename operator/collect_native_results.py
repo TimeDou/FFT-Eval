@@ -54,15 +54,16 @@ def main():
             for file in ['qualification.json','protocol.json']:
                 if(src/file).exists():
                     (target/'throughput').mkdir(exist_ok=True);shutil.copy2(src/file,target/'throughput'/file)
-            for file in ['attempts.json','pilot/intervals.csv','pilot/probe_protocol.json','pilot/probe_results.json']:
+            for file in ['attempts.json','long_intervals/intervals.csv','long_intervals/probe_protocol.json','long_intervals/probe_results.json','long_intervals/progress.json']:
                 src=d/'throughput'/file
                 if src.exists():
                     dst=target/'throughput'/file;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,dst)
         certificate=ppa.get('fmax_certificate',{})
         if certificate:
             src=host(certificate['certificate_directory'])
-            for file in ['certificate.json','identity.json','fmax_scan/trials.csv','fmax_scan/setup_at_passing.rpt','fmax_scan/hold_at_passing.rpt','fmax_scan/check_at_passing.rpt']:
-                dst=target/'frequency'/file;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src/file,dst)
+            for file in ['certificate.json','identity.json','trials.csv','setup_at_passing.rpt','hold_at_passing.rpt','fmax_scan/trials.csv','fmax_scan/setup_at_passing.rpt','fmax_scan/hold_at_passing.rpt','fmax_scan/check_at_passing.rpt']:
+                dst=target/'frequency'/file;dst.parent.mkdir(parents=True,exist_ok=True)
+                if(src/file).exists():shutil.copy2(src/file,dst)
         (target/'scored_with_complete_calibration.json').write_text(json.dumps(g,indent=2)+'\n')
     with(out/'measurements.csv').open('w',newline='')as f:
         w=csv.DictWriter(f,list(rows[0]));w.writeheader();w.writerows(rows)

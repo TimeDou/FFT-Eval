@@ -23,7 +23,7 @@ Inputs are stable before a rising edge. The evaluator observes outputs after tha
 
 - `rst` is synchronous and active high. At a reset edge, `out_valid=out_start=0`; unfinished pre-reset work is discarded. Outputs emitted before a mid-output reset need not be retracted. New frames after reset must compute correctly.
 - `frame_start=1` only on the first of 64 consecutive `in_valid=1` edges. There is no `ready`; the circuit accepts every legal offered frame.
-- A subsequent frame starts at least 384 cycles later. Longer idle intervals, including intervals beyond a 16-bit counter range, are legal.
+- Mandatory-service frames start at least 384 cycles apart. Optional throughput tests use shorter integer intervals down to 64; failure there only limits measured capacity. Longer idle intervals, including beyond a 16-bit counter range, remain legal.
 - Each output frame contains 64 consecutive valid edges. `out_start=1` only on its first valid edge; it is zero when `out_valid=0`.
 - First output is between cycles 63 and 300 inclusive. The last output is no later than cycle 364. Natural frequency order is required.
 - Payload outside `out_valid` is don't-care. Valid output payload and control must be known in four-state simulation.

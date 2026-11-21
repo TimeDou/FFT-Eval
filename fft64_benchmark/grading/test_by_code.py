@@ -27,7 +27,7 @@ def main():
             settings = json.loads((task/'settings.json').read_text())
             result = evaluate('/workspace/submission',out/'fft64_measurements','commercial',
                               seed=settings['seed'],scale=settings['scale'],calibration=calibration,
-                              profile=settings.get('profile','area'))
+                              profile=settings.get('profile','architecture'),audience='hidden')
             grade = result['grade']
             code = {key:grade[key] for key in ['resolved','score','reason']}
             if result['status']=='ENVIRONMENT_ERROR':

@@ -59,12 +59,12 @@ Use the installed platform environment first: run `bash setup.sh --check-only`. 
 
 ## Success and ranking
 
-- A candidate is **feasible** only if numeric quality, output order, reset/protocol, service rate, latency and timing all pass.
-- Every feasible design receives `resolved=true`; there is no minimum score or area-saving threshold.
-- Default `area` profile: normalize complete mapped area between the best validated accurate baseline (0 points) and half its area (1 point). Larger feasible designs still pass with zero area points.
-- Optional `architecture` profile: 60% area, 30% verified sustained throughput, 10% first-output latency. Declare integer `frame_ii_cycles` from 64 to 384 in `design_config.json` (default 384); continuous RTL/mapped tests verify it. Frequency comes from a fixed-netlist PrimeTime clock scan, never a single-clock slack conversion.
-- Profiles use independent, frozen normalization rules. SQNR is a constraint, with no reward for exceeding it. See `SCORING.md` for equations, clock/latency conventions and measurement scope.
-- Your source design and all required data must be self-contained and synthesizable. The operator supplies trusted scripts and technology data.
-- A failed design earns no hardware-quality ranking; verbose verification reports do not earn additional area credit.
+The official objective is 60% complete mapped area, 30% measured sustained throughput, and 10% maximum first-output latency. SQNR is a hard constraint with no bonus. Every design satisfying all mandatory requirements has `resolved=true`, including a feasible zero-score design.
+
+Public numerical evaluation uses at least 1,024 independent nonzero frames plus directed cases; hidden evaluation uses at least 8,192 plus directed cases. Every frame has exactly 64 complex samples. Mandatory service uses at least 1,024 consecutive frames at II=384. Each formally evaluated II receives at least 1,024 consecutive frames. Scoring uses the smallest measured passing interval, never a theoretical/declared II. Failure at a shorter optional II does not reject mandatory service.
+
+SQNR feasibility uses the minimum over applicable nonzero test frames; latency uses the maximum across completed continuous-test frames, including the last frame. Representative mapped-netlist tests compare numeric outputs and valid/start cycles to RTL. See `SCORING.md` and `SPEC.json`.
+
+Start with `run_preview.sh ... --quick` for public numerical and sustained-protocol validation, then measure PPA. Quick still uses the full public frame minimum. Long searches support resume. `--profile area` is a development diagnostic; the official target is the combined score. The operator performs private calibration and hidden evaluation separately.
 
 **Hand in:** `rtl/` + top module `fft64_top`, `DESIGN_PLAN.md`, `measurements.csv` and optionally `design_config.json`. Detailed log files are not required in the narrative.

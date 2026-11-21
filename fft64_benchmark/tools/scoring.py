@@ -120,6 +120,8 @@ def score_result(result,calibration=None):
     grade=dict(resolved=feasible,feasible=feasible,score=0.0,
                score_valid=not feasible and result.get('status')in{'COMPLETE','QUALITY_FAILED','FAILED','THROUGHPUT_FAILED'},
                scoring_version=SCORING_VERSION,profile=profile,policy_sha256=POLICY_SHA256,area_ratio=None)
+    if result.get('status')=='QUICK_CHECK_PASSED':return dict(grade,reason='Public numerical and sustained protocol checks passed; ASIC/capacity scoring was not requested.')
+    if result.get('status')=='RUNNING':return dict(grade,reason='Evaluation is still running; no final score.')
     if not feasible:return dict(grade,reason='A required numerical, protocol, timing, RTL/mapped or declared-throughput check failed.')
     try:measured=performance(result,profile)
     except ValueError as exc:return dict(grade,reason=str(exc))

@@ -8,13 +8,13 @@ import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-TOOLS = ['common.py','model.py','simulate.py','evaluate.py','scoring.py','local_asic.py','commercial.py','toolchain.py','frequency.py','throughput.py']
+TOOLS = ['common.py','model.py','simulate.py','evaluate.py','scoring.py','local_asic.py','commercial.py','toolchain.py','frequency.py','throughput.py','local_frequency.py']
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--out', required=True)
     parser.add_argument('--calibration')
-    parser.add_argument('--profile',choices=['area','architecture'],default='area')
+    parser.add_argument('--profile',choices=['area','architecture'],default='architecture')
     args = parser.parse_args()
     out = Path(args.out).resolve()
     out.mkdir(parents=True, exist_ok=True)

@@ -44,3 +44,5 @@ bash run_synopsys_docker.sh submission --agent Codex-GPT-6.1-Sol-Max --origin mi
 公开工具的实际 1,024+192 帧数值和 1,024 帧服务测试，以及开源 Yosys/ABC + Icarus/Verilator + OpenSTA 的公共诊断和独立时钟扫描，保存在 `evaluation/checks/`。开源数据不作为本商业分数的分母。所有物理数据是 pre-layout synthesis / ideal-interconnect STA，没有 P&R、功耗或真实芯片 Fmax 结论。
 
 最终 75 项回归在宿主机与本机原生 Synopsys 容器 Python 上通过；新的商业/开源环境选择入口也都通过实际环境检测。单元测试中的合成测量夹具不替代上面实际的长帧仿真和 ASIC 数据。
+
+实测全部结束后，旧快照仍在压缩大量逐周期文本；只停止了该冗余压缩，并用新版打包器生成约 19MB 的反馈包。原始测量目录完整保留，未中断任何实验。旧包装进程退出码为 143，恢复后的打包状态为 COMPLETE，见 `evaluation/checks/packaging_recovery.json`。

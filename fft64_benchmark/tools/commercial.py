@@ -11,7 +11,7 @@ def preflight(require_db=True):
 
 def check_log(path):
  # A Synopsys batch process can exit zero after reporting script errors.
- errors=re.findall(r'^\s*(?:Error:|TASK_FATAL)[^\n]*',path.read_text(),re.M)
+ errors=re.findall(r'^\s*(?:Error:|Fatal:|TASK_FATAL)[^\n]*',path.read_text(),re.M)
  if errors:raise RuntimeError(str(path)+'\n'+'\n'.join(errors[:8]))
 
 def checked_metrics(path,kind):

@@ -17,7 +17,7 @@ python3 tools/calibrate.py --backend commercial \
   --out /path/to/calibration_run
 ```
 
-每份实现也使用 `rtl/` 布局和 `fft64_top` 接口。所有基线验证成功后，会生成 `area_reference.json`。审核实测结果与 0.80 通过目标，然后将这个文件作为该版本的面积参考。agent 可通过 `FFT_CALIBRATION` 使用它。
+每份实现也使用 `rtl/` 布局和 `fft64_top` 接口。所有基线验证成功后，会生成 `area_reference.json`。准确参考点按吞吐量/面积效率选择，面积、period、II 来自同一份真实实现。所有硬件约束通过即通过；不存在 0.80 面积比例门槛。评分公式见 `SCORING.md`。agent 可通过 `FFT_CALIBRATION` 使用它。
 
 平台若没有默认的 Python 3.10+，将命令中的 `python3` 换成 `/opt/dsbench/bin/python3`。Liberty 原生单位为 ps/fF，随题 SDC 已按 10 ns、0.1 ns uncertainty、1 fF load 配置。手册说明平台没有预置工艺库，因此仍需用随题 Liberty/DB，不需另装 EDA 软件。
 

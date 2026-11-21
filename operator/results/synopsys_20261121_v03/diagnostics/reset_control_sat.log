@@ -1,0 +1,357 @@
+
+ /----------------------------------------------------------------------------\
+ |                                                                            |
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |                                                                            |
+ |  Copyright (C) 2012 - 2019  Clifford Wolf <clifford@clifford.at>           |
+ |                                                                            |
+ |  Permission to use, copy, modify, and/or distribute this software for any  |
+ |  purpose with or without fee is hereby granted, provided that the above    |
+ |  copyright notice and this permission notice appear in all copies.         |
+ |                                                                            |
+ |  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES  |
+ |  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF          |
+ |  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR   |
+ |  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    |
+ |  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN     |
+ |  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF   |
+ |  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.            |
+ |                                                                            |
+ \----------------------------------------------------------------------------/
+
+ Yosys 0.9 (git sha1 1979e0b)
+
+
+-- Running command `read_verilog /home/sj/ALS/DP2.0/DSBench/Synopsys/diagnostics/control_reduced/reset_proof.sv; hierarchy -check -top reset_control; proc; flatten; opt; sat -set rst 1 -prove next_q 0 -verify' --
+
+1. Executing Verilog-2005 frontend: /home/sj/ALS/DP2.0/DSBench/Synopsys/diagnostics/control_reduced/reset_proof.sv
+Parsing Verilog input from `/home/sj/ALS/DP2.0/DSBench/Synopsys/diagnostics/control_reduced/reset_proof.sv' to AST representation.
+Generating RTLIL representation for module `\A2O1A1Ixp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AND2x2_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AND3x1_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AND4x1_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AO21x1_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AO22x1_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AOI211xp5_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AOI21xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AOI21xp5_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AOI221xp5_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AOI222xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AOI22xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AOI311xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AOI31xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AOI322xp5_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AOI32xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\AOI332xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\DFFHQNx1_ASAP7_75t_R'.
+Generating RTLIL representation for module `\HB1xp67_ASAP7_75t_R'.
+Generating RTLIL representation for module `\INVx1_ASAP7_75t_R'.
+Generating RTLIL representation for module `\INVx2_ASAP7_75t_R'.
+Generating RTLIL representation for module `\INVxp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\INVxp67_ASAP7_75t_R'.
+Generating RTLIL representation for module `\MAJIxp5_ASAP7_75t_R'.
+Generating RTLIL representation for module `\MAJx2_ASAP7_75t_R'.
+Generating RTLIL representation for module `\NAND2xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\NAND2xp5_ASAP7_75t_R'.
+Generating RTLIL representation for module `\NAND3xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\NAND4xp25_ASAP7_75t_R'.
+Generating RTLIL representation for module `\NOR2xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\NOR2xp67_ASAP7_75t_R'.
+Generating RTLIL representation for module `\NOR3xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\NOR4xp25_ASAP7_75t_R'.
+Generating RTLIL representation for module `\O2A1O1Ixp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\OA211x2_ASAP7_75t_R'.
+Generating RTLIL representation for module `\OA21x2_ASAP7_75t_R'.
+Generating RTLIL representation for module `\OAI211xp5_ASAP7_75t_R'.
+Generating RTLIL representation for module `\OAI21xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\OAI21xp5_ASAP7_75t_R'.
+Generating RTLIL representation for module `\OAI221xp5_ASAP7_75t_R'.
+Generating RTLIL representation for module `\OAI222xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\OAI22xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\OAI31xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\OAI32xp33_ASAP7_75t_R'.
+Generating RTLIL representation for module `\OR2x2_ASAP7_75t_R'.
+Generating RTLIL representation for module `\OR3x1_ASAP7_75t_R'.
+Generating RTLIL representation for module `\XNOR2xp5_ASAP7_75t_R'.
+Generating RTLIL representation for module `\XOR2xp5_ASAP7_75t_R'.
+Generating RTLIL representation for module `\reset_control'.
+Successfully finished Verilog frontend.
+
+2. Executing HIERARCHY pass (managing design hierarchy).
+
+2.1. Analyzing design hierarchy..
+Top module:  \reset_control
+Used module:     \NOR4xp25_ASAP7_75t_R
+Used module:     \INVxp33_ASAP7_75t_R
+Used module:     \NOR2xp33_ASAP7_75t_R
+Used module:     \NAND3xp33_ASAP7_75t_R
+Used module:     \NOR3xp33_ASAP7_75t_R
+Used module:     \AOI31xp33_ASAP7_75t_R
+Used module:     \AOI21xp33_ASAP7_75t_R
+Used module:     \A2O1A1Ixp33_ASAP7_75t_R
+Used module:     \NAND2xp33_ASAP7_75t_R
+Used module:     \OAI221xp5_ASAP7_75t_R
+Used module:     \AND2x2_ASAP7_75t_R
+Used module:     \OAI222xp33_ASAP7_75t_R
+Used module:     \HB1xp67_ASAP7_75t_R
+Used module:     \AOI32xp33_ASAP7_75t_R
+Used module:     \AOI22xp33_ASAP7_75t_R
+Used module:     \AOI332xp33_ASAP7_75t_R
+Used module:     \OAI21xp33_ASAP7_75t_R
+Used module:     \NOR2xp67_ASAP7_75t_R
+Used module:     \INVxp67_ASAP7_75t_R
+Used module:     \AO21x1_ASAP7_75t_R
+Used module:     \O2A1O1Ixp33_ASAP7_75t_R
+Used module:     \INVx1_ASAP7_75t_R
+Used module:     \OAI211xp5_ASAP7_75t_R
+Used module:     \AOI322xp5_ASAP7_75t_R
+Used module:     \OAI22xp33_ASAP7_75t_R
+Used module:     \AOI211xp5_ASAP7_75t_R
+Used module:     \NAND4xp25_ASAP7_75t_R
+
+2.2. Analyzing design hierarchy..
+Top module:  \reset_control
+Used module:     \NOR4xp25_ASAP7_75t_R
+Used module:     \INVxp33_ASAP7_75t_R
+Used module:     \NOR2xp33_ASAP7_75t_R
+Used module:     \NAND3xp33_ASAP7_75t_R
+Used module:     \NOR3xp33_ASAP7_75t_R
+Used module:     \AOI31xp33_ASAP7_75t_R
+Used module:     \AOI21xp33_ASAP7_75t_R
+Used module:     \A2O1A1Ixp33_ASAP7_75t_R
+Used module:     \NAND2xp33_ASAP7_75t_R
+Used module:     \OAI221xp5_ASAP7_75t_R
+Used module:     \AND2x2_ASAP7_75t_R
+Used module:     \OAI222xp33_ASAP7_75t_R
+Used module:     \HB1xp67_ASAP7_75t_R
+Used module:     \AOI32xp33_ASAP7_75t_R
+Used module:     \AOI22xp33_ASAP7_75t_R
+Used module:     \AOI332xp33_ASAP7_75t_R
+Used module:     \OAI21xp33_ASAP7_75t_R
+Used module:     \NOR2xp67_ASAP7_75t_R
+Used module:     \INVxp67_ASAP7_75t_R
+Used module:     \AO21x1_ASAP7_75t_R
+Used module:     \O2A1O1Ixp33_ASAP7_75t_R
+Used module:     \INVx1_ASAP7_75t_R
+Used module:     \OAI211xp5_ASAP7_75t_R
+Used module:     \AOI322xp5_ASAP7_75t_R
+Used module:     \OAI22xp33_ASAP7_75t_R
+Used module:     \AOI211xp5_ASAP7_75t_R
+Used module:     \NAND4xp25_ASAP7_75t_R
+Removing unused module `\XOR2xp5_ASAP7_75t_R'.
+Removing unused module `\XNOR2xp5_ASAP7_75t_R'.
+Removing unused module `\OR3x1_ASAP7_75t_R'.
+Removing unused module `\OR2x2_ASAP7_75t_R'.
+Removing unused module `\OAI32xp33_ASAP7_75t_R'.
+Removing unused module `\OAI31xp33_ASAP7_75t_R'.
+Removing unused module `\OAI21xp5_ASAP7_75t_R'.
+Removing unused module `\OA21x2_ASAP7_75t_R'.
+Removing unused module `\OA211x2_ASAP7_75t_R'.
+Removing unused module `\NAND2xp5_ASAP7_75t_R'.
+Removing unused module `\MAJx2_ASAP7_75t_R'.
+Removing unused module `\MAJIxp5_ASAP7_75t_R'.
+Removing unused module `\INVx2_ASAP7_75t_R'.
+Removing unused module `\DFFHQNx1_ASAP7_75t_R'.
+Removing unused module `\AOI311xp33_ASAP7_75t_R'.
+Removing unused module `\AOI222xp33_ASAP7_75t_R'.
+Removing unused module `\AOI221xp5_ASAP7_75t_R'.
+Removing unused module `\AOI21xp5_ASAP7_75t_R'.
+Removing unused module `\AO22x1_ASAP7_75t_R'.
+Removing unused module `\AND4x1_ASAP7_75t_R'.
+Removing unused module `\AND3x1_ASAP7_75t_R'.
+Removed 21 unused modules.
+
+3. Executing PROC pass (convert processes to netlists).
+
+3.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+3.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Removed a total of 0 dead cases.
+
+3.3. Executing PROC_INIT pass (extract init attributes).
+
+3.4. Executing PROC_ARST pass (detect async resets in processes).
+
+3.5. Executing PROC_MUX pass (convert decision trees to multiplexers).
+
+3.6. Executing PROC_DLATCH pass (convert process syncs to latches).
+
+3.7. Executing PROC_DFF pass (convert process syncs to FFs).
+
+3.8. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+4. Executing FLATTEN pass (flatten design).
+Using template INVxp33_ASAP7_75t_R for cells of type INVxp33_ASAP7_75t_R.
+Using template AND2x2_ASAP7_75t_R for cells of type AND2x2_ASAP7_75t_R.
+Using template NAND2xp33_ASAP7_75t_R for cells of type NAND2xp33_ASAP7_75t_R.
+Using template INVx1_ASAP7_75t_R for cells of type INVx1_ASAP7_75t_R.
+Using template NOR4xp25_ASAP7_75t_R for cells of type NOR4xp25_ASAP7_75t_R.
+Using template NAND4xp25_ASAP7_75t_R for cells of type NAND4xp25_ASAP7_75t_R.
+Using template NOR3xp33_ASAP7_75t_R for cells of type NOR3xp33_ASAP7_75t_R.
+Using template NAND3xp33_ASAP7_75t_R for cells of type NAND3xp33_ASAP7_75t_R.
+Using template NOR2xp33_ASAP7_75t_R for cells of type NOR2xp33_ASAP7_75t_R.
+Using template AOI211xp5_ASAP7_75t_R for cells of type AOI211xp5_ASAP7_75t_R.
+Using template AOI332xp33_ASAP7_75t_R for cells of type AOI332xp33_ASAP7_75t_R.
+Using template OAI21xp33_ASAP7_75t_R for cells of type OAI21xp33_ASAP7_75t_R.
+Using template OAI22xp33_ASAP7_75t_R for cells of type OAI22xp33_ASAP7_75t_R.
+Using template HB1xp67_ASAP7_75t_R for cells of type HB1xp67_ASAP7_75t_R.
+Using template A2O1A1Ixp33_ASAP7_75t_R for cells of type A2O1A1Ixp33_ASAP7_75t_R.
+Using template AOI31xp33_ASAP7_75t_R for cells of type AOI31xp33_ASAP7_75t_R.
+Using template OAI211xp5_ASAP7_75t_R for cells of type OAI211xp5_ASAP7_75t_R.
+Using template NOR2xp67_ASAP7_75t_R for cells of type NOR2xp67_ASAP7_75t_R.
+Using template AOI322xp5_ASAP7_75t_R for cells of type AOI322xp5_ASAP7_75t_R.
+Using template OAI222xp33_ASAP7_75t_R for cells of type OAI222xp33_ASAP7_75t_R.
+Using template AOI22xp33_ASAP7_75t_R for cells of type AOI22xp33_ASAP7_75t_R.
+Using template O2A1O1Ixp33_ASAP7_75t_R for cells of type O2A1O1Ixp33_ASAP7_75t_R.
+Using template AO21x1_ASAP7_75t_R for cells of type AO21x1_ASAP7_75t_R.
+Using template OAI221xp5_ASAP7_75t_R for cells of type OAI221xp5_ASAP7_75t_R.
+Using template AOI32xp33_ASAP7_75t_R for cells of type AOI32xp33_ASAP7_75t_R.
+Using template INVxp67_ASAP7_75t_R for cells of type INVxp67_ASAP7_75t_R.
+Using template AOI21xp33_ASAP7_75t_R for cells of type AOI21xp33_ASAP7_75t_R.
+<suppressed ~114 debug messages>
+No more expansions possible.
+Deleting now unused module NAND3xp33_ASAP7_75t_R.
+Deleting now unused module OAI221xp5_ASAP7_75t_R.
+Deleting now unused module NAND2xp33_ASAP7_75t_R.
+Deleting now unused module OAI21xp33_ASAP7_75t_R.
+Deleting now unused module INVxp67_ASAP7_75t_R.
+Deleting now unused module INVxp33_ASAP7_75t_R.
+Deleting now unused module OAI211xp5_ASAP7_75t_R.
+Deleting now unused module INVx1_ASAP7_75t_R.
+Deleting now unused module HB1xp67_ASAP7_75t_R.
+Deleting now unused module OAI22xp33_ASAP7_75t_R.
+Deleting now unused module AOI332xp33_ASAP7_75t_R.
+Deleting now unused module AOI32xp33_ASAP7_75t_R.
+Deleting now unused module AOI322xp5_ASAP7_75t_R.
+Deleting now unused module AOI31xp33_ASAP7_75t_R.
+Deleting now unused module OAI222xp33_ASAP7_75t_R.
+Deleting now unused module AOI22xp33_ASAP7_75t_R.
+Deleting now unused module O2A1O1Ixp33_ASAP7_75t_R.
+Deleting now unused module NOR4xp25_ASAP7_75t_R.
+Deleting now unused module NOR3xp33_ASAP7_75t_R.
+Deleting now unused module AOI21xp33_ASAP7_75t_R.
+Deleting now unused module AOI211xp5_ASAP7_75t_R.
+Deleting now unused module NOR2xp67_ASAP7_75t_R.
+Deleting now unused module AO21x1_ASAP7_75t_R.
+Deleting now unused module NOR2xp33_ASAP7_75t_R.
+Deleting now unused module NAND4xp25_ASAP7_75t_R.
+Deleting now unused module AND2x2_ASAP7_75t_R.
+Deleting now unused module A2O1A1Ixp33_ASAP7_75t_R.
+
+5. Executing OPT pass (performing simple optimizations).
+
+5.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module reset_control.
+<suppressed ~300 debug messages>
+
+5.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\reset_control'.
+<suppressed ~1251 debug messages>
+Removed a total of 417 cells.
+
+5.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \reset_control..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+
+5.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \reset_control.
+Performed a total of 0 changes.
+
+5.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\reset_control'.
+Removed a total of 0 cells.
+
+5.6. Executing OPT_RMDFF pass (remove dff with constant values).
+
+5.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \reset_control..
+Removed 3 unused cells and 1199 unused wires.
+<suppressed ~8 debug messages>
+
+5.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module reset_control.
+<suppressed ~3 debug messages>
+
+5.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+5.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \reset_control..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+
+5.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \reset_control.
+Performed a total of 0 changes.
+
+5.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\reset_control'.
+<suppressed ~12 debug messages>
+Removed a total of 4 cells.
+
+5.13. Executing OPT_RMDFF pass (remove dff with constant values).
+
+5.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \reset_control..
+Removed 0 unused cells and 7 unused wires.
+<suppressed ~7 debug messages>
+
+5.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module reset_control.
+
+5.16. Rerunning OPT passes. (Maybe there is more to do..)
+
+5.17. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \reset_control..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+
+5.18. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \reset_control.
+Performed a total of 0 changes.
+
+5.19. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\reset_control'.
+Removed a total of 0 cells.
+
+5.20. Executing OPT_RMDFF pass (remove dff with constant values).
+
+5.21. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \reset_control..
+
+5.22. Executing OPT_EXPR pass (perform const folding).
+Optimizing module reset_control.
+
+5.23. Finished OPT passes. (There is nothing left to do.)
+
+6. Executing SAT pass (solving SAT problems in the circuit).
+
+Setting up SAT problem:
+Import set-constraint: \rst = 1'1
+Final constraint equation: \rst = 1'1
+Imported 468 cells to SAT database.
+Import proof-constraint: \next_q = 24'000000000000000000000000
+Final proof equation: \next_q = 24'000000000000000000000000
+
+Solving problem with 2323 variables and 5978 clauses..
+SAT proof finished - no model found: SUCCESS!
+
+                  /$$$$$$      /$$$$$$$$     /$$$$$$$    
+                 /$$__  $$    | $$_____/    | $$__  $$   
+                | $$  \ $$    | $$          | $$  \ $$   
+                | $$  | $$    | $$$$$       | $$  | $$   
+                | $$  | $$    | $$__/       | $$  | $$   
+                | $$/$$ $$    | $$          | $$  | $$   
+                |  $$$$$$/ /$$| $$$$$$$$ /$$| $$$$$$$//$$
+                 \____ $$$|__/|________/|__/|_______/|__/
+                       \__/                              
+
+End of script. Logfile hash: b5aa157cc6
+CPU: user 0.23s system 0.01s, MEM: 27.75 MB total, 21.94 MB resident
+Yosys 0.9 (git sha1 1979e0b)
+Time spent: 21% 3x opt_clean (0 sec), 17% 1x flatten (0 sec), ...

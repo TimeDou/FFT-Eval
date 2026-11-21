@@ -7,7 +7,7 @@ import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-TOOLS = ['common.py','model.py','simulate.py','evaluate.py','local_asic.py','commercial.py','toolchain.py']
+TOOLS = ['common.py','model.py','simulate.py','evaluate.py','scoring.py','local_asic.py','commercial.py','toolchain.py']
 
 def main():
     parser = argparse.ArgumentParser()

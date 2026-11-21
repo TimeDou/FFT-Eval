@@ -5,6 +5,7 @@ import json
 import sys
 from common import save
 from evaluate import evaluate
+from scoring import make_calibration
 
 def main():
     parser = argparse.ArgumentParser()
@@ -21,10 +22,8 @@ def main():
     if not valid:
         print('Calibration incomplete. See '+str(directory/'calibration_runs.json'))
         return 2
-    best = min(results, key=lambda r: r['ppa']['area_um2'])
-    reference = dict(benchmark_id='fft64_quant_arch_v0.2', backend=best['backend'],
-                     flow_id=best['flow_id'], reference_area_um2=best['ppa']['area_um2'],
-                     pass_area_ratio=.8, score='fractional_area_saving',
+    reference = make_calibration({str(i):r for i,r in enumerate(results)},
+                     benchmark_id='fft64_quant_arch_v0.3',
                      baselines=[dict(path=str(Path(p).resolve()), source=r['source'],
                                      area_um2=r['ppa']['area_um2']) for p, r in zip(args.baseline, results)])
     save(directory/'area_reference.json', reference)

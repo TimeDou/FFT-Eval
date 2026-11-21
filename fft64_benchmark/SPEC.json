@@ -1,11 +1,11 @@
 {
-  "benchmark_id": "fft64_quant_arch_v0.2",
-  "status": "FUNCTIONAL_SPEC_FIXED_COMMERCIAL_AREA_CALIBRATION_PENDING",
+  "benchmark_id": "fft64_quant_arch_v0.3",
+  "status": "FUNCTIONAL_SPEC_FIXED_CONTINUOUS_PPA_SCORING",
   "task_language": [
     "en",
     "zh-CN"
   ],
-  "profile": "AREA_ORIENTED",
+  "profile": "THROUGHPUT_PER_AREA_AT_VERIFIED_WORKLOAD",
   "fft": {
     "points": 64,
     "direction": "forward",
@@ -47,8 +47,6 @@
     "include_registers_muxes_control_reorder_standard_cell_memories": true,
     "unaccounted_sram_allowed": false,
     "exact_reference_area_um2": null,
-    "proposed_pass_area_ratio_max": 0.8,
-    "official_area_threshold_status": "NOT_FROZEN",
     "tools": [
       "VCS",
       "Design Compiler",
@@ -110,9 +108,29 @@
     "sampling": "Inputs stable before rising edge; outputs observed after that edge; first input edge is cycle 0."
   },
   "scoring": {
-    "feasible_design_score": "clip(1 - area/area_reference, 0, 1)",
-    "resolved": "all hardware constraints pass and area <= 0.80 * area_reference",
-    "area_reference_source": "operator-calibrated accurate implementations in the identical backend and flow",
-    "official_status": "PENDING_COMMERCIAL_CALIBRATION"
+    "version": "verified_workload_throughput_per_area_v1",
+    "resolved": "all required functional, numerical, protocol, service, latency, mapped-netlist and timing checks pass; no area or score cutoff",
+    "feasible_design_score": "E/(1+E), E=(A_ref/A)*(II_ref/II_verified)*(T_ref/T_STA)",
+    "efficiency": "64/(A*II_verified*T_STA); STA-supported sample throughput per full mapped area",
+    "reference_score": 0.5,
+    "reference_selection": "single accurate implementation with maximum measured STA-supported throughput/area in the identical backend, flow and protocol",
+    "period": "effective_required_period_ns from fixed-constraint pre-layout STA, including setup uncertainty",
+    "frame_II": "offered workload interval serviced correctly on the complete RTL and mapped tests; currently 384 cycles; not claimed intrinsic minimum II",
+    "frequency_accounting": "frequency enters once through throughput = 64*Fmax_estimate/II_verified",
+    "failure_score": 0.0,
+    "missing_calibration": "hardware feasibility reported separately; score_valid=false; rerun calibration",
+    "measurement_stage": "pre-layout synthesis and ideal-interconnect STA; not post-route or physical-device Fmax"
+  },
+  "verification": {
+    "rtl": "VCS four-state, ordinary unspecified initial state and synchronous-reset checks",
+    "mapped": "VCS four-state logic, full RTL comparison from three time-zero register initializations: all zero, all one, and seed 20261121",
+    "gate_initialization_modes": [
+      0,
+      1,
+      20261121
+    ],
+    "initialization_scope": "time zero only; no forcing or repair during reset, processing or output",
+    "motivation": "avoid false failures from reconvergent reset X-pessimism while requiring recovery from multiple physical binary initial states",
+    "guarantee": "empirical full-transaction RTL/netlist equivalence; optional formal proof is reported separately"
   }
 }

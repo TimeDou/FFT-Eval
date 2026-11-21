@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 import numpy as np
 from common import ROOT,run,save,sha,lock,read
 
@@ -65,26 +66,38 @@ def schedule(frames,seed=11,reset_test=True):
  ev.extend([[0,0,0,0,0]]*32)
  return np.asarray(ev,dtype=np.int64),dict(frame_starts=starts,offered_min_frame_II=384,cancelled_partial_start=partial,clock_period_ns=10,ignore_before_cycle=ignore_before,reset_probes=reset_probes)
 
-def simulate(source,events,outdir,backend='verilator'):
- d=Path(outdir).resolve();d.mkdir(parents=True,exist_ok=True);signature=dict(source_sha256=__import__('hashlib').sha256(source.encode()).hexdigest(),backend=backend,driver_sha256=sha(__file__))
+def simulate(source,events,outdir,backend='verilator',initialization=None):
+ if initialization is not None and(backend!='vcs' or type(initialization)is not int or initialization<0):
+  raise ValueError('Explicit gate initialization requires VCS and a nonnegative integer mode/seed')
+ d=Path(outdir).resolve();d.mkdir(parents=True,exist_ok=True);signature=dict(source_sha256=__import__('hashlib').sha256(source.encode()).hexdigest(),backend=backend,driver_sha256=sha(__file__),initialized_gate=initialization is not None)
  with lock(d/'lock'):
   if(d/'signature.json').exists():assert read(d/'signature.json')==signature,'Use a separate simulation directory for a new design'
   else:save(d/'signature.json',signature)
   (d/'source.sv').write_text(source);np.savetxt(d/'vectors.txt',events,fmt='%d')
   if backend=='verilator':
    (d/'driver.cpp').write_text(CPP);exe=d/'obj/Vfft64_top'
-   if not exe.exists():run(['verilator','--cc','--exe','--build','-j','2','-Wno-fatal','--top-module','fft64_top','--Mdir',d/'obj',d/'source.sv',d/'driver.cpp'],d/'compile.log',600)
+   if not exe.exists():run(['verilator','--cc','--exe','--build','-j','2','-Wno-fatal','--top-module','fft64_top','--Mdir',d/'obj',d/'source.sv',d/'driver.cpp'],d/'compile.log',600,cwd=d)
    run([exe,d/'vectors.txt',d/'output.txt'],d/'simulation.log',600)
   else:
    (d/'tb.sv').write_text(TB);exe=d/'simv'
    if not exe.exists():
-    args=['iverilog','-g2012','-s','tb','-o',exe,d/'source.sv',d/'tb.sv']if backend=='iverilog'else['vcs','-sverilog','-full64','-timescale=1ns/1ps','-top','tb',d/'source.sv',d/'tb.sv','-o',exe]
-    run(args,d/'compile.log',600)
+    args=['iverilog','-g2012','-s','tb','-o',exe,d/'source.sv',d/'tb.sv']if backend=='iverilog'else['vcs','-sverilog','-full64',*(['+vcs+initreg+random']if initialization is not None else []),'-timescale=1ns/1ps','-top','tb',d/'source.sv',d/'tb.sv','-o',exe]
+    # VCS's default csrc cache belongs to the current working directory. Keep
+    # it private even for serial RTL/netlist runs: same-named modules from a
+    # previous design must not be picked up by incremental compilation.
+    run(args,d/'compile.log',600,cwd=d)
    args=['vvp',exe]if backend=='iverilog'else[exe]
-   run(args+['+VECTORS='+str(d/'vectors.txt'),'+OUTPUT='+str(d/'output.txt')],d/'simulation.log',600,cwd=d)
-  raw=np.loadtxt(d/'output.txt',dtype=np.int64,ndmin=2)
+   if initialization is not None:args+=['+vcs+initreg+'+str(initialization)]
+   runtime=d if initialization is None else d/('initial_state_'+str(initialization))
+   runtime.mkdir(exist_ok=True)
+   run(args+['+VECTORS='+str(d/'vectors.txt'),'+OUTPUT='+str(runtime/'output.txt')],runtime/'simulation.log',600,cwd=runtime)
+  if backend=='verilator':runtime=d
+  log=(runtime/'simulation.log').read_text()
+  if re.search(r'^\s*(?:Fatal:|Error:|Error-\[)',log,re.M)or'VCS initreg not enabled'in log:
+   raise RuntimeError('Simulator reported an error: '+str(runtime/'simulation.log')+'\n'+log[-1600:])
+  raw=np.loadtxt(runtime/'output.txt',dtype=np.int64,ndmin=2)
   assert len(raw)==len(events)and np.array_equal(raw[:,0],np.arange(len(events))), 'Missing/duplicated clock observations'
-  save(d/'receipt.json',dict(signature=signature,input_sha256=sha(d/'vectors.txt'),output_sha256=sha(d/'output.txt'),cycles=len(events)))
+  save(runtime/'receipt.json',dict(signature=signature,input_sha256=sha(d/'vectors.txt'),output_sha256=sha(runtime/'output.txt'),cycles=len(events),initialization=initialization))
   return raw
 
 def decode(raw,events,meta):

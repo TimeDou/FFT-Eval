@@ -11,7 +11,7 @@
 
 The quick mode stops after steps 1–2. It is useful for debugging, but does not establish a final hardware result.
 
-The official backend uses VCS, Design Compiler and PrimeTime. A local Yosys/ABC/OpenSTA backend supports development when commercial tools are unavailable. Its full-data gate simulation uses Verilator, with an additional Icarus four-state reset/corner subset; the commercial backend uses VCS four-state simulation throughout. These flows have separate area references.
+The official backend uses VCS, Design Compiler and PrimeTime. A local Yosys/ABC/OpenSTA backend supports development when commercial tools are unavailable. Its full-data gate simulation uses Verilator, with an additional Icarus four-state reset/corner subset; the commercial backend uses VCS four-state simulation throughout. These flows have separate area references. Commercial gate simulation checks three time-zero register starts (all zero, all one, and seed 20261121) to avoid reconvergent-reset X-pessimism. Each complete transaction trace must match ordinary four-state RTL; no signals are forced or repaired during reset or execution. Runtime Fatal messages are checked even when an old simulator returns exit code zero.
 
 ## Public feedback
 
@@ -31,14 +31,14 @@ Raw results and debugging logs remain in the requested output directory. Missing
 
 Every nonzero tested frame needs SQNR ≥50 dB; zero input needs exact zero output. All offered frames must be returned within the stated deadlines. Larger gaps and resets are part of the protocol tests. Random seeds differ between public development and final evaluation; directed test families are shared and include low-RMS complex sign patterns.
 
-For a fully feasible candidate, let `R=A/A_ref`. The proposed passing target is `R≤0.80`; the continuous score is `clip(1-R,0,1)`, the fractional area saving. No additional points are assigned for documentation length or the number of attempted designs.
+Every design that passes the required hardware checks has `resolved=true`; there is no minimum score or area-saving threshold. Let `E=(A_ref/A)*(II_ref/II)*(T_ref/T)`, using the verified serviced workload frame II and the pre-layout STA limiting period. The continuous score is `E/(1+E)`; the accurate reference design scores 0.5. Area, II and period for the anchor come from one real accurate design with the best throughput/area efficiency. Frequency enters once through throughput. See `SCORING.md` for the complete definitions and examples. Documentation length and the number of attempted designs do not earn points.
 
 Precision reduction is an available optimization, not a required operation. An exact architectural optimization that meets the same area and service target is also a valid solution.
 
-`A_ref` is the smaller area of the operator's accurate implementations, measured with the same library, backend and constraints. It is separate from the float64 numerical oracle. The commercial area reference and proposed pass target must be calibrated and published before official agent trials. They remain pending in this package.
+The anchor is the operator's accurate implementation with the best measured throughput/area, using the same library, backend and constraints. It is separate from the float64 numerical oracle. The commercial anchor must be calibrated on the target platform before official agent trials; the runner does this automatically.
 
 ## Scope
 
-This is the serial, area-oriented profile: 64 input cycles per frame with a 384-cycle service interval. It tests architecture selection under that load; it does not claim to test maximum-throughput MDC performance. A future 64-cycle or parallel-input profile would need separate calibration and ranking.
+This is the serial-interface profile: 64 input cycles per frame with a 384-cycle service interval. It tests architecture selection and STA-supported throughput/area under that verified II; it does not claim to test the intrinsic maximum-throughput MDC capacity. A future 64-cycle or parallel-input workload would need separate calibration and ranking.
 
 The current PPA objective is **pre-layout mapped area and ideal-interconnect STA**. No post-route or power result is implied. Finite numerical tests and mapped simulation are empirical checks; optional RTL-to-netlist formal checking is a separate verification step.

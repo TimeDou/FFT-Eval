@@ -1,6 +1,6 @@
 # FFT64 Quantization and Architecture Benchmark
 
-这是一个完整 FFT 电路优化题。Agent 选择架构、实现定点运算并调整量化与资源组织，在满足 SQNR、吞吐和延迟要求后降低面积。默认采用 **Open 模式：提供架构说明和接口，不提供 FFT 实现**。
+这是一个完整 FFT 电路优化题。Agent 选择架构、实现定点运算并调整量化与资源组织，在满足 SQNR、吞吐和延迟要求后优化吞吐量/面积效率。默认采用 **Open 模式：提供架构说明和接口，不提供 FFT 实现**。
 
 从 [TASK_ZH.md](TASK_ZH.md) 或 [TASK_EN.md](TASK_EN.md) 开始。机器规格见 [SPEC.json](SPEC.json)，接口见 [INTERFACE.md](INTERFACE.md)。本目录不含参考答案、解题记录或隐藏测试种子。
 
@@ -57,7 +57,7 @@ bash run_preview.sh /workspace/submission /workspace/run_local --backend local
 
 ## 评分与平台使用
 
-先通过全部硬件约束，再按完整映射面积排名。拟定通过目标为 `A/A_ref ≤ 0.80`；连续分数为 `max(0, 1-A/A_ref)`。商业平台的准确参考面积须在正式测试前完成校准。
+通过全部硬件约束即 `resolved=true`，没有最低面积降幅或分数门槛。连续得分按相对吞吐量/面积效率 `E` 计算为 `E/(1+E)`，准确参考点为 0.5。频率通过吞吐量计入一次；当前 II 取共同测试负载 384 cycles，不推断未验证的固有 II。详见 [SCORING.md](SCORING.md)。
 
 出题人部署、校准和 DSBench Code Grade 的操作见 [OPERATOR.md](OPERATOR.md)。本题采用 pre-layout 标准单元面积和理想互连 STA；P&R 模板是可选扩展，不参与当前评分。
 

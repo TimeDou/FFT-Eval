@@ -1,0 +1,19 @@
+{
+  "resolved": true,
+  "feasible": true,
+  "score": 0.6023187636857585,
+  "score_valid": true,
+  "scoring_version": "verified_workload_throughput_per_area_v1",
+  "area_ratio": 0.6628661375851379,
+  "relative_throughput_per_area": 1.51457677326726,
+  "performance": {
+    "area_um2": 1614.77874,
+    "limiting_period_ns": 3.815013184,
+    "prelayout_fmax_estimate_MHz": 262.1222920523464,
+    "verified_workload_frame_II_cycles": 384,
+    "target_clock_samples_per_second": 16666666.666666666,
+    "sta_throughput_samples_per_second": 43687048.67539106,
+    "sta_throughput_per_area": 27054.51068509303
+  },
+  "reason": "All required hardware specifications passed; score ranks throughput per area at the verified workload II (reference=0.5)."
+}

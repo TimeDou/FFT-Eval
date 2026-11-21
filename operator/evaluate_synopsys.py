@@ -18,6 +18,7 @@ BENCHMARK = ROOT/'fft64_benchmark'
 sys.path.insert(0, str(BENCHMARK/'tools'))
 from common import TECH,read, save, sha, lock, flow_identity
 from toolchain import prepare
+from scoring import make_calibration
 
 
 def digest(value):
@@ -78,14 +79,17 @@ def protocol(args, state):
 
 
 def platform_identity(environment):
+    import numpy as np
     from evaluate import assemble
     tools={name:dict(path=environment['tools'][name],sha256=sha(environment['tools'][name]))
            for name in ['vcs','dc_shell','pt_shell']}
     files={name:sha(BENCHMARK/'tools'/name)for name in
-           ['evaluate.py','model.py','simulate.py','common.py','toolchain.py','commercial.py']}
+           ['evaluate.py','model.py','simulate.py','common.py','toolchain.py','commercial.py','scoring.py']}
     baselines={name:assemble(ROOT/'operator/baselines'/name)[1]['source_sha256']for name in ['sdf','iterative']}
     return dict(backend='commercial',flow_id=flow_identity('commercial'),tools=tools,
                 evaluator_files=files,baseline_source_sha256=baselines,
+                numerical_runtime=dict(python_version=sys.version,python_executable=sys.executable,
+                                       python_sha256=sha(sys.executable),numpy_version=np.__version__),
                 runner_sha256=sha(__file__))
 
 
@@ -95,7 +99,8 @@ def infrastructure_failure(result):
     message = result.get('failure','')+'\n'+result.get('traceback','')
     return bool(re.search(r'license (?:checkout|check.?out|server|manager)|no valid license|licensing error|'
                           r'unable to (?:obtain|check out).*license|cannot (?:obtain|checkout).*license|'
-                          r'FLEXnet|SNPSLMD_LICENSE_FILE|TimeoutExpired',message,re.I))
+                          r'FLEXnet|SNPSLMD_LICENSE_FILE|Fatal License Error|Inconsistent Encryption|'
+                          r'Design Compiler is not enabled|DCSH-1|TimeoutExpired',message,re.I))
 
 
 def cached_evaluate(submission, directory, settings, calibration=None, formal=False):
@@ -123,16 +128,24 @@ def calibration(args,state,identity,settings,location=None):
             reference=read(directory/'calibration.json')
         else:
             results={}
-            for name in ['sdf','iterative']:
-                result,reused=cached_evaluate(ROOT/'operator/baselines'/name,directory/name,settings)
-                results[name]=result
+            if args.jobs>1:
+                # Both baselines are independent; process isolation also keeps
+                # FFT_WORK and other tool environment variables task-local.
+                with ProcessPoolExecutor(max_workers=min(2,args.jobs))as pool:
+                    futures={pool.submit(cached_evaluate,ROOT/'operator/baselines'/name,directory/name,settings):name
+                             for name in ['sdf','iterative']}
+                    for future in as_completed(futures):
+                        results[futures[future]]=future.result()[0]
+            else:
+                for name in ['sdf','iterative']:
+                    results[name]=cached_evaluate(ROOT/'operator/baselines'/name,directory/name,settings)[0]
+            results={name:results[name]for name in ['sdf','iterative']}
+            for name,result in results.items():
                 if result.get('status')!='COMPLETE' or not result.get('ppa',{}).get('timing_pass'):
                     save(directory/'status.json',dict(status='CALIBRATION_INCOMPLETE',baseline=name,result=result))
                     raise EnvironmentError('Accurate '+name+' calibration did not finish successfully; see '+str(directory/name/'result.json'))
-            reference=dict(backend='commercial',flow_id=identity['flow_id'],platform_fingerprint=fingerprint,
-                           protocol_fingerprint=digest(settings),reference_area_um2=min(r['ppa']['area_um2']for r in results.values()),
-                           pass_area_ratio=read(BENCHMARK/'SPEC.json')['hardware']['proposed_pass_area_ratio_max'],
-                           score='fractional_area_saving',baseline_results=results,created_utc=utc())
+            reference=make_calibration(results,platform_fingerprint=fingerprint,
+                           protocol_fingerprint=digest(settings),baseline_results=results,created_utc=utc())
             save(directory/'calibration.json',reference)
         expected=dict(backend='commercial',flow_id=identity['flow_id'],platform_fingerprint=fingerprint,
                       protocol_fingerprint=digest(settings))
@@ -161,8 +174,8 @@ def worker(entry,outdir,settings,reference,identity,formal):
         save(run/'original_source.json',info)
         evaluated_source=snapshot
     result,reused=cached_evaluate(evaluated_source,run,settings,reference,formal)
-    unavailable=infrastructure_failure(result)
     grade=result['grade']
+    unavailable=infrastructure_failure(result)or(grade.get('feasible',False)and not grade.get('score_valid',False))
     code=dict(resolved=False,score=0.0,reason='Environment error; no valid score: '+result.get('failure',''))if unavailable else {k:grade[k]for k in ['resolved','score','reason']}
     save(directory/'code_result.json',code)
     save(directory/'latest.json',dict(directory=str(run),reused=reused))
@@ -170,10 +183,17 @@ def worker(entry,outdir,settings,reference,identity,formal):
     first=max(lat.get('first_output_latency_cycles',[]),default=None)
     last=max(lat.get('frame_completion_cycles',[]),default=None)
     period=read(BENCHMARK/'SPEC.json')['timing_protocol']['clock_period_ns']
+    performance=grade.get('performance',{})
     row=dict(id=entry['id'],origin=entry['origin'],agent=entry['agent'],backend='commercial',
              state='UNSCORED_INFRASTRUCTURE'if unavailable else result['status'],resolved=code['resolved'],
              score=None if unavailable else code['score'],area_um2=ppa.get('area_um2'),
              area_ratio=grade.get('area_ratio'),worst_sqnr_db=quality.get('minimum_frame_sqnr_db'),
+             limiting_period_ns=performance.get('limiting_period_ns'),
+             prelayout_fmax_estimate_MHz=performance.get('prelayout_fmax_estimate_MHz'),
+             verified_workload_frame_II_cycles=performance.get('verified_workload_frame_II_cycles'),
+             target_clock_samples_per_second=performance.get('target_clock_samples_per_second'),
+             sta_throughput_samples_per_second=performance.get('sta_throughput_samples_per_second'),
+             relative_throughput_per_area=grade.get('relative_throughput_per_area'),
              worst_slack_ns=ppa.get('worst_setup_slack_ns'),timing_pass=ppa.get('timing_pass'),
              first_output_cycles=first,first_output_ns=first*period if first is not None else None,
              completion_cycles=last,completion_ns=last*period if last is not None else None,

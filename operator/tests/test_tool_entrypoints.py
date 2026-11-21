@@ -75,6 +75,24 @@ if mode=='lc_shell' and os.environ.get('FFT_FIXTURE_NO_DB')!='1':
                 receipt=json.loads(Path(str(log)+'.json').read_text())
                 self.assertEqual(receipt['argv'][0],str(self.bin/name))
 
+    def test_legacy_launcher_without_shebang_preserves_product_alias(self):
+        (self.bin/'snps_shell').write_text('''# legacy text launcher without a shebang
+case "$0" in
+ */lc_shell) printf 'MODE=lc_shell\\n' ;;
+ *) printf 'Error: unsupported entrypoint\\n'; exit 23 ;;
+esac
+''')
+        with patch.dict(os.environ,self.env):
+            log=self.root/'legacy_lc.log'
+            common.run(['lc_shell','-f','fixture.tcl'],log)
+        self.assertIn('MODE=lc_shell',log.read_text())
+        receipt=json.loads(Path(str(log)+'.json').read_text())
+        self.assertEqual(receipt['argv'][:2],['bash',str(self.bin/'lc_shell')])
+
+    def test_bad_binary_is_not_reinterpreted_as_shell_text(self):
+        binary=self.bin/'bad_binary';binary.write_bytes(b'\x7fELFbroken');binary.chmod(0o755)
+        with self.assertRaises(OSError):common.run([binary],self.root/'bad_binary.log')
+
     def test_prepare_uses_lc_alias_and_checks_both_artifacts(self):
         with patch.dict(os.environ,self.env),patch.object(toolchain,'TECH',self.tech):
             result=toolchain.prepare('commercial',allow_build=False)

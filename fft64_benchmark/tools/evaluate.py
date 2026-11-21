@@ -3,7 +3,6 @@ from pathlib import Path
 import argparse
 import hashlib
 import json
-import math
 import os
 import re
 import sys
@@ -15,6 +14,7 @@ from common import ROOT, TECH, COMB, SEQ, flow_identity, read, save, sha
 from model import make_frames, quality, reference as fft_reference
 from simulate import schedule, simulate, decode
 from toolchain import activate, probe, select_backend
+from scoring import score_result
 
 
 def assemble(submission):
@@ -61,32 +61,6 @@ def used_cell_models(mapped):
     if not models:
         raise ValueError('No mapped standard-cell models found')
     return '\n'.join(models)
-
-
-def score_result(result, calibration=None):
-    passed = (result.get('status') == 'COMPLETE'
-              and result.get('quality', {}).get('feasible', False)
-              and result.get('protocol_pass', False)
-              and result.get('mapped_simulation_pass', False)
-              and result.get('ppa', {}).get('timing_pass', False)
-              and result.get('ppa', {}).get('formal_status') != 'FAILED')
-    if not calibration:
-        return dict(resolved=False, score=0.0, area_ratio=None,
-                    reason='Measured without an area calibration; functional/PPA feedback is available.')
-    if calibration.get('backend') != result.get('backend') or calibration.get('flow_id') != result.get('flow_id'):
-        return dict(resolved=False, score=0.0, area_ratio=None,
-                    reason='Area reference uses a different backend or measurement setup.')
-    base = calibration['reference_area_um2']
-    area = result.get('ppa', {}).get('area_um2')
-    if not math.isfinite(base) or base <= 0:
-        raise ValueError('Invalid reference area')
-    if area is None or not math.isfinite(area) or area <= 0 or not passed:
-        return dict(resolved=False, score=0.0, area_ratio=None,
-                    reason='A functional, quality, timing or mapped-simulation check did not pass.')
-    ratio = area/base
-    return dict(resolved=ratio <= calibration.get('pass_area_ratio', .8),
-                score=float(max(0.0, min(1.0, 1-ratio))), area_ratio=ratio,
-                reason='All hardware checks passed; score is the fractional full-design area saving.')
 
 
 def compact(result):
@@ -164,11 +138,14 @@ def evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
                 ppa = measure(source, directory/'asic', formal)
             result.update(ppa=ppa, flow_id=flow_identity(backend))
             mapped_source = used_cell_models((directory/'asic/mapped.v').read_text())+'\n'+(directory/'asic/mapped.v').read_text()
-            gate_raw = simulate(mapped_source, events, directory/'mapped_sim',
-                                'verilator' if backend == 'local' else 'vcs')
-            gate_outputs, _ = decode(gate_raw, events, metadata)
-            assert np.array_equal(gate_raw[:, 1:3], raw[:, 1:3]), 'Mapped control/cycle mismatch'
-            assert np.array_equal(gate_outputs, outputs), 'Mapped payload differs from the RTL'
+            initializations = [None] if backend == 'local' else [0, 1, 20261121]
+            for initialization in initializations:
+                options = {} if initialization is None else dict(initialization=initialization)
+                gate_raw = simulate(mapped_source, events, directory/'mapped_sim',
+                                    'verilator' if backend == 'local' else 'vcs', **options)
+                gate_outputs, _ = decode(gate_raw, events, metadata)
+                assert np.array_equal(gate_raw[:, 1:3], raw[:, 1:3]), 'Mapped control/cycle mismatch'
+                assert np.array_equal(gate_outputs, outputs), 'Mapped payload differs from the RTL'
             if backend == 'local':
                 tiny = np.vstack([frames[:2], frames[-3:]])
                 tiny_events, tiny_metadata = schedule(tiny, 17)
@@ -178,7 +155,8 @@ def evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
                 rtl_outputs, _ = decode(rtl_four, tiny_events, tiny_metadata)
                 assert np.array_equal(four_raw[:, 1:3], rtl_four[:, 1:3]) and np.array_equal(four_outputs, rtl_outputs)
             result.update(status='COMPLETE', mapped_simulation_pass=True,
-                          mapped_full_four_state=backend == 'commercial')
+                          mapped_full_four_state=backend == 'commercial',
+                          mapped_initial_state_modes=initializations)
     except Exception as exc:
         result.update(status='ENVIRONMENT_ERROR' if isinstance(exc, (EnvironmentError, FileNotFoundError)) else 'FAILED',
                       failure=str(exc), traceback=traceback.format_exc())

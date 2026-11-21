@@ -49,10 +49,10 @@ def assemble(submission):
     if re.search(r'\bnegedge\b', code) or any(
             name != 'clk' for name in re.findall(r'\bposedge\s+(\w+)', code)):
         raise ValueError('Use only the specified positive-edge clk')
-    if 'frame_ii_cycles' in config:
-        from throughput import validate_interval
-        validate_interval(config['frame_ii_cycles'])
-    return text, dict(top='fft64_top', files=files, frame_ii_cycles=config.get('frame_ii_cycles',384),
+    # The declaration is only a scheduling hint; capacity is measured.
+    hint=config.get('frame_ii_cycles',384)
+    if type(hint)is not int or not 64<=hint<=384:hint=384
+    return text, dict(top='fft64_top', files=files, frame_ii_cycles=hint,
                       source_sha256=hashlib.sha256(text.encode()).hexdigest())
 
 

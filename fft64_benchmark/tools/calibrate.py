@@ -12,7 +12,7 @@ def main():
     parser.add_argument('--baseline', action='append', required=True)
     parser.add_argument('--backend', choices=['auto', 'local', 'commercial'], default='auto')
     parser.add_argument('--out', required=True)
-    parser.add_argument('--profile',choices=['area','architecture'],default='area')
+    parser.add_argument('--profile',choices=['area','architecture'],default='architecture')
     args = parser.parse_args()
     directory = Path(args.out).resolve()
     results = [evaluate(path, directory/f'baseline_{i}', args.backend, seed=20261118,profile=args.profile,auto_ii=args.profile=='architecture')
@@ -24,7 +24,7 @@ def main():
         print('Calibration incomplete. See '+str(directory/'calibration_runs.json'))
         return 2
     reference = make_calibration({str(i):r for i,r in enumerate(results)},profile=args.profile,
-                     benchmark_id='fft64_quant_arch_v0.4',
+                     benchmark_id='fft64_quant_arch_v0.5',
                      evaluation_protocol=dict(seed=20261118,scale=1),
                      baselines=[dict(path=str(Path(p).resolve()), source=r['source'],
                                      area_um2=r['ppa']['area_um2']) for p, r in zip(args.baseline, results)])

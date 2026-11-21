@@ -147,8 +147,9 @@ def prepare(requested='auto', quick=False, check_only=False, allow_build=True, c
     if not check_only:
         if not initial['numpy_available']:
             try:
-                wheel_options = ['--no-index', '--find-links', ROOT/'vendor/wheels'] if sys.version_info[:2] == (3, 12) else []
-                run([sys.executable, '-m', 'pip', 'install', *wheel_options, '-r', ROOT/'requirements.txt'],
+                # pip chooses a wheel matching this interpreter/platform and
+                # honors the site's index, offline links and external cache.
+                run([sys.executable, '-m', 'pip', 'install', '--only-binary=:all:', '-r', ROOT/'requirements.txt'],
                     prefix()/'logs/numpy.log', 600)
                 importlib.invalidate_caches()
                 actions.append('Installed the missing NumPy dependency.')

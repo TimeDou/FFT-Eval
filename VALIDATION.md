@@ -11,3 +11,9 @@ Detailed submission records, raw CSV/JSON, per-frame latencies and the immutable
 The campaign's immutable snapshot predates later deployment, open-source fallback, hint-validation and reporting refinements. The exact executed source is archived with the result, avoiding any claim that a different revision was measured. The frozen sample sizes, numerical method, scoring formulas and physical mapping settings remain explicit in the provenance.
 
 All evidence is finite-sample. Physical metrics are pre-layout synthesis and ideal-interconnect STA, with no post-route, power or formal worst-case numerical claim.
+
+## NumPy distribution update
+
+The repository wheel was removed from both main trees. Existing NumPy is reused; a missing dependency is installed as a compatible binary from the pinned requirement through pip, with site mirror/offline-cache settings respected. The Docker wrapper delegates preparation to the same code and can use an external shared wheelhouse. No FFT numerical or hardware measurements were rerun for this packaging-only change.
+
+82 operator regressions passed on the host. A fresh native Python 3.12 virtual environment, with no repository wheel and initially no NumPy, installed NumPy 2.2.6 from an external offline cache and then reused it without reinstalling. The real Docker environment check also passed using the external-cache option.

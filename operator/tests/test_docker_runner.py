@@ -80,6 +80,30 @@ class DockerRunnerTests(unittest.TestCase):
             with self.assertRaises(SystemExit): docker_runner.main([])
         run.assert_not_called()
 
+    def test_numpy_preparation_is_delegated_without_a_bundled_wheel(self):
+        _, _, run = self.execute()
+        command = run.call_args.args[0][-1]
+        self.assertNotIn('vendor/wheels', command)
+        self.assertNotIn('pip install', command)
+        self.assertIn('run_synopsys.sh submission', command)
+
+    def test_external_wheelhouse_uses_container_uri_and_is_not_snapshotted(self):
+        wheelhouse = self.shared/'offline wheels'
+        wheelhouse.mkdir(parents=True)
+        (wheelhouse/'cache.whl').write_text('TEST FIXTURE ONLY')
+        _, _, run = self.execute(['--wheelhouse',str(wheelhouse)])
+        command = run.call_args.args[0][-1]
+        self.assertIn('PIP_NO_INDEX=1', command)
+        self.assertIn('PIP_FIND_LINKS=file:///mnt/mydata/offline%20wheels', command)
+        snapshot = next((self.shared/'jobs').iterdir())
+        self.assertFalse(list(snapshot.rglob('*.whl')))
+
+    def test_external_wheelhouse_outside_shared_mount_is_rejected(self):
+        wheelhouse = self.root/'unmounted';wheelhouse.mkdir()
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                self.execute(['--wheelhouse',str(wheelhouse)])
+
     def test_runtime_archive_checksum_failure_does_not_extract_or_execute(self):
         runtime = self.root/'runtime'; runtime.mkdir()
         (runtime/bootstrap.ARCHIVE).write_bytes(b'wrong bytes')

@@ -1,1 +1,2 @@
-numpy>=1.26,<3
+# Install this version only if NumPy is missing. Existing NumPy is reused.
+numpy==2.2.6

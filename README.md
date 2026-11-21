@@ -56,3 +56,17 @@ bash run_evaluation.sh /path/to/submission --backend local --jobs 2 --out /path/
 Agent 分支例如 `Codex-GPT-6.1-Sol-Max`。该分支中的 `submission/` 是提交，`evaluation/` 是对应新规范的结果。当前参考解由此前作者参考设计迁移，不冒充一次新的独立 Agent rollout。
 
 公开仓库重新建立干净单分支历史。旧克隆、缓存的 commit 地址和平台缓存无法靠删除 Git 分支撤回，正式测试应使用全新 clone。GitHub 历史对象的物理回收由托管平台管理；如果需要撤销已经公开的信息，应另建从未承载该信息的公开仓库。
+
+## NumPy installation without vendored binaries
+
+Existing NumPy is reused. Missing NumPy is installed once by the shared setup path using the pinned binary requirement; pip index/mirror/cache configuration remains available. The Docker wrapper delegates dependency preparation to that same setup path.
+
+For an offline Docker, place a wheel matching its Python/platform in an external directory under the shared mount, then pass that host path:
+
+```bash
+bash run_synopsys_docker.sh /path/to/submission \
+  --wheelhouse /home/sj/ALS/DP2.0/DSBench/Synopsys/runtime/wheelhouse \
+  --out /mnt/mydata/eval/agent_A
+```
+
+This directory is accessed through the shared mount and is not copied into the repository or the source snapshot. The option configures pip for offline installation only when NumPy is absent. Prior experiment histories and archived source remain unchanged.

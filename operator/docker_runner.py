@@ -31,6 +31,7 @@ def main(argv=None):
     parser.add_argument('--ssh-port', type=int, default=int(os.environ.get('FFT_DOCKER_PORT', '1234')))
     parser.add_argument('--shared-dir', default=os.environ.get('FFT_DOCKER_SHARED_DIR', '/home/sj/ALS/DP2.0/DSBench/Synopsys'))
     parser.add_argument('--container-share', default=os.environ.get('FFT_CONTAINER_SHARE', '/mnt/mydata'))
+    parser.add_argument('--wheelhouse', help='External offline wheel directory on the host, inside the shared mount')
     options, native = parser.parse_known_args(args)
     normalized=[]
     for token in native:
@@ -41,6 +42,12 @@ def main(argv=None):
     if not submission and '--check-only' not in native:
         parser.error('Provide one local submission directory, or --check-only; native batch mode remains available via run_synopsys.sh')
     shared = Path(options.shared_dir).resolve(); shared.mkdir(parents=True, exist_ok=True)
+    wheelhouse = None
+    if options.wheelhouse:
+        path = Path(options.wheelhouse).resolve()
+        if not path.is_dir() or not path.is_relative_to(shared):
+            parser.error('--wheelhouse must be an existing directory inside --shared-dir')
+        wheelhouse = remote_path(path, shared, options.container_share.rstrip('/'))
     prepare(shared/'runtime')
     (shared/'eval').mkdir(exist_ok=True)
     (shared/'eval_state').mkdir(exist_ok=True)
@@ -81,12 +88,11 @@ def main(argv=None):
     native_command=shlex.join(['bash', 'run_synopsys.sh']+(['submission'] if submission else [])+native)
     output=native[native.index('--out')+1]
     ownership=' '.join(shlex.quote(x)for x in [remote,output,remote_path(cache,shared,mount),native[native.index('--state-dir')+1]])
-    command = ('set -e; export FFT_CONTAINER_SHARE='+shlex.quote(mount)+
+    dependency_env = ('export PIP_NO_INDEX=1 PIP_FIND_LINKS='+shlex.quote(Path(wheelhouse).as_uri())+'; ') if wheelhouse else ''
+    command = ('set -e; '+dependency_env+'export FFT_CONTAINER_SHARE='+shlex.quote(mount)+
                ' FFT_EDA_PROFILE='+shlex.quote(remote+'/operator/docker_env.sh')+
                ' FFT_TECH_DIR='+shlex.quote(remote_path(cache, shared, mount))+'; '+
                'source "$FFT_EDA_PROFILE"; cd '+shlex.quote(remote)+'; '+
-               'if ! "$FFT_PYTHON" -c "import numpy" >/dev/null 2>&1; then '+
-               '"$FFT_PYTHON" -m pip install --no-index --find-links fft64_benchmark/vendor/wheels numpy==2.2.6; fi; '+
                'if '+native_command+'; then result=0; else result=$?; fi; '+
                'if [ "$(id -u)" = 0 ]; then chown -R '+str(os.getuid())+':'+str(os.getgid())+' '+ownership+'; fi; exit "$result"')
     ssh = ['ssh', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'ConnectTimeout=10',

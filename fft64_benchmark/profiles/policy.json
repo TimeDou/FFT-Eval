@@ -1,0 +1,98 @@
+{
+  "version": "fft64_quant_pdf_v0.5",
+  "default": "architecture",
+  "shared_spec": {
+    "sqnr_min_db": 50.0,
+    "clock_period_ns": 10.0,
+    "base_frame_ii_cycles": 384,
+    "first_output_deadline_cycles": 300,
+    "completion_deadline_cycles": 364,
+    "input_parallelism": 1,
+    "output_parallelism": 1,
+    "samples_per_frame": 64
+  },
+  "profiles": {
+    "area": {
+      "weights": {
+        "area": 1.0,
+        "throughput": 0.0,
+        "latency": 0.0
+      },
+      "reference": {
+        "area": "minimum area among validated accurate baselines"
+      },
+      "targets": {
+        "area_ratio_to_best_accurate": 0.5
+      },
+      "frequency_in_score": false,
+      "ii_in_score": false
+    },
+    "architecture": {
+      "weights": {
+        "area": 0.6,
+        "throughput": 0.3,
+        "latency": 0.1
+      },
+      "reference": {
+        "area": "minimum validated accurate full mapped area",
+        "throughput": "mandatory service: 1e9/(384*10) FFT/s",
+        "latency": "mandatory first-output ceiling: 300*10 ns"
+      },
+      "targets": {
+        "area_ratio_to_best_accurate": 0.5,
+        "throughput_ratio_to_best_accurate": 2.0,
+        "latency_ratio_to_best_accurate": 0.5,
+        "latency_physical_floor_cycles": 63
+      },
+      "normalization": "componentwise accurate-baseline envelope; no claim that the reference vector is one physical design",
+      "throughput": "certified setup Fmax / verified claimed frame II; FFTs/s",
+      "latency": "worst first-input to first-output cycles multiplied by common target period 10ns; no additional frequency reward",
+      "claimed_ii": {
+        "minimum": 64,
+        "maximum": 384,
+        "default": 384,
+        "configuration_field": "frame_ii_cycles"
+      },
+      "ii_calibration": {
+        "pilot_all_integer_intervals": [
+          64,
+          384
+        ],
+        "pilot_frames_per_interval": 1024,
+        "continuous_final_full_dataset": true,
+        "mixed_gap_tail_frames": 16,
+        "chunk_intervals": 64,
+        "all_tested_intervals_long": true
+      },
+      "fmax_scan": {
+        "minimum_period_ns": 0.25,
+        "maximum_period_ns": 10.0,
+        "resolution_ns": 0.01,
+        "maximum_iterations": 24,
+        "method": "clock reconstraint and full STA update on the fixed mapped netlist; score uses passing endpoint",
+        "hold": "report min-path slack; certification requires no observed negative hold slack"
+      }
+    }
+  },
+  "normalized_terms": {
+    "area": "clip((A_ref-A)/(A_ref-A_target),0,1)",
+    "throughput": "clip((T-T_ref)/(T_target-T_ref),0,1)",
+    "latency": "clip((L_ref-L)/(L_ref-L_target),0,1)"
+  },
+  "feasibility": "mandatory numerical, continuous 384-cycle service, reset, latency, setup/hold and representative RTL/mapped consistency; optional shorter-II failures recorded separately",
+  "score": "feasible * weighted sum of normalized terms; feasible is independent of score",
+  "sqnr_reward": false,
+  "freeze_policy": "anchors use only accurate baseline measurements; target ratios and weights do not change after agent results",
+  "evaluation": {
+    "public_random_nonzero_frames": 1024,
+    "hidden_random_nonzero_frames": 8192,
+    "additional_directed_cases": true,
+    "sustained_consecutive_frames": 1024,
+    "frames_per_ii": 1024,
+    "mapped_random_frames": 64,
+    "mapped_includes_directed": true,
+    "mapped_at_best_ii_frames": 128,
+    "ii_search": "all integers 64..384; optional shorter failures do not invalidate mandatory service",
+    "fft_length": 64
+  }
+}

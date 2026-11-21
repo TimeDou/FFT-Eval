@@ -1,19 +1,11 @@
 # 验证状态
 
-统一评分器的 26 项流程、启动器和面积统计测试已通过，覆盖目标平台校准、两种生成来源使用相同协议、完成结果复用、RTL 变更后独立运行、许可证失败不计为有效零分、失败后重试，以及旧成功结果不会冒充当前结果。
+本机 SSH Docker 的完整 VCS → DC → PrimeTime → 映射网表流程已经通过：准确 R2SDF、准确复用 radix-2、量化 banking 参考解，各 376 帧、三种 gate 时刻零初态。全部数值、协议、截止时间、10 ns 时序及映射对照检查通过。连续评分与硬件通过状态分离，不设面积降幅门槛。
 
-这些测试采用明确标记的模拟商业结果，只验证流程控制，不提供商业 PPA。
+详细实测表和复现命令见 [LOCAL_SYNOPSYS.md](LOCAL_SYNOPSYS.md)，原始小型数据见 [results/synopsys_20261121_v03/](results/synopsys_20261121_v03/)。本机结果为 2016 年版本商业工具的 pre-layout/ideal-interconnect 测量；新版平台须重新校准。
 
-软链接入口回归使用共享启动器夹具：`lc_shell` 和 `dc_shell` 指向同一底层文件，但必须以各自入口名调用。测试覆盖 PATH、显式工具变量、HOME 目录查找和实际子进程 argv；真实路径仅可用于诊断/指纹，不能取代执行入口。库准备还检查两个非空 DB 是否确实生成，失败反馈包包含完整编译日志及 argv 记录。
+57 项流程/工具入口/指标/评分/快照/仿真驱动回归在宿主机与容器中均通过。参考解另外 25 项已有检查通过。单元测试中的商业 PPA 夹具只验证流程；上述真实商业测量来自独立完整运行，不使用夹具值。
 
-这验证了本地脚本的入口行为，不代替目标平台 Library Compiler 的实际执行。目标平台需更新后重跑确认 DB 转换及后续综合/STA。
+复现控制测试：`python3 -m unittest discover -s operator/tests -v`。Python 需 3.10+ 和 NumPy；容器可使用共享目录的 `runtime/python/bin/python3`。生产 Tcl 回归使用 `tclsh`。
 
-面积回归用系统 `tclsh` 执行实际 `synth_dc.tcl`，仅用夹具提供 EDA 命令与已知小型映射层级。夹具明确拒绝顶层 design `area` 属性，检查重复 cell 类型按实例累计、层级不重复计入、寄存器面积、无效/非有限 library area、空设计、不合法 cell/clock，以及 Tcl 失败时非零退出。另用商业阶段夹具检查：DC 返回 0 但日志有 Error 时不进入 PT；损坏或无效指标不会被保存为成功测量；负的有限 slack 仍正常记为 timing failure。
-
-流程版本切换回归确认新的 flow identity 会重新建立校准，同时保留旧失败记录。上述测试不提供 DC 映射或 PT 时序的真实数值，不替代许可证平台的最终执行。
-
-复现这些回归：`python3 -m unittest discover -s operator/tests -v`。生产 Tcl 回归需要系统 `tclsh`；未安装时相应测试会明确标为 SKIPPED。
-
-在当前没有 VCS/DC/PT 的主机上，实际执行 `run_synopsys.sh --check-only` 返回 `ENVIRONMENT_NOT_READY` 并生成反馈包；即使本机有开源工具，也没有回退或生成商业分数。
-
-准确基线与参考解的真实开源数值/映射验证见 `fft64-solution` 分支。真实 VCS/DC/PrimeTime 面积、时序和最终分数由目标平台运行后得到；当前分支未声称已经完成商业执行。
+早期失败实验保留：LC 启动/环境错误、迭代基线 reset X、隔离编译后的复现，以及后续控制锥 SAT 和三种二值初态验证。没有将失败点删除或当作有效面积收益。原来的 v0.2 开源结果和分数仍保留，不能与 v0.3 商业数据混用。

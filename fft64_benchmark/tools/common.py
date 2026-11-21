@@ -1,6 +1,7 @@
 """Shared file, process and environment helpers for the FFT64 evaluator."""
 from pathlib import Path
 import fcntl
+import errno
 import hashlib
 import json
 import os
@@ -41,9 +42,21 @@ def run(argv, log, timeout=600, cwd=None):
         log.rename(previous / (log.name + '.' + str(time.time_ns())))
     start = time.monotonic()
     with log.open('w') as stream:
-        proc = subprocess.Popen(argv, stdin=subprocess.DEVNULL,
-                                stdout=stream, stderr=subprocess.STDOUT,
-                                cwd=cwd or ROOT, start_new_session=True)
+        options=dict(stdin=subprocess.DEVNULL, stdout=stream, stderr=subprocess.STDOUT,
+                     cwd=cwd or ROOT, start_new_session=True)
+        try:
+            proc = subprocess.Popen(argv, **options)
+        except OSError as exc:
+            # Some legacy Synopsys launchers are executable shell text without
+            # a shebang. Interactive bash handles ENOEXEC automatically; Python
+            # execve does not. Keep the product alias as the script's $0.
+            if exc.errno != errno.ENOEXEC:
+                raise
+            header=Path(argv[0]).read_bytes()[:4096]
+            if not header or b'\0' in header or header.startswith(b'\x7fELF'):
+                raise
+            argv=['bash',*argv]
+            proc = subprocess.Popen(argv, **options)
         try:
             proc.wait(timeout=timeout)
         except subprocess.TimeoutExpired:
@@ -72,9 +85,9 @@ def lock(path):
 
 def flow_identity(backend):
     """Identify the setup so an area denominator stays comparable."""
-    files = ['SPEC.json', 'tools/local_asic.py'] if backend == 'local' else [
+    files = ['SPEC.json', 'tools/local_asic.py', 'tools/scoring.py'] if backend == 'local' else [
         'SPEC.json', 'tools/commercial.py', 'flow/synth_dc.tcl',
-        'flow/constraints.sdc', 'flow/timing_pt.tcl', 'flow/paths.tcl']
+        'flow/constraints.sdc', 'flow/timing_pt.tcl', 'flow/paths.tcl', 'tools/scoring.py']
     libraries = [COMB, SEQ]
     if backend == 'commercial':
         libraries += [TECH/'db/comb_rvt_tt.db', TECH/'db/seq_rvt_tt.db']

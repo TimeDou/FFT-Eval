@@ -1,4 +1,4 @@
-# EDA Agent Challenge: Design an Area-Efficient, Quantized 64-Point FFT
+# EDA Agent Challenge: Design an Area- and Performance-Efficient, Quantized 64-Point FFT
 
 ## Background
 
@@ -23,7 +23,7 @@ The reference FFT is evaluated in float64 using the **same already-quantized inp
 
 Every nonzero test frame must achieve **SQNR >= 50 dB** (equivalently frame NMSE <= 1e-5). An all-zero input frame must produce exactly zero outputs. This metric measures **implementation-induced error**, not the earlier input ADC quantization error. Finite development and hidden test sets do not constitute a formal guarantee for all possible inputs.
 
-## Hardware service contract — area-oriented profile
+## Hardware service contract — common workload
 
 - Single synchronous clock, period **10 ns**.
 - One complex input on each of 64 consecutive valid cycles per frame; a `frame_start` pulse marks its first sample.
@@ -37,7 +37,7 @@ Every nonzero test frame must achieve **SQNR >= 50 dB** (equivalently frame NMSE
 
 ## Objective and allowable design methods
 
-**Primary objective:** minimize the mapped standard-cell area of the **complete FFT top module**, including combinational logic, pipeline/register state, twiddle storage, control, multiplexing, output reorder, and memories implemented in standard cells. There is no free SRAM or uncounted data path.
+**Primary objective:** improve the throughput per mapped standard-cell area of the **complete FFT top module**, including combinational logic, pipeline/register state, twiddle storage, control, multiplexing, output reorder, and memories implemented in standard cells. There is no free SRAM or uncounted data path.
 
 You may use:
 - R2SDF, R2^2SDF, R4SDF, R2MDC, R4MDC, folded/iterative radix-2/radix-4, or another valid FFT architecture.
@@ -55,13 +55,14 @@ Use the installed platform environment first: run `bash setup.sh --check-only`. 
 3. Implement or modify RTL. Establish one accurate (high-precision) baseline before aggressive quantization.
 4. Compare architectures under the *same* full-top PPA, numeric and protocol flow. Then explore stage-wise precision/rounding choices.
 5. After each material candidate experiment, revise `DESIGN_PLAN.md` with the measurement, decision, and next hypothesis. Keep a compact `measurements.csv`.
-6. Submit the best fully validated RTL, its configuration and the updated plan. The evaluator, not your report, measures actual quality, timing and mapped area.
+6. Submit the fully validated RTL with the best continuous PPA score, its configuration and the updated plan. The evaluator, not your report, measures actual quality, timing and mapped area.
 
 ## Success and ranking
 
 - A candidate is **feasible** only if numeric quality, output order, reset/protocol, service rate, latency and timing all pass.
-- Among feasible designs, **lower complete mapped area is better**. An operator-calibrated exact reference area `A_ref` is frozen before evaluation. The initial proposed pass goal is `Area <= 0.80*A_ref`; this is **not official** until calibrated and published with the tool/library version.
-- A feasible design receives continuous score `clip(1-Area/A_ref, 0, 1)`, its fractional full-design area saving. Failed hardware checks receive zero.
+- Every feasible design receives `resolved=true`; there is no minimum score or area-saving threshold.
+- Let `A` be complete mapped area, `II` the verified input frame interval, and `T` the STA limiting period. A single accurate reference design supplies `A_ref, II_ref, T_ref`. Define `E=(A_ref/A)*(II_ref/II)*(T_ref/T)` and `score=E/(1+E)`. The reference scores 0.5; higher throughput/area efficiency scores higher.
+- Frequency enters once through `throughput=64/(II*T)`. The common verified workload currently uses II=384; no faster untested intrinsic II is assumed. See `SCORING.md` for definitions and examples.
 - Your source design and all required data must be self-contained and synthesizable. The operator supplies trusted scripts and technology data.
 - A failed design earns no hardware-quality ranking; verbose verification reports do not earn additional area credit.
 

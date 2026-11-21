@@ -1,0 +1,34 @@
+{
+  "status": "DIAGNOSTIC_COMPLETE",
+  "official_scoring": "Do not use pilot PPA/quality as the final calibration",
+  "unchanged_contract": {
+    "fft": true,
+    "numeric": true,
+    "timing_protocol": true,
+    "interface": true,
+    "allowed_approximation": true,
+    "forbidden": true
+  },
+  "unchanged_since": "4fc5098",
+  "diagnosis": "reconvergent reset X pessimism; no mapped logic or numerical FFT semantics were modified",
+  "reset_sat": {
+    "result": "PASS",
+    "scope": "24 control FF next states are zero under asserted reset for every binary current state",
+    "command": "yosys -p \"read_verilog reset_control.sv; hierarchy -check -top reset_control; proc; flatten; opt; sat -set rst 1 -prove next_q 0 -verify\""
+  },
+  "native_three_start_test": {
+    "frames": 168,
+    "clock_observations_per_start": 132108,
+    "all_zero": true,
+    "all_one": true,
+    "seed_20261121": true
+  },
+  "files": {
+    "reset_control.sv": "9609950732f788f1b41b4fcc0bf3de5b6f41c069d6a32f095b21f337287308dd",
+    "reset_control_sat.log": "2e58125a8d2c8f1a9300dd7f5874b29de8d82003f29a30548f1c2d59a80ce095",
+    "three_start_comparison.json": "0912eacd84bd02379febb1b419e1df3bff8ce1dc4af42ac4a91b8e76f6b7346e",
+    "initial_iterative_failure.json": "3107ecc9cd5e4a8e4e333acd5fe7436e70812531ebe0493d6c242426c31ad8ce",
+    "isolated_x_failure.log": "53b5c17f9d990aa53f8b9f9f6ff30091afbe2b1450116741d7f727d94381839d",
+    "initialized_compile_receipt.txt": "45118abd5b95657702d9e6c33af8f4090114d17a814123cbcede6979fc57478f"
+  }
+}

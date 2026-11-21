@@ -1,8 +1,8 @@
 # FFT-Bench：跨平台生成，统一 Synopsys 复测
 
-这个分支用于出题人和实验人员统一复测设计。无论 RTL 是在 Yosys/Icarus/OpenROAD 还是 Synopsys 环境下生成，都用同一套 **VCS → DC → PrimeTime → mapped-netlist simulation** 获得最终分数。
+这个仓库支持出题人和实验人员统一复测设计。无论 RTL 是在 Yosys/Icarus/OpenROAD 还是 Synopsys 环境下生成，都用同一套 **VCS → DC → PrimeTime → mapped-netlist simulation** 获得最终分数。
 
-`fft64_benchmark/` 是 agent 使用的纯题目目录；`operator/` 是复测及准确基线校准资源。给 agent 准备环境时只使用题目目录。优化后的参考解在另一个分支 `fft64-solution`，不放入本分支。
+`fft64_benchmark/` 是 agent 使用的纯题目目录；`operator/` 是复测及准确基线校准资源。给 agent 准备环境时只使用题目目录。`synopsys-eval` 分支只保留题目与复测资源；优化后的参考解放在 `fft64-solution` 分支。
 
 ## 一键复测一个设计
 
@@ -31,7 +31,7 @@ bash run_synopsys.sh ../agent_A/submission \
 
 脚本自动加载平台 EDA profile，使用预装工具和 Python；只准备缺少的 NumPy/ASAP7 DB。**此入口固定使用商业流程，不回退到 Yosys，也不构建开源 EDA 工具。**
 
-首次运行会在同一平台实测两份准确定点基线，取较小面积作为 `A_ref`。后续设计复用匹配的校准。通过全部硬件约束后，连续分数为 `clip(1-A/A_ref,0,1)`，通过目标为 `A/A_ref≤0.80`。这些仍是 pre-layout 面积与 ideal-interconnect STA，不称为 post-route。
+首次运行会在同一平台实测两份准确定点基线，选出吞吐量/面积效率最高的一份作为参考点。后续设计复用匹配的校准。通过全部硬件规格即 `resolved=true`；连续分数为 `E/(1+E)`，其中 `E=(A_ref/A)*(II_ref/II)*(T_ref/T)`。没有最低面积降幅或分数门槛，准确参考点为 0.5。频率只通过吞吐量计入一次。详见 [评分定义](fft64_benchmark/SCORING.md)。这些仍是 pre-layout 面积与 ideal-interconnect STA，不称为 post-route。
 
 DC 总面积按映射后每个 leaf instance 对应的 library cell area 累加；同一单元类型出现多次则按实例数计入，层级容器不重复计入。寄存器面积在同一遍历中统计，不依赖部分 DC 版本缺失的顶层 design `area` 属性。原始 `dc_area.rpt` 仍保留；机器结果的 `area_method` 标明统计方式。综合报错或面积/时序数据无效时停止，不生成有效评分。
 
@@ -85,3 +85,17 @@ Synopsys 工具入口可能是指向共享 `snps_shell` 的软链接。调用路
 - `fft64-solution`：基于本分支的参考解、重新生成的候选、实测结果与复现脚本。
 
 源码和小型科学结果通过 Git 同步。许可证、编译后的 DB、工具安装及大型编译缓存保持平台本地。
+
+## 本机 SSH Docker 运行
+
+已为共享挂载方式提供独立入口。宿主机共享目录默认 `/home/sj/ALS/DP2.0/DSBench/Synopsys`，容器内为 `/mnt/mydata`，SSH 为 `root@localhost:1234`：
+
+```bash
+bash run_synopsys_docker.sh fft64_solution --origin reference --seed 20261121 --scale 3
+```
+
+SSH 首次会要求输入容器密码，脚本不保存密码。入口复用容器内已安装的 VCS/DC/LC/PT，只准备共享目录下独立 Python 和随题 NumPy wheel，不构建 Yosys/Icarus。每次运行使用独立源码快照，库缓存及匹配的校准跨次复用；默认结果在共享目录的 `eval/` 下。
+
+可用 `--ssh-host`、`--ssh-port`、`--shared-dir`、`--container-share` 配置其他挂载。已有 Python/EDA 配置可通过环境变量覆盖 `operator/docker_env.sh` 中的默认值。直接在新版 DSBench 平台运行时继续使用 `run_synopsys.sh`，无需这个宿主机入口。
+
+本机容器的完整实测结果与修复说明见 [operator/LOCAL_SYNOPSYS.md](operator/LOCAL_SYNOPSYS.md)。三份设计均通过 376 帧及三种初态检查；参考解为 `resolved=true, score=0.602319`。

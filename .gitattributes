@@ -3,3 +3,6 @@
 fft64_solution/results/** -text -whitespace
 fft64_solution/**/measurements.csv -text -whitespace
 fft64_solution/measurements.csv -text -whitespace
+
+# Preserve native tool reports and CSV receipts byte for byte.
+operator/results/** -text -whitespace

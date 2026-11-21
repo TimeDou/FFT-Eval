@@ -10,6 +10,7 @@ import sys
 import tempfile
 import tarfile
 import unittest
+from concurrent.futures import Future
 from unittest.mock import patch
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -27,7 +28,7 @@ class RunnerTests(unittest.TestCase):
         self.submission=self.root/'agent_A';(self.submission/'rtl').mkdir(parents=True)
         (self.submission/'rtl/top.sv').write_text('module fft64_top; endmodule\n')
         (self.submission/'measurements.csv').write_text('area_um2\n1\n')
-        self.calls=[];self.fail_license=False;self.fail_calibration=False
+        self.calls=[];self.fail_license=False;self.fail_calibration=False;self.fail_timing=False;self.candidate_area=500.
         self.identity=dict(backend='commercial',flow_id='FIXTURE_ONLY_NOT_MEASURED',tools={'fixture':'test'})
         self.environment=dict(ready=True,selected_backend='commercial',tools={},actions=[],failures=[])
 
@@ -44,14 +45,17 @@ class RunnerTests(unittest.TestCase):
     def fake_evaluate(self,submission,outdir,backend,seed,scale,calibration=None,formal=False):
         self.calls.append(dict(submission=str(submission),backend=backend,seed=seed,scale=scale))
         info=assemble(submission)[1]
-        area={'sdf':1000.,'iterative':900.}.get(Path(submission).name,500.)
+        area={'sdf':1000.,'iterative':900.}.get(Path(submission).name,self.candidate_area)
         result=dict(status='COMPLETE',backend=backend,flow_id=self.identity['flow_id'],source=info,
                     protocol_pass=True,quality=dict(feasible=True,minimum_frame_sqnr_db=60.),
-                    ppa=dict(area_um2=area,timing_pass=True,worst_setup_slack_ns=1.),
-                    latency=dict(first_output_latency_cycles=[256],frame_completion_cycles=[319]),
+                    ppa=dict(area_um2=area,timing_pass=True,worst_setup_slack_ns=1.,
+                             effective_required_period_ns=9.,clock_period_ns=10.),
+                    latency=dict(first_output_latency_cycles=[256],frame_completion_cycles=[319],offered_frame_II=384),
                     mapped_simulation_pass=True)
         if calibration is not None and self.fail_license:
             result.update(status='FAILED',failure='No valid license available')
+        if calibration is not None and self.fail_timing:
+            result['ppa'].update(timing_pass=False,worst_setup_slack_ns=-1.,effective_required_period_ns=11.)
         if Path(submission).name=='sdf' and self.fail_calibration:
             result.update(status='FAILED',failure='fixture DC script failure')
         result['grade']=score_result(result,calibration)
@@ -82,7 +86,7 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(reference['reference_area_um2'],900.)
         row=read(self.root/'out/summary.json')['submissions'][0]
         self.assertEqual(row['area_um2'],500.)
-        self.assertAlmostEqual(row['score'],1-500/900)
+        self.assertAlmostEqual(row['score'],(900/500)/(1+900/500))
         self.assertTrue(row['resolved']);self.assertEqual(row['first_output_ns'],2560.)
         self.assertEqual(len(self.calls),3)
         self.assertTrue(all(call['backend']=='commercial'for call in self.calls))
@@ -92,6 +96,34 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(self.execute(self.args()),0)
         self.assertFalse(self.calls)
         self.assertTrue(read(self.root/'out/summary.json')['submissions'][0]['reused'])
+
+    def test_low_score_does_not_fail_a_feasible_design(self):
+        self.candidate_area=10000.
+        self.assertEqual(self.execute(self.args()),0)
+        row=read(self.root/'out/summary.json')['submissions'][0]
+        self.assertTrue(row['resolved']);self.assertLess(row['score'],.1)
+
+    def test_timing_failure_is_a_real_zero_score_not_an_infrastructure_error(self):
+        self.fail_timing=True
+        self.assertEqual(self.execute(self.args()),0)
+        row=read(self.root/'out/summary.json')['submissions'][0]
+        self.assertFalse(row['resolved']);self.assertEqual(row['score'],0.)
+        self.assertNotEqual(row['state'],'UNSCORED_INFRASTRUCTURE')
+
+    def test_parallel_calibration_submits_two_independent_process_tasks(self):
+        class ImmediatePool:
+            def __init__(self,max_workers):self.max_workers=max_workers
+            def __enter__(self):return self
+            def __exit__(self,*args):pass
+            def submit(self,fn,*args):
+                future=Future();future.set_result(fn(*args));return future
+        with patch.object(runner,'ProcessPoolExecutor',ImmediatePool):
+            args=self.args(jobs=2)
+            # Only exercise calibration dispatch here; execute() also has a
+            # separate candidate pool whose iteration is covered by native runs.
+            with patch.object(engine,'evaluate',side_effect=self.fake_evaluate):
+                runner.calibration(args,self.root/'state',self.identity,dict(seed=12345,scale=1))
+        self.assertEqual(len(self.calls),2)
 
     def test_changed_source_gets_separate_run(self):
         self.execute(self.args());self.calls.clear()

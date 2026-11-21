@@ -65,6 +65,13 @@ class ScoringTests(unittest.TestCase):
         self.assertEqual(cal['targets']['first_output_latency_ns'],665)
         self.assertAlmostEqual(cal['targets']['throughput_ffts_per_second'],2e9/(2*64))
 
+    def test_feasible_zero_combined_score_still_passes(self):
+        accurate=result(profile='architecture')
+        cal=make_calibration({'accurate':accurate},profile='architecture')
+        design=result(area=10000,period=10,interval=384,first=300,profile='architecture')
+        g=score_result(design,cal)
+        self.assertTrue(g['resolved']);self.assertTrue(g['score_valid']);self.assertEqual(g['score'],0)
+
     def test_fixed_clock_slack_cannot_substitute_a_frequency_certificate(self):
         a=result(profile='architecture');del a['ppa']['fmax_certificate']
         a['ppa']['effective_required_period_ns']=2

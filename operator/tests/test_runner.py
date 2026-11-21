@@ -42,16 +42,21 @@ class RunnerTests(unittest.TestCase):
         values.update(overrides)
         return argparse.Namespace(**values)
 
-    def fake_evaluate(self,submission,outdir,backend,seed,scale,calibration=None,formal=False):
+    def fake_evaluate(self,submission,outdir,backend,seed,scale,calibration=None,formal=False,profile='area',auto_ii=False):
         self.calls.append(dict(submission=str(submission),backend=backend,seed=seed,scale=scale))
         info=assemble(submission)[1]
         area={'sdf':1000.,'iterative':900.}.get(Path(submission).name,self.candidate_area)
-        result=dict(status='COMPLETE',backend=backend,flow_id=self.identity['flow_id'],source=info,
+        result=dict(status='COMPLETE',seconds=.123,backend=backend,profile=profile,flow_id=self.identity['flow_id'],source=info,
                     protocol_pass=True,quality=dict(feasible=True,minimum_frame_sqnr_db=60.),
                     ppa=dict(area_um2=area,timing_pass=True,worst_setup_slack_ns=1.,
                              effective_required_period_ns=9.,clock_period_ns=10.),
                     latency=dict(first_output_latency_cycles=[256],frame_completion_cycles=[319],offered_frame_II=384),
                     mapped_simulation_pass=True)
+        if profile=='architecture':
+            result['ppa'].update(mapped_sha256='FIXTURE',fmax_certificate=dict(status='CERTIFIED',hold_pass=True,
+                mapped_sha256='FIXTURE',passing_period_ns=5.,failing_period_ns=4.995))
+            result['throughput_check']=dict(status='PASS',mapped_pass=True,verified_frame_ii_cycles=320,
+                                            first_output_latency_cycles=[256])
         if calibration is not None and self.fail_license:
             result.update(status='FAILED',failure='No valid license available')
         if calibration is not None and self.fail_timing:
@@ -86,7 +91,7 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(reference['reference_area_um2'],900.)
         row=read(self.root/'out/summary.json')['submissions'][0]
         self.assertEqual(row['area_um2'],500.)
-        self.assertAlmostEqual(row['score'],(900/500)/(1+900/500))
+        self.assertAlmostEqual(row['score'],(900-500)/(900-450))
         self.assertTrue(row['resolved']);self.assertEqual(row['first_output_ns'],2560.)
         self.assertEqual(len(self.calls),3)
         self.assertTrue(all(call['backend']=='commercial'for call in self.calls))
@@ -96,6 +101,15 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(self.execute(self.args()),0)
         self.assertFalse(self.calls)
         self.assertTrue(read(self.root/'out/summary.json')['submissions'][0]['reused'])
+
+    def test_interrupted_checkpoint_is_retried_instead_of_scored_as_zero(self):
+        self.execute(self.args());self.calls.clear()
+        latest=read(self.root/'out/candidates/agent_A/latest.json')
+        path=Path(latest['directory'])/'result.json';r=read(path)
+        del r['seconds'];del r['grade'];save(path,r)
+        self.assertEqual(self.execute(self.args()),0)
+        self.assertEqual(len(self.calls),1)
+        self.assertFalse(read(self.root/'out/candidates/agent_A/latest.json')['reused'])
 
     def test_low_score_does_not_fail_a_feasible_design(self):
         self.candidate_area=10000.
@@ -172,6 +186,31 @@ class RunnerTests(unittest.TestCase):
         self.execute(self.args(seed=None,protocol=str(self.root/'out/protocol.json'),
                                state_dir=str(self.root/'other_state'),out=str(self.root/'out3')))
         self.assertEqual(read(self.root/'out3/protocol.json'),first)
+
+    def test_previous_version_default_protocol_is_preserved_and_namespaced(self):
+        old=self.root/'state/evaluation_protocol.json'
+        save(old,dict(benchmark_id='v0.3',seed=7,scale=1))
+        before=old.read_bytes()
+        self.assertEqual(self.execute(self.args(seed=None)),0)
+        self.assertEqual(old.read_bytes(),before)
+        self.assertEqual(len(list((self.root/'state/protocols').glob('*/evaluation_protocol.json'))),1)
+
+    def test_changed_ii_declaration_gets_a_separate_candidate_run(self):
+        self.execute(self.args());self.calls.clear()
+        save(self.submission/'design_config.json',dict(rtl=['rtl/top.sv'],frame_ii_cycles=320))
+        self.execute(self.args())
+        self.assertEqual(len(self.calls),1)
+        latest=read(self.root/'out/candidates/agent_A/latest.json')
+        config=read(Path(latest['directory'])/'submission/design_config.json')
+        self.assertEqual(config['frame_ii_cycles'],320)
+        self.assertEqual(len(list((self.root/'out/candidates/agent_A/runs').iterdir())),2)
+
+    def test_profiles_have_independent_calibration_and_candidate_caches(self):
+        self.assertEqual(self.execute(self.args(profile='area')),0)
+        self.assertEqual(self.execute(self.args(profile='architecture')),0)
+        self.assertEqual(len(list((self.root/'state/calibration').iterdir())),2)
+        self.assertEqual(len(list((self.root/'out/candidates/agent_A/runs').iterdir())),2)
+        self.assertEqual(read(self.root/'out/calibration.json')['profile'],'architecture')
 
     def test_previous_success_is_not_left_as_current_score_after_environment_failure(self):
         self.execute(self.args())

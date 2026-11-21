@@ -2,7 +2,7 @@
 
 这个仓库支持出题人和实验人员统一复测设计。无论 RTL 是在 Yosys/Icarus/OpenROAD 还是 Synopsys 环境下生成，都用同一套 **VCS → DC → PrimeTime → mapped-netlist simulation** 获得最终分数。
 
-`fft64_benchmark/` 是 agent 使用的纯题目目录；`operator/` 是复测及准确基线校准资源。给 agent 准备环境时只使用题目目录。`synopsys-eval` 分支只保留题目与复测资源；优化后的参考解放在 `fft64-solution` 分支。
+`fft64_benchmark/` 是 agent 使用的纯题目目录；`operator/` 是复测及准确基线校准资源。给 agent 准备环境时只使用题目目录。默认题面是面积任务；要测跨架构吞吐优化，可将 agent 启动任务指定为 `fft64_benchmark/TASK_ARCHITECTURE_ZH.md`（英文为 `TASK_ARCHITECTURE_EN.md`）。`synopsys-eval` 分支只保留题目与复测资源；优化后的参考解放在 `fft64-solution` 分支。
 
 ## 一键复测一个设计
 
@@ -31,7 +31,12 @@ bash run_synopsys.sh ../agent_A/submission \
 
 脚本自动加载平台 EDA profile，使用预装工具和 Python；只准备缺少的 NumPy/ASAP7 DB。**此入口固定使用商业流程，不回退到 Yosys，也不构建开源 EDA 工具。**
 
-首次运行会在同一平台实测两份准确定点基线，选出吞吐量/面积效率最高的一份作为参考点。后续设计复用匹配的校准。通过全部硬件规格即 `resolved=true`；连续分数为 `E/(1+E)`，其中 `E=(A_ref/A)*(II_ref/II)*(T_ref/T)`。没有最低面积降幅或分数门槛，准确参考点为 0.5。频率只通过吞吐量计入一次。详见 [评分定义](fft64_benchmark/SCORING.md)。这些仍是 pre-layout 面积与 ideal-interconnect STA，不称为 post-route。
+首次运行在本平台实测两份准确定点基线，再固定所选模式的校准标尺。默认 `--profile area`：只奖励面积，准确参考面积为 0 分、其 50% 面积为 1 分。可选 `--profile architecture`：60% 面积、30% 已验证持续吞吐、10% 首输出延迟；在 `design_config.json` 声明 `frame_ii_cycles`，平台验证连续服务并逐点扫描 PrimeTime 时钟。满足全部规格即 `resolved=true`，低分或零分也通过，SQNR 不额外加分。两种模式分别校准，详见 [评分定义](fft64_benchmark/SCORING.md)。所有物理数据仍属 pre-layout synthesis / ideal-interconnect STA。
+
+```bash
+bash run_synopsys.sh /workspace/submissions/agent_A --profile architecture \
+  --out /workspace/eval/agent_A_architecture
+```
 
 DC 总面积按映射后每个 leaf instance 对应的 library cell area 累加；同一单元类型出现多次则按实例数计入，层级容器不重复计入。寄存器面积在同一遍历中统计，不依赖部分 DC 版本缺失的顶层 design `area` 属性。原始 `dc_area.rpt` 仍保留；机器结果的 `area_method` 标明统计方式。综合报错或面积/时序数据无效时停止，不生成有效评分。
 
@@ -98,4 +103,4 @@ SSH 首次会要求输入容器密码，脚本不保存密码。入口复用容�
 
 可用 `--ssh-host`、`--ssh-port`、`--shared-dir`、`--container-share` 配置其他挂载。已有 Python/EDA 配置可通过环境变量覆盖 `operator/docker_env.sh` 中的默认值。直接在新版 DSBench 平台运行时继续使用 `run_synopsys.sh`，无需这个宿主机入口。
 
-本机容器的完整实测结果与修复说明见 [operator/LOCAL_SYNOPSYS.md](operator/LOCAL_SYNOPSYS.md)。三份设计均通过 376 帧及三种初态检查；参考解为 `resolved=true, score=0.602319`。
+本机容器的完整实测结果与修复说明见 [operator/LOCAL_SYNOPSYS.md](operator/LOCAL_SYNOPSYS.md)。历史 v0.3 的 376 帧验证仍保留；其旧分数已被 v0.4 双模式规则取代。新版本结果见 `operator/results/scoring_profiles_v04/`。

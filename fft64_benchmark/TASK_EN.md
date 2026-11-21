@@ -61,8 +61,9 @@ Use the installed platform environment first: run `bash setup.sh --check-only`. 
 
 - A candidate is **feasible** only if numeric quality, output order, reset/protocol, service rate, latency and timing all pass.
 - Every feasible design receives `resolved=true`; there is no minimum score or area-saving threshold.
-- Let `A` be complete mapped area, `II` the verified input frame interval, and `T` the STA limiting period. A single accurate reference design supplies `A_ref, II_ref, T_ref`. Define `E=(A_ref/A)*(II_ref/II)*(T_ref/T)` and `score=E/(1+E)`. The reference scores 0.5; higher throughput/area efficiency scores higher.
-- Frequency enters once through `throughput=64/(II*T)`. The common verified workload currently uses II=384; no faster untested intrinsic II is assumed. See `SCORING.md` for definitions and examples.
+- Default `area` profile: normalize complete mapped area between the best validated accurate baseline (0 points) and half its area (1 point). Larger feasible designs still pass with zero area points.
+- Optional `architecture` profile: 60% area, 30% verified sustained throughput, 10% first-output latency. Declare integer `frame_ii_cycles` from 64 to 384 in `design_config.json` (default 384); continuous RTL/mapped tests verify it. Frequency comes from a fixed-netlist PrimeTime clock scan, never a single-clock slack conversion.
+- Profiles use independent, frozen normalization rules. SQNR is a constraint, with no reward for exceeding it. See `SCORING.md` for equations, clock/latency conventions and measurement scope.
 - Your source design and all required data must be self-contained and synthesizable. The operator supplies trusted scripts and technology data.
 - A failed design earns no hardware-quality ranking; verbose verification reports do not earn additional area credit.
 

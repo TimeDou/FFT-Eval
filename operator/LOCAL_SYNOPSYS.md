@@ -1,3 +1,5 @@
+> 本文保留 v0.3 的历史验证记录。当前评分已升级为双模式 v0.4；新规则见 [SCORING_PROFILES.md](SCORING_PROFILES.md)，新实测见 [results/scoring_profiles_v04](results/scoring_profiles_v04/README.md)。旧分数、未修复 hold 的面积及单点 slack 频率估计不得用于新排名。
+
 # 本机 Synopsys 完整验证（2026-11-21）
 
 N64 FFT benchmark v0.3 已在本机 SSH Docker 中完整跑通。准确 R2SDF、准确复用 radix-2 与原有量化 banking 参考解均通过 **376 帧**的 RTL 数值/协议测试、DC 综合、PrimeTime STA，以及三种时刻零初态下的完整映射网表对照。

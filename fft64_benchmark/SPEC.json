@@ -1,11 +1,11 @@
 {
-  "benchmark_id": "fft64_quant_arch_v0.3",
-  "status": "FUNCTIONAL_SPEC_FIXED_CONTINUOUS_PPA_SCORING",
+  "benchmark_id": "fft64_quant_arch_v0.4",
+  "status": "FIXED_NUMERICAL_SPEC_INDEPENDENT_SCORING_PROFILES",
   "task_language": [
     "en",
     "zh-CN"
   ],
-  "profile": "THROUGHPUT_PER_AREA_AT_VERIFIED_WORKLOAD",
+  "profile": "area (default) or architecture",
   "fft": {
     "points": 64,
     "direction": "forward",
@@ -39,7 +39,8 @@
     "output_valid_cycles_consecutive": true,
     "first_output_latest_cycle_from_first_input": 300,
     "last_output_latest_cycle_from_first_input": 364,
-    "reset": "synchronous_active_high_abort_inflight_frame"
+    "reset": "synchronous_active_high_abort_inflight_frame",
+    "architecture_profile": "Additional continuous-frame verification at declared frame_ii_cycles, with mixed gaps and dense reset probes; original 384-cycle workload remains mandatory"
   },
   "hardware": {
     "area_measurement": "full_top_mapped_standard_cell_area_pre_layout",
@@ -57,7 +58,8 @@
     "output_load_fF": 1,
     "clock_transition_ns": 0.02,
     "liberty_time_unit": "ps",
-    "liberty_capacitance_unit": "fF"
+    "liberty_capacitance_unit": "fF",
+    "hold_check": "minimum-delay STA must pass; common incremental hold repair after compile_ultra"
   },
   "allowed_approximation": [
     "stage_or_instruction_precision_reduction",
@@ -108,18 +110,17 @@
     "sampling": "Inputs stable before rising edge; outputs observed after that edge; first input edge is cycle 0."
   },
   "scoring": {
-    "version": "verified_workload_throughput_per_area_v1",
-    "resolved": "all required functional, numerical, protocol, service, latency, mapped-netlist and timing checks pass; no area or score cutoff",
-    "feasible_design_score": "E/(1+E), E=(A_ref/A)*(II_ref/II_verified)*(T_ref/T_STA)",
-    "efficiency": "64/(A*II_verified*T_STA); STA-supported sample throughput per full mapped area",
-    "reference_score": 0.5,
-    "reference_selection": "single accurate implementation with maximum measured STA-supported throughput/area in the identical backend, flow and protocol",
-    "period": "effective_required_period_ns from fixed-constraint pre-layout STA, including setup uncertainty",
-    "frame_II": "offered workload interval serviced correctly on the complete RTL and mapped tests; currently 384 cycles; not claimed intrinsic minimum II",
-    "frequency_accounting": "frequency enters once through throughput = 64*Fmax_estimate/II_verified",
-    "failure_score": 0.0,
-    "missing_calibration": "hardware feasibility reported separately; score_valid=false; rerun calibration",
-    "measurement_stage": "pre-layout synthesis and ideal-interconnect STA; not post-route or physical-device Fmax"
+    "version": "independent_fft_profiles_v1",
+    "policy_file": "profiles/policy.json",
+    "resolved": "all selected-profile numerical, protocol, timing and RTL/mapped requirements pass; independent of score",
+    "area": "clip((A_ref-A)/(A_ref-0.5*A_ref),0,1); A_ref is smallest validated accurate mapped area",
+    "architecture": "0.6*S_A + 0.3*S_T + 0.1*S_L; independent accurate-baseline envelope and targets in frozen policy",
+    "frequency": "architecture only: passing setup/hold endpoint from reconstraint and STA clock scan on fixed mapped netlist; 0.01ns bracket",
+    "throughput": "certified Fmax / verified declared frame_ii_cycles (FFTs/s); claim 64..384, default 384",
+    "latency_score": "worst first-output cycles at common 10ns clock, including dense stream test; no second frequency reward",
+    "SQNR": "hard constraint only; no bonus above threshold",
+    "missing_calibration": "score_valid=false; hardware feasibility remains separately available",
+    "measurement_stage": "pre-layout synthesis and ideal-interconnect STA; not post-route or silicon Fmax"
   },
   "verification": {
     "rtl": "VCS four-state, ordinary unspecified initial state and synchronous-reset checks",

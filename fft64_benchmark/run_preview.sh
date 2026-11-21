@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Usage: bash run_preview.sh SUBMISSION OUTPUT [--backend auto|commercial|local] [--quick] [--no-build]
+# Usage: bash run_preview.sh SUBMISSION OUTPUT [--backend auto|commercial|local] [--profile area|architecture] [--quick] [--no-build]
 set -euo pipefail
 TASK_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "$TASK_DIR/runtime.sh"
 fft_runtime_init "$TASK_DIR"
-if [[ "${1:-}" == --help ]]; then printf '%s\n' 'Usage: bash run_preview.sh SUBMISSION OUTPUT [--backend auto|commercial|local] [--quick] [--no-build]'; exit 0; fi
+if [[ "${1:-}" == --help ]]; then printf '%s\n' 'Usage: bash run_preview.sh SUBMISSION OUTPUT [--backend auto|commercial|local] [--profile area|architecture] [--quick] [--no-build]'; exit 0; fi
 TASK_SUBMISSION="${1:-/workspace/submission}"
 TASK_OUTPUT="${2:-$TASK_SUBMISSION/runs/preview_$(date +%Y%m%d_%H%M%S)}"
 if [[ $# -ge 2 ]]; then shift 2; elif [[ $# -eq 1 ]]; then shift; fi

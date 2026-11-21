@@ -7,7 +7,7 @@ import math
 POLICY_PATH=Path(__file__).resolve().parents[1]/'profiles/policy.json'
 POLICY=json.loads(POLICY_PATH.read_text())
 POLICY_SHA256=hashlib.sha256(POLICY_PATH.read_bytes()).hexdigest()
-SCORING_VERSION='independent_fft_profiles_v1'
+SCORING_VERSION='fft64_quant_pdf_long_frames_v1'
 
 
 def profile_policy(profile):
@@ -91,18 +91,18 @@ def make_calibration(results,profile='area',**metadata):
         fastest=max(measured,key=lambda n:measured[n]['effective_throughput_ffts_per_second'])
         longest=max(measured,key=lambda n:measured[n]['first_output_latency_ns'])
         shortest=min(measured,key=lambda n:measured[n]['first_output_latency_ns'])
-        references=dict(area_um2=measured[worst_area]['area_um2'],
-                        throughput_ffts_per_second=measured[slowest]['effective_throughput_ffts_per_second'],
-                        first_output_latency_ns=measured[longest]['first_output_latency_ns'])
+        references=dict(area_um2=area_best,
+                        throughput_ffts_per_second=1e9/(384*POLICY['shared_spec']['clock_period_ns']),
+                        first_output_latency_ns=300*POLICY['shared_spec']['clock_period_ns'])
         targets.update(throughput_ffts_per_second=measured[fastest]['effective_throughput_ffts_per_second']*policy['targets']['throughput_ratio_to_best_accurate'],
                        first_output_latency_ns=max(measured[shortest]['first_output_latency_ns']*policy['targets']['latency_ratio_to_best_accurate'],
                            policy['targets']['latency_physical_floor_cycles']*POLICY['shared_spec']['clock_period_ns']))
-        sources.update(area_reference=worst_area,throughput_reference=slowest,throughput_target=fastest,
-                       latency_reference=longest,latency_target=shortest)
+        sources.update(area_reference=best_area,throughput_reference='mandatory_384_cycle_service',throughput_target=fastest,
+                       latency_reference='mandatory_300_cycle_deadline',latency_target=shortest)
     return dict(metadata,backend=first_result['backend'],flow_id=first_result['flow_id'],profile=profile,
                 scoring_version=SCORING_VERSION,policy_sha256=POLICY_SHA256,weights=policy['weights'],
                 references=references,targets=targets,anchor_sources=sources,baseline_performance=measured,
-                reference_area_um2=references['area_um2'],reference_design=best_area if profile=='area'else'componentwise_accurate_envelope',
+                reference_area_um2=references['area_um2'],reference_design=best_area if profile=='area'else'paper_contract_and_accurate_calibration',
                 normalization='frozen targets relative to accurate baselines only; no candidate adaptation')
 
 

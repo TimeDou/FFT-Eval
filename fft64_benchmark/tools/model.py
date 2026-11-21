@@ -58,3 +58,53 @@ def make_frames(seed=20261116,scale=1):
         add('complex_sign_quantization_boundary_'+str(raw),a)
     add('zero',np.zeros((N,2)))
     return np.asarray(out),labels
+
+
+def evaluation_frames(seed, random_frames=1024):
+    """Independent nonzero 64-point frames, followed by directed cases.
+
+    Count means FRAMES, never FFT length. Rejection happens after quantization
+    so every scored nonzero frame satisfies the declared complex RMS domain.
+    """
+    if type(random_frames)is not int or random_frames<1024:
+        raise ValueError('Numerical evaluation needs at least 1024 independent random frames')
+    rng=np.random.default_rng(seed);frames=[];labels=[]
+    while len(frames)<random_frames:
+        family=int(rng.integers(0,6))
+        if family==0:a=rng.uniform(-.5,.5,(64,2))
+        elif family==1:a=rng.uniform(-.0625,.0625,(64,2))
+        elif family==2:a=np.clip(rng.normal(0,.125,(64,2)),-.5,.5)
+        elif family==3:a=np.clip(rng.normal(0,.03125,(64,2)),-.5,.5)
+        elif family==4:a=np.clip(rng.normal(0,.3,(64,2)),-.5,.5)
+        else:
+            raw=int(rng.choice([725,726,727,730,1031]));a=rng.choice([-raw,raw],(64,2))/32768
+        x=np.rint(a*32768).astype(np.int64)
+        if np.sqrt(np.mean(np.sum((x/32768)**2,axis=-1)))<1/32:continue
+        frames.append(x);labels.append('independent_random_'+str(family))
+    directed,names=make_frames(seed^0x6a09e667,1)
+    for x,label in zip(directed,names):
+        if label in {'tone','impulse','DC_corner','negative_DC_corner','Nyquist','zero'}or label.startswith('quantization_boundary'):
+            frames.append(x);labels.append('directed_'+label)
+    # Every integer-frequency bin, including extrema and low-amplitude tones.
+    t=np.arange(64)
+    for k in range(64):
+        for amplitude in [.0625,.5]:
+            z=amplitude*np.exp(2j*np.pi*(k*t/64+rng.uniform(0,1)))
+            frames.append(np.rint(np.column_stack([z.real,z.imag])*32768).astype(np.int64))
+            labels.append('directed_frequency_sweep')
+    out=np.asarray(frames,dtype=np.int64)
+    assert out.shape==(len(out),64,2) and out.min()>=-16384 and out.max()<=16384
+    return out,labels
+
+
+def quality_union(*qualities):
+    """Hard SQNR uses the minimum over applicable, successfully decoded tests."""
+    items=[q for q in qualities if q]
+    minima=[q['minimum_frame_sqnr_db']for q in items if q.get('minimum_frame_sqnr_db')is not None]
+    return dict(frames=sum(q['frames']for q in items),
+                minimum_frame_sqnr_db=min(minima)if minima else None,
+                worst_frame_nmse=max(q['worst_frame_nmse']for q in items),
+                zero_frame_exact=all(q['zero_frame_exact']for q in items),
+                feasible=all(q['feasible']for q in items),
+                aggregation='minimum SQNR and maximum NMSE, never average frame dB',
+                failed_frames=[dict(test=i,indices=q.get('failed_frames',[]))for i,q in enumerate(items)if not q['feasible']])

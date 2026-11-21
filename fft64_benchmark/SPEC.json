@@ -1,11 +1,11 @@
 {
-  "benchmark_id": "fft64_quant_arch_v0.4",
+  "benchmark_id": "fft64_quant_arch_v0.5",
   "status": "FIXED_NUMERICAL_SPEC_INDEPENDENT_SCORING_PROFILES",
   "task_language": [
     "en",
     "zh-CN"
   ],
-  "profile": "area (default) or architecture",
+  "profile": "architecture (paper combined objective); optional area diagnostic",
   "fft": {
     "points": 64,
     "direction": "forward",
@@ -110,14 +110,14 @@
     "sampling": "Inputs stable before rising edge; outputs observed after that edge; first input edge is cycle 0."
   },
   "scoring": {
-    "version": "independent_fft_profiles_v1",
+    "version": "fft64_quant_pdf_long_frames_v1",
     "policy_file": "profiles/policy.json",
     "resolved": "all selected-profile numerical, protocol, timing and RTL/mapped requirements pass; independent of score",
     "area": "clip((A_ref-A)/(A_ref-0.5*A_ref),0,1); A_ref is smallest validated accurate mapped area",
-    "architecture": "0.6*S_A + 0.3*S_T + 0.1*S_L; independent accurate-baseline envelope and targets in frozen policy",
+    "architecture": "0.6*area + 0.3*throughput + 0.1*latency, paper equations (6)-(8)",
     "frequency": "architecture only: passing setup/hold endpoint from reconstraint and STA clock scan on fixed mapped netlist; 0.01ns bracket",
-    "throughput": "certified Fmax / verified declared frame_ii_cycles (FFTs/s); claim 64..384, default 384",
-    "latency_score": "worst first-output cycles at common 10ns clock, including dense stream test; no second frequency reward",
+    "throughput": "STA-certified frequency divided by smallest measured long-tested integer II; never agent claim",
+    "latency_score": "maximum observed first-output cycles times common 10 ns, reference 300 cycles",
     "SQNR": "hard constraint only; no bonus above threshold",
     "missing_calibration": "score_valid=false; hardware feasibility remains separately available",
     "measurement_stage": "pre-layout synthesis and ideal-interconnect STA; not post-route or silicon Fmax"
@@ -133,5 +133,17 @@
     "initialization_scope": "time zero only; no forcing or repair during reset, processing or output",
     "motivation": "avoid false failures from reconvergent reset X-pessimism while requiring recovery from multiple physical binary initial states",
     "guarantee": "empirical full-transaction RTL/netlist equivalence; optional formal proof is reported separately"
+  },
+  "evaluation": {
+    "public_random_nonzero_frames": 1024,
+    "hidden_random_nonzero_frames": 8192,
+    "additional_directed_cases": true,
+    "sustained_consecutive_frames": 1024,
+    "frames_per_ii": 1024,
+    "mapped_random_frames": 64,
+    "mapped_includes_directed": true,
+    "mapped_at_best_ii_frames": 128,
+    "ii_search": "all integers 64..384; optional shorter failures do not invalidate mandatory service",
+    "fft_length": 64
   }
 }

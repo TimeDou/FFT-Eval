@@ -35,7 +35,10 @@ def validate_trials(endpoint,trials,settings):
     if len(trials)!=endpoint.get('trials'):raise EnvironmentError('Incomplete frequency scan trace')
 
 
-def certify(asic):
+def certify(asic,backend='commercial'):
+    if backend=='local':
+        from local_frequency import certify_local
+        return certify_local(asic)
     from commercial import check_log
     asic=Path(asic).resolve()
     settings=profile_policy('architecture')['fmax_scan']

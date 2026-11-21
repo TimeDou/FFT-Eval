@@ -42,7 +42,7 @@ class RunnerTests(unittest.TestCase):
         values.update(overrides)
         return argparse.Namespace(**values)
 
-    def fake_evaluate(self,submission,outdir,backend,seed,scale,calibration=None,formal=False,profile='area',auto_ii=False):
+    def fake_evaluate(self,submission,outdir,backend,seed,scale,calibration=None,formal=False,profile='area',auto_ii=False,audience='hidden'):
         self.calls.append(dict(submission=str(submission),backend=backend,seed=seed,scale=scale))
         info=assemble(submission)[1]
         area={'sdf':1000.,'iterative':900.}.get(Path(submission).name,self.candidate_area)

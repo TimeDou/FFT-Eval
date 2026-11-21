@@ -51,40 +51,54 @@ def stream_schedule(frames,interval,seed=11,tail=True,reset_probes=True):
 
 
 def probe_intervals(source,frames,outdir,backend='vcs',seed=11):
-    """Batch all integer intervals in ONE simulation, resetting each epoch.
-
-    Probe capture records X sentinels. Every epoch is decoded and retained as a
-    pass/fail observation; only a subsequent strict full-data gate test qualifies
-    an interval for scoring.
-    """
+    """Every tested II receives >=1024 consecutive frames; no short pilot."""
     out=Path(outdir);out.mkdir(parents=True,exist_ok=True)
     checkpoint=out/'probe_results.json'
     if checkpoint.exists():return read(checkpoint)
-    settings=profile_policy('architecture')
-    count=min(settings['ii_calibration']['pilot_frames_per_interval'],len(frames))
+    settings=profile_policy('architecture')['ii_calibration'];count=settings['pilot_frames_per_interval']
+    if len(frames)<count:raise ValueError('Throughput trial needs at least 1024 frames')
     rng=np.random.default_rng(seed);indices=rng.choice(len(frames),size=count,replace=False)
-    selected=frames[indices];events=[];epochs=[];offset=0
-    lo,hi=settings['ii_calibration']['pilot_all_integer_intervals']
-    for interval in range(lo,hi+1):
-        e,m,_=stream_schedule(selected,interval,seed,tail=False,reset_probes=False)
-        events.append(e);epochs.append((interval,offset,len(e),m));offset+=len(e)
-    batch=np.concatenate(events,axis=0)
+    selected=frames[indices];lo,hi=settings['pilot_all_integer_intervals'];results=[];compiled=None
+    chunk_size=settings['chunk_intervals'];(out/'latencies').mkdir(exist_ok=True)
     save(out/'probe_protocol.json',dict(intervals=[lo,hi],frame_indices=indices.tolist(),frames_per_interval=count,
-                                       total_cycles=len(batch),scoring_use='qualification only; strict full test still required'))
-    raw=simulate(source,batch,out/'simulation',backend,probe=True)
-    results=[]
-    for interval,start,length,metadata in epochs:
-        item=dict(frame_ii_cycles=interval,pass_rtl=False)
-        e=batch[start:start+length];r=raw[start:start+length].copy();r[:,0]-=start
-        try:
-            outputs,_=decode(r,e,metadata);q=quality(selected,outputs)
-            item.update(pass_rtl=bool(q['feasible']),minimum_sqnr_db=q['minimum_frame_sqnr_db'])
-            if not q['feasible']:item['reason']='SQNR/zero-frame failure'
-        except (AssertionError,ValueError)as exc:item['reason']=str(exc)[:400]
-        results.append(item)
+        fft_length=64,method='exhaustive integer-II long RTL measurements; no claimed-II score'))
+    for begin in range(lo,hi+1,chunk_size):
+        end=min(hi+1,begin+chunk_size);chunk=out/('intervals_'+str(begin)+'_'+str(end-1));chunk.mkdir(exist_ok=True)
+        saved=chunk/'results.json'
+        if saved.exists():
+            results.extend(read(saved))
+            if compiled is None and(chunk/'simulation/simv').exists():compiled=chunk/'simulation'
+            continue
+        events=[];epochs=[];offset=0
+        for interval in range(begin,end):
+            e,m,_=stream_schedule(selected,interval,seed,tail=False,reset_probes=False)
+            events.append(e);epochs.append((interval,offset,len(e),m));offset+=len(e)
+        batch=np.concatenate(events,axis=0);del events
+        raw=simulate(source,batch,chunk/'simulation',backend,probe=True,reuse_compiled_from=compiled)
+        if compiled is None:compiled=chunk/'simulation'
+        measured=[]
+        for interval,start,length,metadata in epochs:
+            item=dict(frame_ii_cycles=interval,tested_frames=count,pass_rtl=False)
+            e=batch[start:start+length];r=raw[start:start+length].copy();r[:,0]-=start
+            try:
+                outputs,lat=decode(r,e,metadata);q=quality(selected,outputs)
+                item.update(pass_rtl=bool(q['feasible']),minimum_sqnr_db=q['minimum_frame_sqnr_db'],quality=q,
+                            maximum_first_output_cycles=lat['maximum_first_output_latency_cycles'],
+                            maximum_completion_cycles=lat['maximum_frame_completion_cycles'])
+                np.savez_compressed(out/'latencies'/('ii_'+str(interval)+'.npz'),
+                    first=lat['per_frame_first_output_latency_cycles'],completion=lat['per_frame_completion_cycles'])
+                if not q['feasible']:item['reason']='SQNR or exact-zero failure'
+            except (AssertionError,ValueError)as exc:item['reason']=str(exc)[:400]
+            measured.append(item)
+        save(saved,measured);results.extend(measured)
+        save(out/'progress.json',dict(status='RUNNING',completed_intervals=len(results),total_intervals=hi-lo+1,
+                                     frames_per_interval=count,last_interval=end-1))
+        del raw,batch
     save(checkpoint,results)
     with(out/'intervals.csv').open('w',newline='')as stream:
-        writer=csv.DictWriter(stream,['frame_ii_cycles','pass_rtl','minimum_sqnr_db','reason']);writer.writeheader();writer.writerows(results)
+        writer=csv.DictWriter(stream,['frame_ii_cycles','tested_frames','pass_rtl','minimum_sqnr_db','maximum_first_output_cycles','maximum_completion_cycles','reason'],extrasaction='ignore')
+        writer.writeheader();writer.writerows(results)
+    save(out/'progress.json',dict(status='COMPLETE',completed_intervals=len(results),frames_per_interval=count))
     return results
 
 
@@ -122,21 +136,34 @@ def qualify(source,mapped_source,frames,outdir,interval,backend='vcs',seed=11,
 
 def verify(source,mapped_source,frames,outdir,claimed_interval=384,auto=False,backend='vcs',seed=11,
            rtl_compiled=None,gate_compiled=None):
+    """Measured capacity, independent of an agent's declared/theoretical II."""
+    from model import quality_union
     out=Path(outdir);out.mkdir(parents=True,exist_ok=True)
-    if auto:
-        observations=probe_intervals(source,frames,out/'pilot',backend,seed)
-        intervals=[x['frame_ii_cycles']for x in observations if x['pass_rtl']]
-    else:intervals=[validate_interval(claimed_interval)]
-    attempts=[]
-    for interval in intervals:
-        result=qualify(source,mapped_source,frames,out/'full',interval,backend,seed,
+    observations=probe_intervals(source,frames,out/'long_intervals',backend,seed)
+    mandatory=next(x for x in observations if x['frame_ii_cycles']==384)
+    if not mandatory['pass_rtl']:
+        result=dict(status='FAIL',mapped_pass=False,reason='Mandatory 384-cycle long service failed',mandatory=mandatory)
+        save(out/'result.json',result);return result
+    passed=[x for x in observations if x['pass_rtl']];attempts=[]
+    for selected in passed:
+        interval=selected['frame_ii_cycles']
+        # Mapping equivalence is a representative subset, separate from the
+        # 1024-frame-per-II RTL capacity measurement.
+        subset=frames[:128]
+        result=qualify(source,mapped_source,subset,out/'mapped_subset',interval,backend,seed,
                        rtl_compiled=rtl_compiled,gate_compiled=gate_compiled)
         attempts.append(dict(interval=interval,status=result['status']))
         save(out/'attempts.json',attempts)
         if result['status']=='PASS':
-            result=dict(result,qualification_method='all-integer pilot plus full validation'if auto else'agent claim plus full validation',
-                        minimum_claim='smallest successful full-tested interval in pilot-qualified set'if auto else'verified declared interval; not a formal global minimum',
-                        directory=str((out/'full'/('ii_'+str(interval))).resolve()))
+            result=dict(result,quality=quality_union(*(x['quality']for x in passed),result['quality']),
+                qualification_method='exhaustive long RTL service measurement + representative RTL/mapped subset',
+                verified_frame_ii_cycles=interval,continuous_frames_verified=selected['tested_frames'],
+                mapped_subset_frames=len(subset),ignored_agent_claim=claimed_interval,
+                first_output_latency_cycles=[max(x['maximum_first_output_cycles']for x in passed)],
+                maximum_frame_completion_cycles=max(x['maximum_completion_cycles']for x in passed),
+                optional_shorter_failures=sum(not x['pass_rtl']for x in observations),
+                minimum_claim='smallest passing tested integer II; finite-frame evidence, not a formal worst-case guarantee',
+                directory=str((out/'mapped_subset'/('ii_'+str(interval))).resolve()))
             save(out/'result.json',result);return result
-    result=dict(status='FAIL',mapped_pass=False,reason='No requested interval passed strict full validation',attempts=attempts)
+    result=dict(status='FAIL',mapped_pass=False,reason='No long-tested interval passed mapped subset',attempts=attempts)
     save(out/'result.json',result);return result

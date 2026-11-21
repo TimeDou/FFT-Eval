@@ -119,7 +119,7 @@ def cached_evaluate(submission, directory, settings, calibration=None, formal=Fa
             result['grade']=score_result(result,calibration)
             return result,True
     result=evaluate(submission,directory,'commercial',seed=settings['seed'],scale=settings['scale'],
-                    calibration=calibration,formal=formal,profile=profile,auto_ii=auto_ii)
+                    calibration=calibration,formal=formal,profile=profile,auto_ii=auto_ii,audience='hidden')
     return result,False
 
 
@@ -317,7 +317,7 @@ def main():
     parser.add_argument('--state-dir',help='Shared calibration/protocol cache; default .eval_state/')
     parser.add_argument('--protocol',help='Frozen operator protocol JSON for cross-machine synchronization')
     parser.add_argument('--seed',type=int)
-    parser.add_argument('--scale',type=int,default=3)
+    parser.add_argument('--scale',type=int,default=1)
     parser.add_argument('--calibration',help='A calibration.json produced by this runner in the same environment')
     parser.add_argument('--jobs',type=int,default=1)
     parser.add_argument('--id')
@@ -325,7 +325,7 @@ def main():
     parser.add_argument('--agent',default='unspecified')
     parser.add_argument('--check-only',action='store_true')
     parser.add_argument('--formal',action='store_true')
-    parser.add_argument('--profile',choices=['area','architecture'],default='area',help='Independent frozen scoring profile; default area')
+    parser.add_argument('--profile',choices=['area','architecture'],default='architecture',help='Independent frozen scoring profile; default area')
     args=parser.parse_args()
     if sum(bool(x)for x in [args.submission,args.manifest,args.batch])>1:parser.error('Choose one input mode')
     if args.protocol and args.seed is not None:parser.error('Choose --protocol or --seed')

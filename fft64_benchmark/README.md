@@ -11,7 +11,11 @@
 - [AGENT_WORKFLOW.md](AGENT_WORKFLOW.md) / [DESIGN_PLAN_TEMPLATE.md](DESIGN_PLAN_TEMPLATE.md): evidence-based design loop
 - [SCORING.md](SCORING.md) / [EVALUATION.md](EVALUATION.md): feasibility, score, and verification stages
 
-## Run from the repository root
+## SSH container deployment
+
+With sibling `Synopsys/` and `port.txt`, run `bash check_env.sh` from the repository root. Use `bash run_synopsys_debug.sh submission --quick --out runs/quick` for public debugging in the container, or `bash synopsys.sh exec -- <command>` to call its tools directly. The host needs only Python and SSH. See [REMOTE_SYNOPSYS.md](../REMOTE_SYNOPSYS.md).
+
+## Tools installed in the current environment
 
 ```bash
 bash fft64_benchmark/setup.sh --check-only

@@ -38,7 +38,9 @@ Agent 可自主比较不同架构和精度方案，并根据实际测量调整�
 
 ## 5. 建议工作过程
 
-在**仓库根目录**执行：
+如果仓库同级存在 `Synopsys/` 与 `port.txt`，应使用提供的 SSH 入口，不要在宿主机重复搭建 EDA 环境。在仓库根目录运行 `bash check_env.sh`，然后使用 `bash run_synopsys_debug.sh submission --quick --out runs/quick`。`--profile area` 提供映射与 STA 反馈，`--profile architecture` 执行完整吞吐率与频率评价。也可用 `bash synopsys.sh exec -- <命令>` 在容器中直接调试。详见仓库根目录的 `REMOTE_SYNOPSYS.md`。
+
+工具直接安装在当前环境中时，在**仓库根目录**执行：
 
 ```bash
 bash fft64_benchmark/setup.sh --check-only

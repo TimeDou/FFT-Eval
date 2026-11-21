@@ -38,7 +38,9 @@ All area calculations include the **complete top-level mapped implementation**, 
 
 ## 5. Recommended workflow
 
-From the **repository root**:
+When sibling `Synopsys/` and `port.txt` are present, use the provided SSH transport instead of installing EDA tools on the host. From the repository root, run `bash check_env.sh`, then `bash run_synopsys_debug.sh submission --quick --out runs/quick`. Use `--profile area` for mapping/STA feedback and `--profile architecture` for the full throughput/frequency profile. `bash synopsys.sh exec -- <command>` calls tools directly in the container. See the repository's `REMOTE_SYNOPSYS.md`.
+
+For tools installed directly in the current environment, run from the **repository root**:
 
 ```bash
 bash fft64_benchmark/setup.sh --check-only

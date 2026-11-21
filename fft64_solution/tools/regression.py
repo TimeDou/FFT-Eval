@@ -15,6 +15,7 @@ from check_numeric import check
 from model import reference
 from simulate import schedule,decode
 from evaluate import assemble,score_result
+from scoring import SCORING_VERSION
 
 def main():
     tests=[]
@@ -62,9 +63,12 @@ def main():
         text,source=assemble(root)
         assert 'wire test_signal' in text and len(source['files'])==2
     tests.append(dict(name='self_contained_rtl_include',passed=True))
-    reference_area=dict(backend='local',flow_id='sample',reference_area_um2=100,pass_area_ratio=.8)
+    reference_area=dict(backend='local',flow_id='sample',reference_area_um2=100,
+                        reference_period_ns=9,reference_frame_II_cycles=384,scoring_version=SCORING_VERSION)
     result=dict(status='FAILED',backend='local',flow_id='sample',protocol_pass=True,
-                quality=dict(feasible=True),mapped_simulation_pass=True,ppa=dict(area_um2=10,timing_pass=True))
+                quality=dict(feasible=True),mapped_simulation_pass=True,
+                ppa=dict(area_um2=10,timing_pass=True,effective_required_period_ns=9,clock_period_ns=10),
+                latency=dict(offered_frame_II=384))
     assert score_result(result,reference_area)['score']==0
     result['status']='COMPLETE';assert score_result(result,reference_area)['resolved']
     result['backend']='commercial';assert score_result(result,reference_area)['area_ratio']is None

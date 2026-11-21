@@ -1,3 +1,5 @@
+> 本文件保留历史 v0.2 开源实验。当前 v0.3 本机商业结果见 [SYNOPSYS_RESULTS.md](SYNOPSYS_RESULTS.md)，最新状态见 [results/SYNOPSYS_LATEST.json](results/SYNOPSYS_LATEST.json)。两种流程与评分版本分开记录。
+
 # 本轮解题结果
 
 已将已有方案迁移到新题面和新接口，并完成完整本机复测。选择迭代 R2、精确 parity banking、数据少保留 1 个小数位、twiddle fraction 9；完整面积 **2236.47 µm²**，相对较小准确基线下降 **37.32%**。新的留出测试最低逐帧 SQNR 为 **55.24 dB**，满足 50 dB 要求。

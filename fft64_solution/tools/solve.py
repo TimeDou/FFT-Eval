@@ -15,6 +15,7 @@ BENCHMARK = SOLUTION.with_name('fft64_benchmark')
 sys.path.insert(0, str(BENCHMARK/'tools'))
 from common import read, save, sha, flow_identity,lock
 from evaluate import evaluate, score_result
+from scoring import make_calibration
 from generate import emit
 from tool_context import current as current_tool_context
 
@@ -36,7 +37,7 @@ def execution_context():
 def run_root():
     identity = {str(p.relative_to(BENCHMARK)): sha(p) for p in [
         BENCHMARK/'SPEC.json', *[BENCHMARK/'tools'/n for n in
-        ['common.py','evaluate.py','simulate.py','model.py','local_asic.py']]]}
+        ['common.py','evaluate.py','simulate.py','model.py','local_asic.py','scoring.py']]]}
     identity['generate.py'] = sha(SOLUTION/'tools/generate.py')
     identity['solve.py'] = sha(__file__)
     identity['execution_tools'] = hashlib.sha256(json.dumps(execution_context(),sort_keys=True).encode()).hexdigest()
@@ -128,9 +129,8 @@ def run_search():
     if not all(r['status']=='COMPLETE' and r['ppa']['timing_pass'] for r in accurate):
         save(SOLUTION/'results/status.json',dict(status='NEEDS_BASELINE_FIX',run=str(run),run_relative=str(run.relative_to(SOLUTION)),completed=len(results),total=len(CASES)))
         raise RuntimeError('An accurate baseline needs attention; completed results are retained')
-    calibration = dict(benchmark_id='fft64_quant_arch_v0.2', backend='local', flow_id=flow_identity('local'),
-                       reference_area_um2=min(r['ppa']['area_um2'] for r in accurate),
-                       pass_area_ratio=.8, score='fractional_area_saving')
+    calibration = make_calibration({name:results[name]for name in ['accurate_sdf','accurate_iterative']},
+                                  benchmark_id=read(BENCHMARK/'SPEC.json')['benchmark_id'])
     save(SOLUTION/'results/local_area_reference.json', calibration)
     for name, result in results.items():
         result['grade'] = score_result(result, calibration)

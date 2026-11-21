@@ -1,0 +1,38 @@
+{
+  "backend": "commercial",
+  "flow_id": "0d7d9cc4d5b2ea4185069e41fb57fe66927ecd7cb6d7aa620d4638324d64e182",
+  "tools": {
+    "vcs": {
+      "path": "/usr/synopsys/vcs-L-2016.06/bin/vcs",
+      "sha256": "862dbb6504c06be76841c3ee5f2ac896e31a6b85d9763a43d1b788e1e77eda04"
+    },
+    "dc_shell": {
+      "path": "/usr/synopsys/dc-L-2016.03-SP1/bin/dc_shell",
+      "sha256": "9f02911939ed5da9be588569bf74ae4a36b0ed5f48d67f4e9f36aa7110d7f5f5"
+    },
+    "pt_shell": {
+      "path": "/usr/synopsys/pt-M-2016.12-SP1/bin/pt_shell",
+      "sha256": "4628e991bb7477042adc7b8af31cad457af59054ea4a757d4cd2dbcf9c138e2f"
+    }
+  },
+  "evaluator_files": {
+    "evaluate.py": "2b3522ba52b72dc74ed556ff2d723b5d1a86f5821c110b85ec7a77c39a84bb5c",
+    "model.py": "63e7374a7a3c07e296c4b44878419a559b6c22e7b975b18b2ba45532034f6eee",
+    "simulate.py": "e7ab6c6b21caf43199605777945c48ad03d906b7cc0f2b569451bf27e9d2917b",
+    "common.py": "49f2945c6c9617f63806d09866f4f00afb3418d9c43388a034c5d3ee68a602d3",
+    "toolchain.py": "6a481a4e74ea24a87875e09f113e68267468ca931634de481bc188c52d158ec0",
+    "commercial.py": "6dceef52ca4d5ccc1f9af17f4121c036f4010db77bc6a5f9939489f949d68c2d",
+    "scoring.py": "c05d423ad8348dad93bded072ffe691e0679311116b64aa7a9d6be09a6a75604"
+  },
+  "baseline_source_sha256": {
+    "sdf": "c342a5dedfec900f97e98ebceb7f71b696d8280a72f83da74f59a90272478943",
+    "iterative": "11bc67b460ffd93c3bc1cfd2c106abcda1f19886350db58705e4728d5fa770ca"
+  },
+  "numerical_runtime": {
+    "python_version": "3.12.10 (main, May 30 2025, 05:37:37) [Clang 20.1.4 ]",
+    "python_executable": "/mnt/mydata/runtime/python/bin/python3",
+    "python_sha256": "d17344654e51cf1a30ab2d36aaf6a7d9e64937b13f0150cbcf17d1f60036e210",
+    "numpy_version": "2.2.6"
+  },
+  "runner_sha256": "a721ce91797c08fc9e2178af299f025bc090784e51669d0e336f71c553c0be35"
+}

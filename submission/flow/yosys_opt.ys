@@ -1,0 +1,6 @@
+# Default RTL optimization. Copy to submission/flow/yosys_opt.ys and replace.
+# RTL and library blackboxes have already been read, top is fft64_top.
+# You may choose FSM/memory/optimization passes and their order here.
+# The wrapper subsequently applies dfflibmap, ABC, and structural export.
+# Boolean rewriting such as rewrite/resyn2 belongs in abc_opt.script.
+synth -top fft64_top -flatten -noabc

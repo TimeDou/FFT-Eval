@@ -1,6 +1,6 @@
 #@ # 
 #@ # Running dc_shell Version L-2016.03-SP1 for linux64 -- Apr 18, 2016
-#@ # Date:   Sun Nov 22 14:57:37 2026
+#@ # Date:   Sun Nov 22 21:29:28 2026
 #@ # Run by: root@lizhen
 #@ 
 
@@ -5434,8 +5434,8 @@ source /usr/synopsys/dc-L-2016.03-SP1/admin/setup/.synopsys_dc.setup
 #@ }
 #@ # -- End source /usr/synopsys/dc-L-2016.03-SP1/admin/setup/.synopsys_dc.setup
 
-source -echo -verbose /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/synth_dc.tcl
-#@ # -- Starting source /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/synth_dc.tcl
+source -echo -verbose /mnt/mydata/agent_reviews/final_score_aware_20261122_132636/engine_private/fft64_benchmark/flow/synth_dc.tcl
+#@ # -- Starting source /mnt/mydata/agent_reviews/final_score_aware_20261122_132636/engine_private/fft64_benchmark/flow/synth_dc.tcl
 
 #@ # Batch shells can log a Tcl error and continue to exit successfully. Stop at
 #@ # the first Tcl failure, and leave no partial metrics JSON for the evaluator.
@@ -5510,7 +5510,7 @@ source -echo -verbose /mnt/mydata/agent_reviews/review_20261122_065445/engine/ff
 #@     puts stderr "TASK_FATAL: $task_error"
 #@     exit 1
 #@ }
-#@ # -- Starting source /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/paths.tcl
+#@ # -- Starting source /mnt/mydata/agent_reviews/final_score_aware_20261122_132636/engine_private/fft64_benchmark/flow/paths.tcl
 
 #@ # Shared, fixed by the task author; candidates cannot supply timing commands.
 #@ set TASK_ROOT [file normalize [file join [file dirname [info script]] ..]]
@@ -5522,9 +5522,9 @@ source -echo -verbose /mnt/mydata/agent_reviews/review_20261122_065445/engine/ff
 #@ file mkdir $WORK
 #@ set DBLIST [list [file join $TECH_DIR db comb_rvt_tt.db] [file join $TECH_DIR db seq_rvt_tt.db]]
 #@ foreach db $DBLIST {if {![file exists $db]} {error "Missing compiled ASAP7 DB: $db; run prepare_libraries first"}}
-#@ # -- End source /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/paths.tcl
+#@ # -- End source /mnt/mydata/agent_reviews/final_score_aware_20261122_132636/engine_private/fft64_benchmark/flow/paths.tcl
 
-#@ # -- Starting source /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/constraints.sdc
+#@ # -- Starting source /mnt/mydata/agent_reviews/final_score_aware_20261122_132636/engine_private/fft64_benchmark/flow/constraints.sdc
 
 #@ # ASAP7 library native time unit is 1ps, capacitance is 1fF.
 #@ create_clock -name clk -period 10000 [get_ports clk]
@@ -5537,28 +5537,6 @@ source -echo -verbose /mnt/mydata/agent_reviews/review_20261122_065445/engine/ff
 #@ # Reset must work in simulation. Performance rating excludes reset switching;
 #@ # reset is released at least two full cycles before the first input packet.
 #@ set_false_path -from [get_ports rst]
-#@ # -- End source /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/constraints.sdc
-
-#@ # -- Starting source /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/templates/dc_opt.tcl
-
-#@ # Default optimization recipe. Copy to submission/flow/dc_opt.tcl and replace
-#@ # this body to explore DC commands, app variables and compile strategies.
-#@ # The design is elaborated and the default synthesis constraints are loaded.
-#@ # Examples to investigate on the installed DC (check `help` for support):
-#@ #   compile_ultra -timing_high_effort_script
-#@ #   compile_ultra -retime
-#@ #   compile -map_effort high -area_effort high
-#@ #   compile_ultra -incremental
-#@ # You may change the synthesis target to steer optimization. Final timing is
-#@ # independently measured with the benchmark's fixed constraints.
-#@ # Keep the external clk/reset/transaction behavior; do not insert clock gating.
-#@ ungroup -all -flatten
-#@ set_fix_hold [get_clocks clk]
-#@ set_max_area 0
-#@ set_fix_multiple_port_nets -all -buffer_constants
-#@ set_dont_touch_network [get_ports clk]
-#@ compile_ultra -area_high_effort_script
-#@ compile -incremental_mapping -only_hold_time
-#@ # -- End source /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/templates/dc_opt.tcl
+#@ # -- End source /mnt/mydata/agent_reviews/final_score_aware_20261122_132636/engine_private/fft64_benchmark/flow/constraints.sdc
 
 #@ exit 0

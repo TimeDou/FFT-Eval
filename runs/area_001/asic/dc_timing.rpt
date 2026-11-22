@@ -1,0 +1,537 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 5
+Design : fft64_top
+Version: L-2016.03-SP1
+Date   : Sun Nov 22 19:27:59 2026
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: PVT_0P7V_25C   Library: asap7sc7p5t_ALL_RVT_TT_nldm_211120
+Wire Load Model Mode: top
+
+  Startpoint: cp1_reg_1_ (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: o2_re_reg_17_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  cp1_reg_1_/CLK (DFFHQNx1_ASAP7_75t_R)                   0.00 #     0.00 r
+  cp1_reg_1_/QN (DFFHQNx1_ASAP7_75t_R)                   73.95      73.95 r
+  U23590/Y (INVxp33_ASAP7_75t_R)                         71.78     145.73 f
+  U23614/Y (OAI22xp33_ASAP7_75t_R)                       37.25     182.98 r
+  U23619/Y (INVxp33_ASAP7_75t_R)                         33.71     216.69 f
+  U6145/Y (NAND2xp5_ASAP7_75t_R)                        135.92     352.61 r
+  U23620/Y (INVxp33_ASAP7_75t_R)                        196.24     548.85 f
+  U23625/Y (O2A1O1Ixp33_ASAP7_75t_R)                    192.53     741.38 r
+  U23626/Y (HB1xp67_ASAP7_75t_R)                         77.23     818.60 r
+  U23627/Y (AND2x2_ASAP7_75t_R)                          32.79     851.40 r
+  U23629/Y (NOR2xp33_ASAP7_75t_R)                        35.02     886.42 f
+  U23638/Y (NAND2xp33_ASAP7_75t_R)                      133.92    1020.34 r
+  U23639/Y (NAND2xp33_ASAP7_75t_R)                      162.16    1182.50 f
+  U23640/Y (NOR2xp33_ASAP7_75t_R)                        81.18    1263.68 r
+  U6058/Y (NAND2xp5_ASAP7_75t_R)                        117.76    1381.44 f
+  U5966/Y (OR2x2_ASAP7_75t_R)                            74.87    1456.31 f
+  U23660/Y (NAND2xp33_ASAP7_75t_R)                      103.23    1559.53 r
+  U23661/Y (INVxp33_ASAP7_75t_R)                        136.52    1696.06 f
+  U23662/Y (NOR2xp33_ASAP7_75t_R)                       141.63    1837.68 r
+  U23675/Y (INVxp33_ASAP7_75t_R)                        144.68    1982.37 f
+  U23676/Y (NAND2xp33_ASAP7_75t_R)                      158.63    2140.99 r
+  U23691/Y (OAI31xp33_ASAP7_75t_R)                      153.38    2294.37 f
+  U23692/Y (NAND2xp33_ASAP7_75t_R)                       78.88    2373.25 r
+  U23693/Y (INVxp33_ASAP7_75t_R)                         31.20    2404.45 f
+  U23694/Y (NOR2xp33_ASAP7_75t_R)                       123.55    2528.00 r
+  U24358/Y (INVxp33_ASAP7_75t_R)                        151.16    2679.16 f
+  U23718/Y (NOR2xp33_ASAP7_75t_R)                       131.10    2810.26 r
+  U23719/Y (INVxp33_ASAP7_75t_R)                        145.52    2955.78 f
+  U23720/Y (OAI22xp33_ASAP7_75t_R)                       67.98    3023.76 r
+  U23722/Y (XOR2xp5_ASAP7_75t_R)                         42.46    3066.22 r
+  U23882/Y (XOR2xp5_ASAP7_75t_R)                         35.76    3101.99 r
+  U23886/Y (XNOR2xp5_ASAP7_75t_R)                        26.38    3128.37 r
+  U23887/Y (NOR2xp33_ASAP7_75t_R)                        16.79    3145.16 f
+  U23888/Y (NOR2xp33_ASAP7_75t_R)                        25.74    3170.90 r
+  U23923/Y (XOR2xp5_ASAP7_75t_R)                         35.47    3206.36 r
+  U23925/Y (NAND2xp33_ASAP7_75t_R)                       13.22    3219.58 f
+  U23926/Y (NAND2xp33_ASAP7_75t_R)                       25.04    3244.62 r
+  U23927/Y (XNOR2xp5_ASAP7_75t_R)                        27.17    3271.79 r
+  U23928/Y (XNOR2xp5_ASAP7_75t_R)                        26.46    3298.25 r
+  U23994/Y (XOR2xp5_ASAP7_75t_R)                         34.32    3332.57 r
+  U24048/Y (XOR2xp5_ASAP7_75t_R)                         33.97    3366.54 r
+  U24321/Y (XNOR2xp5_ASAP7_75t_R)                        17.93    3384.47 f
+  U24322/Y (NOR2xp33_ASAP7_75t_R)                        21.89    3406.36 r
+  U24323/Y (NOR2xp33_ASAP7_75t_R)                        21.79    3428.15 f
+  U24422/Y (NAND2xp33_ASAP7_75t_R)                       23.21    3451.36 r
+  U24519/Y (NAND2xp33_ASAP7_75t_R)                       19.36    3470.72 f
+  U24520/Y (NAND2xp33_ASAP7_75t_R)                       21.86    3492.58 r
+  U26725/Y (NAND2xp33_ASAP7_75t_R)                       23.61    3516.19 f
+  U26727/Y (XNOR2xp5_ASAP7_75t_R)                        29.99    3546.19 f
+  U26731/Y (NOR2xp33_ASAP7_75t_R)                        21.66    3567.85 r
+  U26732/Y (NOR2xp33_ASAP7_75t_R)                        27.17    3595.02 f
+  U26738/Y (XNOR2xp5_ASAP7_75t_R)                        29.44    3624.46 f
+  U26739/Y (NOR2xp33_ASAP7_75t_R)                        21.94    3646.40 r
+  U26740/Y (NOR2xp33_ASAP7_75t_R)                        32.11    3678.50 f
+  U26748/Y (MAJIxp5_ASAP7_75t_R)                         31.75    3710.25 r
+  U26753/Y (XNOR2xp5_ASAP7_75t_R)                        24.17    3734.43 r
+  U26755/Y (NOR2xp33_ASAP7_75t_R)                        21.30    3755.72 f
+  U26756/Y (NOR2xp33_ASAP7_75t_R)                        20.48    3776.21 r
+  U26758/Y (NOR2xp33_ASAP7_75t_R)                        21.34    3797.55 f
+  U26759/Y (NOR2xp33_ASAP7_75t_R)                        20.49    3818.04 r
+  U26761/Y (NOR2xp33_ASAP7_75t_R)                        21.34    3839.38 f
+  U26762/Y (NOR2xp33_ASAP7_75t_R)                        20.50    3859.88 r
+  U26764/Y (NOR2xp33_ASAP7_75t_R)                        21.34    3881.22 f
+  U26765/Y (NOR2xp33_ASAP7_75t_R)                        20.50    3901.72 r
+  U26767/Y (NOR2xp33_ASAP7_75t_R)                        25.99    3927.71 f
+  U26768/Y (NOR2xp33_ASAP7_75t_R)                        26.24    3953.95 r
+  U26774/Y (MAJIxp5_ASAP7_75t_R)                         20.09    3974.04 f
+  U26775/Y (NAND2xp33_ASAP7_75t_R)                       27.79    4001.83 r
+  U26821/Y (NAND2xp33_ASAP7_75t_R)                       23.90    4025.72 f
+  U27129/Y (MAJIxp5_ASAP7_75t_R)                         21.98    4047.70 r
+  U27135/Y (AND2x2_ASAP7_75t_R)                          22.71    4070.41 r
+  U27136/Y (NOR2xp33_ASAP7_75t_R)                        14.97    4085.38 f
+  U27137/Y (NOR2xp33_ASAP7_75t_R)                        20.38    4105.76 r
+  U27139/Y (NOR2xp33_ASAP7_75t_R)                        21.31    4127.07 f
+  U27140/Y (NOR2xp33_ASAP7_75t_R)                        20.55    4147.62 r
+  U27142/Y (NAND2xp33_ASAP7_75t_R)                       22.31    4169.93 f
+  U27150/Y (NAND3xp33_ASAP7_75t_R)                       19.52    4189.45 r
+  U27151/Y (A2O1A1Ixp33_ASAP7_75t_R)                     20.27    4209.73 f
+  U27153/Y (OAI21xp33_ASAP7_75t_R)                       15.83    4225.56 r
+  U27154/Y (OAI31xp33_ASAP7_75t_R)                       23.64    4249.20 f
+  U27157/Y (A2O1A1Ixp33_ASAP7_75t_R)                     19.29    4268.49 r
+  U27158/Y (AOI31xp33_ASAP7_75t_R)                       15.75    4284.24 f
+  U27159/Y (AOI21xp33_ASAP7_75t_R)                       20.01    4304.25 r
+  o2_re_reg_17_/D (DFFHQNx1_ASAP7_75t_R)                  0.00    4304.25 r
+  data arrival time                                               4304.25
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  o2_re_reg_17_/CLK (DFFHQNx1_ASAP7_75t_R)                0.00    9900.00 r
+  library setup time                                    -14.05    9885.95
+  data required time                                              9885.95
+  --------------------------------------------------------------------------
+  data required time                                              9885.95
+  data arrival time                                              -4304.25
+  --------------------------------------------------------------------------
+  slack (MET)                                                     5581.70
+
+
+  Startpoint: cp1_reg_1_ (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: o2_im_reg_17_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  cp1_reg_1_/CLK (DFFHQNx1_ASAP7_75t_R)                   0.00 #     0.00 r
+  cp1_reg_1_/QN (DFFHQNx1_ASAP7_75t_R)                   73.95      73.95 r
+  U23590/Y (INVxp33_ASAP7_75t_R)                         71.78     145.73 f
+  U23614/Y (OAI22xp33_ASAP7_75t_R)                       37.25     182.98 r
+  U23619/Y (INVxp33_ASAP7_75t_R)                         33.71     216.69 f
+  U6145/Y (NAND2xp5_ASAP7_75t_R)                        135.92     352.61 r
+  U23620/Y (INVxp33_ASAP7_75t_R)                        196.24     548.85 f
+  U23625/Y (O2A1O1Ixp33_ASAP7_75t_R)                    192.53     741.38 r
+  U23626/Y (HB1xp67_ASAP7_75t_R)                         77.23     818.60 r
+  U23627/Y (AND2x2_ASAP7_75t_R)                          32.79     851.40 r
+  U23629/Y (NOR2xp33_ASAP7_75t_R)                        35.02     886.42 f
+  U23638/Y (NAND2xp33_ASAP7_75t_R)                      133.92    1020.34 r
+  U23639/Y (NAND2xp33_ASAP7_75t_R)                      162.16    1182.50 f
+  U23640/Y (NOR2xp33_ASAP7_75t_R)                        81.18    1263.68 r
+  U6058/Y (NAND2xp5_ASAP7_75t_R)                        117.76    1381.44 f
+  U5966/Y (OR2x2_ASAP7_75t_R)                            74.87    1456.31 f
+  U23660/Y (NAND2xp33_ASAP7_75t_R)                      103.23    1559.53 r
+  U23661/Y (INVxp33_ASAP7_75t_R)                        136.52    1696.06 f
+  U23662/Y (NOR2xp33_ASAP7_75t_R)                       141.63    1837.68 r
+  U23675/Y (INVxp33_ASAP7_75t_R)                        144.68    1982.37 f
+  U23676/Y (NAND2xp33_ASAP7_75t_R)                      158.63    2140.99 r
+  U23691/Y (OAI31xp33_ASAP7_75t_R)                      153.38    2294.37 f
+  U23692/Y (NAND2xp33_ASAP7_75t_R)                       78.88    2373.25 r
+  U23693/Y (INVxp33_ASAP7_75t_R)                         31.20    2404.45 f
+  U23694/Y (NOR2xp33_ASAP7_75t_R)                       123.55    2528.00 r
+  U24358/Y (INVxp33_ASAP7_75t_R)                        151.16    2679.16 f
+  U23718/Y (NOR2xp33_ASAP7_75t_R)                       131.10    2810.26 r
+  U23719/Y (INVxp33_ASAP7_75t_R)                        145.52    2955.78 f
+  U25075/Y (OAI22xp33_ASAP7_75t_R)                       67.98    3023.76 r
+  U25076/Y (NAND2xp33_ASAP7_75t_R)                       19.58    3043.34 f
+  U25077/Y (NAND2xp33_ASAP7_75t_R)                       28.01    3071.35 r
+  U25086/Y (XNOR2xp5_ASAP7_75t_R)                        27.78    3099.13 r
+  U25087/Y (NOR2xp33_ASAP7_75t_R)                        17.01    3116.13 f
+  U25088/Y (NOR2xp33_ASAP7_75t_R)                        27.22    3143.35 r
+  U25090/Y (NOR2xp33_ASAP7_75t_R)                        19.30    3162.65 f
+  U25091/Y (NOR2xp33_ASAP7_75t_R)                        25.86    3188.51 r
+  U25095/Y (XOR2xp5_ASAP7_75t_R)                         36.97    3225.48 r
+  U25096/Y (AND2x2_ASAP7_75t_R)                          25.80    3251.29 r
+  U25097/Y (NOR2xp33_ASAP7_75t_R)                        19.57    3270.85 f
+  U25100/Y (XNOR2xp5_ASAP7_75t_R)                        31.17    3302.03 f
+  U25101/Y (NOR2xp33_ASAP7_75t_R)                        15.60    3317.63 r
+  U25102/Y (NOR2xp33_ASAP7_75t_R)                        23.07    3340.70 f
+  U25324/Y (XNOR2xp5_ASAP7_75t_R)                        30.63    3371.34 f
+  U25325/Y (NOR2xp33_ASAP7_75t_R)                        22.14    3393.47 r
+  U25326/Y (NOR2xp33_ASAP7_75t_R)                        23.03    3416.51 f
+  U25328/Y (NOR2xp33_ASAP7_75t_R)                        22.43    3438.94 r
+  U25329/Y (NOR2xp33_ASAP7_75t_R)                        22.55    3461.49 f
+  U25331/Y (NOR2xp33_ASAP7_75t_R)                        27.80    3489.29 r
+  U25332/Y (NOR2xp33_ASAP7_75t_R)                        27.04    3516.32 f
+  U25437/Y (MAJIxp5_ASAP7_75t_R)                         26.69    3543.01 r
+  U25531/Y (XOR2xp5_ASAP7_75t_R)                         30.32    3573.33 r
+  U25535/Y (NAND2xp33_ASAP7_75t_R)                       20.08    3593.41 f
+  U25537/Y (NAND2xp33_ASAP7_75t_R)                       33.46    3626.87 r
+  U25542/Y (MAJIxp5_ASAP7_75t_R)                         30.47    3657.34 f
+  U25865/Y (MAJIxp5_ASAP7_75t_R)                         22.35    3679.69 r
+  U25867/Y (NOR2xp33_ASAP7_75t_R)                        21.73    3701.41 f
+  U25868/Y (NOR2xp33_ASAP7_75t_R)                        20.64    3722.05 r
+  U25870/Y (NAND2xp33_ASAP7_75t_R)                       20.43    3742.48 f
+  U25871/Y (NAND2xp33_ASAP7_75t_R)                       26.83    3769.31 r
+  U25876/Y (MAJIxp5_ASAP7_75t_R)                         19.98    3789.30 f
+  U25939/Y (NAND2xp33_ASAP7_75t_R)                       28.59    3817.89 r
+  U25996/Y (NAND2xp33_ASAP7_75t_R)                       29.37    3847.26 f
+  U27011/Y (MAJIxp5_ASAP7_75t_R)                         26.41    3873.67 r
+  U27012/Y (NAND2xp33_ASAP7_75t_R)                       22.42    3896.09 f
+  U27013/Y (NAND2xp33_ASAP7_75t_R)                       31.67    3927.75 r
+  U27014/Y (MAJIxp5_ASAP7_75t_R)                         21.10    3948.85 f
+  U27016/Y (NOR2xp33_ASAP7_75t_R)                        28.31    3977.16 r
+  U27017/Y (NOR2xp33_ASAP7_75t_R)                        33.42    4010.58 f
+  U27021/Y (MAJIxp5_ASAP7_75t_R)                         37.63    4048.21 r
+  U27030/Y (MAJIxp5_ASAP7_75t_R)                         25.44    4073.64 f
+  U27036/Y (XNOR2xp5_ASAP7_75t_R)                        29.50    4103.15 f
+  U27037/Y (NAND3xp33_ASAP7_75t_R)                       17.00    4120.15 r
+  U27038/Y (A2O1A1Ixp33_ASAP7_75t_R)                     27.02    4147.18 f
+  U27039/Y (NAND3xp33_ASAP7_75t_R)                       22.40    4169.58 r
+  U27040/Y (A2O1A1Ixp33_ASAP7_75t_R)                     20.85    4190.42 f
+  U27041/Y (OAI21xp33_ASAP7_75t_R)                       19.10    4209.53 r
+  U27042/Y (AOI21xp33_ASAP7_75t_R)                       14.49    4224.02 f
+  U27043/Y (AOI21xp33_ASAP7_75t_R)                       19.82    4243.84 r
+  o2_im_reg_17_/D (DFFHQNx1_ASAP7_75t_R)                  0.00    4243.84 r
+  data arrival time                                               4243.84
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  o2_im_reg_17_/CLK (DFFHQNx1_ASAP7_75t_R)                0.00    9900.00 r
+  library setup time                                    -14.05    9885.95
+  data required time                                              9885.95
+  --------------------------------------------------------------------------
+  data required time                                              9885.95
+  data arrival time                                              -4243.84
+  --------------------------------------------------------------------------
+  slack (MET)                                                     5642.11
+
+
+  Startpoint: cp1_reg_1_ (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: o2_re_reg_16_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  cp1_reg_1_/CLK (DFFHQNx1_ASAP7_75t_R)                   0.00 #     0.00 r
+  cp1_reg_1_/QN (DFFHQNx1_ASAP7_75t_R)                   73.95      73.95 r
+  U23590/Y (INVxp33_ASAP7_75t_R)                         71.78     145.73 f
+  U23614/Y (OAI22xp33_ASAP7_75t_R)                       37.25     182.98 r
+  U23619/Y (INVxp33_ASAP7_75t_R)                         33.71     216.69 f
+  U6145/Y (NAND2xp5_ASAP7_75t_R)                        135.92     352.61 r
+  U23620/Y (INVxp33_ASAP7_75t_R)                        196.24     548.85 f
+  U23625/Y (O2A1O1Ixp33_ASAP7_75t_R)                    192.53     741.38 r
+  U23626/Y (HB1xp67_ASAP7_75t_R)                         77.23     818.60 r
+  U23627/Y (AND2x2_ASAP7_75t_R)                          32.79     851.40 r
+  U23629/Y (NOR2xp33_ASAP7_75t_R)                        35.02     886.42 f
+  U23638/Y (NAND2xp33_ASAP7_75t_R)                      133.92    1020.34 r
+  U23639/Y (NAND2xp33_ASAP7_75t_R)                      162.16    1182.50 f
+  U23640/Y (NOR2xp33_ASAP7_75t_R)                        81.18    1263.68 r
+  U6058/Y (NAND2xp5_ASAP7_75t_R)                        117.76    1381.44 f
+  U5966/Y (OR2x2_ASAP7_75t_R)                            74.87    1456.31 f
+  U23660/Y (NAND2xp33_ASAP7_75t_R)                      103.23    1559.53 r
+  U23661/Y (INVxp33_ASAP7_75t_R)                        136.52    1696.06 f
+  U23662/Y (NOR2xp33_ASAP7_75t_R)                       141.63    1837.68 r
+  U23675/Y (INVxp33_ASAP7_75t_R)                        144.68    1982.37 f
+  U23676/Y (NAND2xp33_ASAP7_75t_R)                      158.63    2140.99 r
+  U23691/Y (OAI31xp33_ASAP7_75t_R)                      153.38    2294.37 f
+  U23692/Y (NAND2xp33_ASAP7_75t_R)                       78.88    2373.25 r
+  U23693/Y (INVxp33_ASAP7_75t_R)                         31.20    2404.45 f
+  U23694/Y (NOR2xp33_ASAP7_75t_R)                       123.55    2528.00 r
+  U24358/Y (INVxp33_ASAP7_75t_R)                        151.16    2679.16 f
+  U23718/Y (NOR2xp33_ASAP7_75t_R)                       131.10    2810.26 r
+  U23719/Y (INVxp33_ASAP7_75t_R)                        145.52    2955.78 f
+  U23720/Y (OAI22xp33_ASAP7_75t_R)                       67.98    3023.76 r
+  U23722/Y (XOR2xp5_ASAP7_75t_R)                         42.46    3066.22 r
+  U23882/Y (XOR2xp5_ASAP7_75t_R)                         35.76    3101.99 r
+  U23886/Y (XNOR2xp5_ASAP7_75t_R)                        26.38    3128.37 r
+  U23887/Y (NOR2xp33_ASAP7_75t_R)                        16.79    3145.16 f
+  U23888/Y (NOR2xp33_ASAP7_75t_R)                        25.74    3170.90 r
+  U23923/Y (XOR2xp5_ASAP7_75t_R)                         35.47    3206.36 r
+  U23925/Y (NAND2xp33_ASAP7_75t_R)                       13.22    3219.58 f
+  U23926/Y (NAND2xp33_ASAP7_75t_R)                       25.04    3244.62 r
+  U23927/Y (XNOR2xp5_ASAP7_75t_R)                        27.17    3271.79 r
+  U23928/Y (XNOR2xp5_ASAP7_75t_R)                        26.46    3298.25 r
+  U23994/Y (XOR2xp5_ASAP7_75t_R)                         34.32    3332.57 r
+  U24048/Y (XOR2xp5_ASAP7_75t_R)                         33.97    3366.54 r
+  U24321/Y (XNOR2xp5_ASAP7_75t_R)                        23.67    3390.21 r
+  U24322/Y (NOR2xp33_ASAP7_75t_R)                        22.73    3412.94 f
+  U24323/Y (NOR2xp33_ASAP7_75t_R)                        22.36    3435.29 r
+  U24422/Y (NAND2xp33_ASAP7_75t_R)                       16.68    3451.98 f
+  U24519/Y (NAND2xp33_ASAP7_75t_R)                       22.36    3474.33 r
+  U24520/Y (NAND2xp33_ASAP7_75t_R)                       18.54    3492.88 f
+  U26725/Y (NAND2xp33_ASAP7_75t_R)                       28.23    3521.11 r
+  U26727/Y (XNOR2xp5_ASAP7_75t_R)                        24.73    3545.84 r
+  U26731/Y (NOR2xp33_ASAP7_75t_R)                        23.14    3568.98 f
+  U26732/Y (NOR2xp33_ASAP7_75t_R)                        27.15    3596.13 r
+  U26738/Y (XNOR2xp5_ASAP7_75t_R)                        25.59    3621.72 r
+  U26739/Y (NOR2xp33_ASAP7_75t_R)                        22.76    3644.48 f
+  U26740/Y (NOR2xp33_ASAP7_75t_R)                        34.23    3678.71 r
+  U26748/Y (MAJIxp5_ASAP7_75t_R)                         29.25    3707.96 f
+  U26753/Y (XNOR2xp5_ASAP7_75t_R)                        27.90    3735.86 f
+  U26755/Y (NOR2xp33_ASAP7_75t_R)                        19.84    3755.70 r
+  U26756/Y (NOR2xp33_ASAP7_75t_R)                        20.01    3775.71 f
+  U26758/Y (NOR2xp33_ASAP7_75t_R)                        20.11    3795.82 r
+  U26759/Y (NOR2xp33_ASAP7_75t_R)                        20.04    3815.85 f
+  U26761/Y (NOR2xp33_ASAP7_75t_R)                        20.11    3835.97 r
+  U26762/Y (NOR2xp33_ASAP7_75t_R)                        19.99    3855.96 f
+  U26764/Y (NOR2xp33_ASAP7_75t_R)                        20.10    3876.06 r
+  U26765/Y (NOR2xp33_ASAP7_75t_R)                        20.07    3896.13 f
+  U26767/Y (NOR2xp33_ASAP7_75t_R)                        25.47    3921.60 r
+  U26768/Y (NOR2xp33_ASAP7_75t_R)                        26.05    3947.66 f
+  U26774/Y (MAJIxp5_ASAP7_75t_R)                         22.43    3970.09 r
+  U26775/Y (NAND2xp33_ASAP7_75t_R)                       22.64    3992.73 f
+  U26821/Y (NAND2xp33_ASAP7_75t_R)                       27.09    4019.82 r
+  U27129/Y (MAJIxp5_ASAP7_75t_R)                         19.93    4039.74 f
+  U27135/Y (AND2x2_ASAP7_75t_R)                          24.87    4064.61 f
+  U27136/Y (NOR2xp33_ASAP7_75t_R)                        16.48    4081.10 r
+  U27137/Y (NOR2xp33_ASAP7_75t_R)                        20.13    4101.22 f
+  U27139/Y (NOR2xp33_ASAP7_75t_R)                        20.26    4121.48 r
+  U27140/Y (NOR2xp33_ASAP7_75t_R)                        19.94    4141.42 f
+  U27142/Y (NAND2xp33_ASAP7_75t_R)                       30.30    4171.72 r
+  U28120/Y (OAI21xp33_ASAP7_75t_R)                       17.74    4189.46 f
+  U28121/Y (AOI22xp33_ASAP7_75t_R)                       19.68    4209.14 r
+  o2_re_reg_16_/D (DFFHQNx1_ASAP7_75t_R)                  0.00    4209.14 r
+  data arrival time                                               4209.14
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  o2_re_reg_16_/CLK (DFFHQNx1_ASAP7_75t_R)                0.00    9900.00 r
+  library setup time                                    -15.58    9884.42
+  data required time                                              9884.42
+  --------------------------------------------------------------------------
+  data required time                                              9884.42
+  data arrival time                                              -4209.14
+  --------------------------------------------------------------------------
+  slack (MET)                                                     5675.28
+
+
+  Startpoint: cp1_reg_1_ (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: o2_re_reg_15_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  cp1_reg_1_/CLK (DFFHQNx1_ASAP7_75t_R)                   0.00 #     0.00 r
+  cp1_reg_1_/QN (DFFHQNx1_ASAP7_75t_R)                   73.95      73.95 r
+  U23590/Y (INVxp33_ASAP7_75t_R)                         71.78     145.73 f
+  U23614/Y (OAI22xp33_ASAP7_75t_R)                       37.25     182.98 r
+  U23619/Y (INVxp33_ASAP7_75t_R)                         33.71     216.69 f
+  U6145/Y (NAND2xp5_ASAP7_75t_R)                        135.92     352.61 r
+  U23620/Y (INVxp33_ASAP7_75t_R)                        196.24     548.85 f
+  U23625/Y (O2A1O1Ixp33_ASAP7_75t_R)                    192.53     741.38 r
+  U23626/Y (HB1xp67_ASAP7_75t_R)                         77.23     818.60 r
+  U23627/Y (AND2x2_ASAP7_75t_R)                          32.79     851.40 r
+  U23629/Y (NOR2xp33_ASAP7_75t_R)                        35.02     886.42 f
+  U23638/Y (NAND2xp33_ASAP7_75t_R)                      133.92    1020.34 r
+  U23639/Y (NAND2xp33_ASAP7_75t_R)                      162.16    1182.50 f
+  U23640/Y (NOR2xp33_ASAP7_75t_R)                        81.18    1263.68 r
+  U6058/Y (NAND2xp5_ASAP7_75t_R)                        117.76    1381.44 f
+  U5966/Y (OR2x2_ASAP7_75t_R)                            74.87    1456.31 f
+  U23660/Y (NAND2xp33_ASAP7_75t_R)                      103.23    1559.53 r
+  U23661/Y (INVxp33_ASAP7_75t_R)                        136.52    1696.06 f
+  U23662/Y (NOR2xp33_ASAP7_75t_R)                       141.63    1837.68 r
+  U23675/Y (INVxp33_ASAP7_75t_R)                        144.68    1982.37 f
+  U23676/Y (NAND2xp33_ASAP7_75t_R)                      158.63    2140.99 r
+  U23691/Y (OAI31xp33_ASAP7_75t_R)                      153.38    2294.37 f
+  U23692/Y (NAND2xp33_ASAP7_75t_R)                       78.88    2373.25 r
+  U23693/Y (INVxp33_ASAP7_75t_R)                         31.20    2404.45 f
+  U23694/Y (NOR2xp33_ASAP7_75t_R)                       123.55    2528.00 r
+  U24358/Y (INVxp33_ASAP7_75t_R)                        151.16    2679.16 f
+  U23718/Y (NOR2xp33_ASAP7_75t_R)                       131.10    2810.26 r
+  U23719/Y (INVxp33_ASAP7_75t_R)                        145.52    2955.78 f
+  U23720/Y (OAI22xp33_ASAP7_75t_R)                       67.98    3023.76 r
+  U23722/Y (XOR2xp5_ASAP7_75t_R)                         42.46    3066.22 r
+  U23882/Y (XOR2xp5_ASAP7_75t_R)                         35.76    3101.99 r
+  U23886/Y (XNOR2xp5_ASAP7_75t_R)                        26.38    3128.37 r
+  U23887/Y (NOR2xp33_ASAP7_75t_R)                        16.79    3145.16 f
+  U23888/Y (NOR2xp33_ASAP7_75t_R)                        25.74    3170.90 r
+  U23923/Y (XOR2xp5_ASAP7_75t_R)                         35.47    3206.36 r
+  U23925/Y (NAND2xp33_ASAP7_75t_R)                       13.22    3219.58 f
+  U23926/Y (NAND2xp33_ASAP7_75t_R)                       25.04    3244.62 r
+  U23927/Y (XNOR2xp5_ASAP7_75t_R)                        27.17    3271.79 r
+  U23928/Y (XNOR2xp5_ASAP7_75t_R)                        26.46    3298.25 r
+  U23994/Y (XOR2xp5_ASAP7_75t_R)                         34.32    3332.57 r
+  U24048/Y (XOR2xp5_ASAP7_75t_R)                         33.97    3366.54 r
+  U24321/Y (XNOR2xp5_ASAP7_75t_R)                        17.93    3384.47 f
+  U24322/Y (NOR2xp33_ASAP7_75t_R)                        21.89    3406.36 r
+  U24323/Y (NOR2xp33_ASAP7_75t_R)                        21.79    3428.15 f
+  U24422/Y (NAND2xp33_ASAP7_75t_R)                       23.21    3451.36 r
+  U24519/Y (NAND2xp33_ASAP7_75t_R)                       19.36    3470.72 f
+  U24520/Y (NAND2xp33_ASAP7_75t_R)                       21.86    3492.58 r
+  U26725/Y (NAND2xp33_ASAP7_75t_R)                       23.61    3516.19 f
+  U26727/Y (XNOR2xp5_ASAP7_75t_R)                        29.99    3546.19 f
+  U26731/Y (NOR2xp33_ASAP7_75t_R)                        21.66    3567.85 r
+  U26732/Y (NOR2xp33_ASAP7_75t_R)                        27.17    3595.02 f
+  U26738/Y (XNOR2xp5_ASAP7_75t_R)                        29.44    3624.46 f
+  U26739/Y (NOR2xp33_ASAP7_75t_R)                        21.94    3646.40 r
+  U26740/Y (NOR2xp33_ASAP7_75t_R)                        32.11    3678.50 f
+  U26748/Y (MAJIxp5_ASAP7_75t_R)                         31.75    3710.25 r
+  U26753/Y (XNOR2xp5_ASAP7_75t_R)                        24.17    3734.43 r
+  U26755/Y (NOR2xp33_ASAP7_75t_R)                        21.30    3755.72 f
+  U26756/Y (NOR2xp33_ASAP7_75t_R)                        20.48    3776.21 r
+  U26758/Y (NOR2xp33_ASAP7_75t_R)                        21.34    3797.55 f
+  U26759/Y (NOR2xp33_ASAP7_75t_R)                        20.49    3818.04 r
+  U26761/Y (NOR2xp33_ASAP7_75t_R)                        21.34    3839.38 f
+  U26762/Y (NOR2xp33_ASAP7_75t_R)                        20.50    3859.88 r
+  U26764/Y (NOR2xp33_ASAP7_75t_R)                        21.34    3881.22 f
+  U26765/Y (NOR2xp33_ASAP7_75t_R)                        20.50    3901.72 r
+  U26767/Y (NOR2xp33_ASAP7_75t_R)                        25.99    3927.71 f
+  U26768/Y (NOR2xp33_ASAP7_75t_R)                        26.24    3953.95 r
+  U26774/Y (MAJIxp5_ASAP7_75t_R)                         20.09    3974.04 f
+  U26775/Y (NAND2xp33_ASAP7_75t_R)                       27.79    4001.83 r
+  U26821/Y (NAND2xp33_ASAP7_75t_R)                       23.90    4025.72 f
+  U27129/Y (MAJIxp5_ASAP7_75t_R)                         21.98    4047.70 r
+  U27135/Y (AND2x2_ASAP7_75t_R)                          22.71    4070.41 r
+  U27136/Y (NOR2xp33_ASAP7_75t_R)                        14.97    4085.38 f
+  U27137/Y (NOR2xp33_ASAP7_75t_R)                        20.38    4105.76 r
+  U27139/Y (NOR2xp33_ASAP7_75t_R)                        21.31    4127.07 f
+  U28118/Y (AOI21xp33_ASAP7_75t_R)                       18.95    4146.02 r
+  U28119/Y (AOI22xp33_ASAP7_75t_R)                       16.03    4162.05 f
+  o2_re_reg_15_/D (DFFHQNx1_ASAP7_75t_R)                  0.00    4162.05 f
+  data arrival time                                               4162.05
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  o2_re_reg_15_/CLK (DFFHQNx1_ASAP7_75t_R)                0.00    9900.00 r
+  library setup time                                     -6.27    9893.73
+  data required time                                              9893.73
+  --------------------------------------------------------------------------
+  data required time                                              9893.73
+  data arrival time                                              -4162.05
+  --------------------------------------------------------------------------
+  slack (MET)                                                     5731.69
+
+
+  Startpoint: cp1_reg_1_ (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: o2_re_reg_14_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  cp1_reg_1_/CLK (DFFHQNx1_ASAP7_75t_R)                   0.00 #     0.00 r
+  cp1_reg_1_/QN (DFFHQNx1_ASAP7_75t_R)                   73.95      73.95 r
+  U23590/Y (INVxp33_ASAP7_75t_R)                         71.78     145.73 f
+  U23614/Y (OAI22xp33_ASAP7_75t_R)                       37.25     182.98 r
+  U23619/Y (INVxp33_ASAP7_75t_R)                         33.71     216.69 f
+  U6145/Y (NAND2xp5_ASAP7_75t_R)                        135.92     352.61 r
+  U23620/Y (INVxp33_ASAP7_75t_R)                        196.24     548.85 f
+  U23625/Y (O2A1O1Ixp33_ASAP7_75t_R)                    192.53     741.38 r
+  U23626/Y (HB1xp67_ASAP7_75t_R)                         77.23     818.60 r
+  U23627/Y (AND2x2_ASAP7_75t_R)                          32.79     851.40 r
+  U23629/Y (NOR2xp33_ASAP7_75t_R)                        35.02     886.42 f
+  U23638/Y (NAND2xp33_ASAP7_75t_R)                      133.92    1020.34 r
+  U23639/Y (NAND2xp33_ASAP7_75t_R)                      162.16    1182.50 f
+  U23640/Y (NOR2xp33_ASAP7_75t_R)                        81.18    1263.68 r
+  U6058/Y (NAND2xp5_ASAP7_75t_R)                        117.76    1381.44 f
+  U5966/Y (OR2x2_ASAP7_75t_R)                            74.87    1456.31 f
+  U23660/Y (NAND2xp33_ASAP7_75t_R)                      103.23    1559.53 r
+  U23661/Y (INVxp33_ASAP7_75t_R)                        136.52    1696.06 f
+  U23662/Y (NOR2xp33_ASAP7_75t_R)                       141.63    1837.68 r
+  U23675/Y (INVxp33_ASAP7_75t_R)                        144.68    1982.37 f
+  U23676/Y (NAND2xp33_ASAP7_75t_R)                      158.63    2140.99 r
+  U23691/Y (OAI31xp33_ASAP7_75t_R)                      153.38    2294.37 f
+  U23692/Y (NAND2xp33_ASAP7_75t_R)                       78.88    2373.25 r
+  U23693/Y (INVxp33_ASAP7_75t_R)                         31.20    2404.45 f
+  U23694/Y (NOR2xp33_ASAP7_75t_R)                       123.55    2528.00 r
+  U24358/Y (INVxp33_ASAP7_75t_R)                        151.16    2679.16 f
+  U23718/Y (NOR2xp33_ASAP7_75t_R)                       131.10    2810.26 r
+  U23719/Y (INVxp33_ASAP7_75t_R)                        145.52    2955.78 f
+  U23720/Y (OAI22xp33_ASAP7_75t_R)                       67.98    3023.76 r
+  U23722/Y (XOR2xp5_ASAP7_75t_R)                         42.46    3066.22 r
+  U23882/Y (XOR2xp5_ASAP7_75t_R)                         35.76    3101.99 r
+  U23886/Y (XNOR2xp5_ASAP7_75t_R)                        26.38    3128.37 r
+  U23887/Y (NOR2xp33_ASAP7_75t_R)                        16.79    3145.16 f
+  U23888/Y (NOR2xp33_ASAP7_75t_R)                        25.74    3170.90 r
+  U23923/Y (XOR2xp5_ASAP7_75t_R)                         35.47    3206.36 r
+  U23925/Y (NAND2xp33_ASAP7_75t_R)                       13.22    3219.58 f
+  U23926/Y (NAND2xp33_ASAP7_75t_R)                       25.04    3244.62 r
+  U23927/Y (XNOR2xp5_ASAP7_75t_R)                        27.17    3271.79 r
+  U23928/Y (XNOR2xp5_ASAP7_75t_R)                        26.46    3298.25 r
+  U23994/Y (XOR2xp5_ASAP7_75t_R)                         34.32    3332.57 r
+  U24048/Y (XOR2xp5_ASAP7_75t_R)                         33.97    3366.54 r
+  U24321/Y (XNOR2xp5_ASAP7_75t_R)                        17.93    3384.47 f
+  U24322/Y (NOR2xp33_ASAP7_75t_R)                        21.89    3406.36 r
+  U24323/Y (NOR2xp33_ASAP7_75t_R)                        21.79    3428.15 f
+  U24422/Y (NAND2xp33_ASAP7_75t_R)                       23.21    3451.36 r
+  U24519/Y (NAND2xp33_ASAP7_75t_R)                       19.36    3470.72 f
+  U24520/Y (NAND2xp33_ASAP7_75t_R)                       21.86    3492.58 r
+  U26725/Y (NAND2xp33_ASAP7_75t_R)                       23.61    3516.19 f
+  U26727/Y (XNOR2xp5_ASAP7_75t_R)                        29.99    3546.19 f
+  U26731/Y (NOR2xp33_ASAP7_75t_R)                        21.66    3567.85 r
+  U26732/Y (NOR2xp33_ASAP7_75t_R)                        27.17    3595.02 f
+  U26738/Y (XNOR2xp5_ASAP7_75t_R)                        29.44    3624.46 f
+  U26739/Y (NOR2xp33_ASAP7_75t_R)                        21.94    3646.40 r
+  U26740/Y (NOR2xp33_ASAP7_75t_R)                        32.11    3678.50 f
+  U26748/Y (MAJIxp5_ASAP7_75t_R)                         31.75    3710.25 r
+  U26753/Y (XNOR2xp5_ASAP7_75t_R)                        24.17    3734.43 r
+  U26755/Y (NOR2xp33_ASAP7_75t_R)                        21.30    3755.72 f
+  U26756/Y (NOR2xp33_ASAP7_75t_R)                        20.48    3776.21 r
+  U26758/Y (NOR2xp33_ASAP7_75t_R)                        21.34    3797.55 f
+  U26759/Y (NOR2xp33_ASAP7_75t_R)                        20.49    3818.04 r
+  U26761/Y (NOR2xp33_ASAP7_75t_R)                        21.34    3839.38 f
+  U26762/Y (NOR2xp33_ASAP7_75t_R)                        20.50    3859.88 r
+  U26764/Y (NOR2xp33_ASAP7_75t_R)                        21.34    3881.22 f
+  U26765/Y (NOR2xp33_ASAP7_75t_R)                        20.50    3901.72 r
+  U26767/Y (NOR2xp33_ASAP7_75t_R)                        25.99    3927.71 f
+  U26768/Y (NOR2xp33_ASAP7_75t_R)                        26.24    3953.95 r
+  U26774/Y (MAJIxp5_ASAP7_75t_R)                         20.09    3974.04 f
+  U26775/Y (NAND2xp33_ASAP7_75t_R)                       27.79    4001.83 r
+  U26821/Y (NAND2xp33_ASAP7_75t_R)                       23.90    4025.72 f
+  U27129/Y (MAJIxp5_ASAP7_75t_R)                         21.98    4047.70 r
+  U27133/Y (NOR2xp33_ASAP7_75t_R)                        19.84    4067.54 f
+  U28111/Y (INVxp33_ASAP7_75t_R)                         21.94    4089.48 r
+  U28112/Y (AND2x2_ASAP7_75t_R)                          23.75    4113.23 r
+  U28116/Y (NOR2xp33_ASAP7_75t_R)                        11.28    4124.50 f
+  U28117/Y (AOI22xp33_ASAP7_75t_R)                       18.07    4142.57 r
+  o2_re_reg_14_/D (DFFHQNx1_ASAP7_75t_R)                  0.00    4142.57 r
+  data arrival time                                               4142.57
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  o2_re_reg_14_/CLK (DFFHQNx1_ASAP7_75t_R)                0.00    9900.00 r
+  library setup time                                    -15.58    9884.42
+  data required time                                              9884.42
+  --------------------------------------------------------------------------
+  data required time                                              9884.42
+  data arrival time                                              -4142.57
+  --------------------------------------------------------------------------
+  slack (MET)                                                     5741.84
+
+
+1

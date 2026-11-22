@@ -1,0 +1,11 @@
+# Default timing-aware ABC technology mapping, matching the Yosys Liberty flow.
+# Copy to submission/flow/abc_opt.script and replace the command sequence.
+# {D} is replaced by the public builder with -D <requested delay in ps>.
+strash;
+ifraig; scorr; dc2; dretime; retime {D}; strash;
+&get -n; &dch -f; &nf {D}; &put;
+buffer; upsize {D}; dnsize {D}; stime -p;
+# A resyn2-style alternative Boolean sequence before mapping can include:
+# balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;
+# refactor -z; rewrite -z; balance;
+# Preserve a final Liberty mapping step, e.g. map {D}, or &nf {D}; &put.

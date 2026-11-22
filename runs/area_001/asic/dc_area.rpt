@@ -1,0 +1,46 @@
+ 
+****************************************
+Report : area
+Design : fft64_top
+Version: L-2016.03-SP1
+Date   : Sun Nov 22 19:27:58 2026
+****************************************
+
+Information: Updating design information... (UID-85)
+Warning: Design 'fft64_top' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+Library(s) Used:
+
+    asap7sc7p5t_ALL_RVT_TT_nldm_211120 (File: /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db)
+    asap7sc7p5t_SEQ_RVT_TT_nldm_220123 (File: /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db)
+
+Number of ports:                           86
+Number of nets:                         27800
+Number of cells:                        27764
+Number of combinational cells:          22260
+Number of sequential cells:              5504
+Number of macros/black boxes:               0
+Number of buf/inv:                       1606
+Number of references:                      62
+
+Combinational area:               1792.975503
+Buf/Inv area:                       71.879401
+Noncombinational area:            1604.966339
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (No wire load specified)
+
+Total cell area:                  3397.941842
+Total area:                 undefined
+
+Hierarchical area distribution
+------------------------------
+
+                                  Global cell area          Local cell area
+                                  ------------------  ---------------------------- 
+Hierarchical cell                 Absolute   Percent  Combi-     Noncombi-  Black-
+                                  Total      Total    national   national   boxes   Design
+--------------------------------  ---------  -------  ---------  ---------  ------  ---------
+fft64_top                         3397.9418    100.0  1792.9755  1604.9663  0.0000  fft64_top
+--------------------------------  ---------  -------  ---------  ---------  ------  ---------
+Total                                                 1792.9755  1604.9663  0.0000
+
+1

@@ -1,12 +1,11 @@
 ###################################################################
 
-# Created by write_sdc on Sun Nov 22 14:59:55 2026
+# Created by write_sdc on Sun Nov 22 21:29:32 2026
 
 ###################################################################
 set sdc_version 2.0
 
 set_units -time ps -resistance kOhm -capacitance fF -voltage V -current mA
-set_max_area 0
 set_load -pin_load 1 [get_ports out_valid]
 set_load -pin_load 1 [get_ports out_start]
 set_load -pin_load 1 [get_ports {out_re[23]}]

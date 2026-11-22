@@ -1,66 +1,45 @@
-# Operator Scoring Profiles and Reproducible Evaluation
+# FFT64-Quant: Operator Scoring and Calibration
 
-## 1. Current profile
+## Evaluation profiles
 
-**FFT64-Quant defaults to `architecture`.** It uses hard functional/quality requirements and a continuous hardware score with **60% mapped area, 30% verified throughput, 10% worst first-output latency**. `area` remains an independent **diagnostic** profile, not the default and not comparable to architecture-profile scores.
+The default `architecture` profile uses mapped area (60%), verified effective throughput (30%) and maximum observed first-output latency (10%), subject to mandatory FFT, SQNR, reset, protocol, II=384, mapped-equivalence and timing checks. The `area` profile is an independent diagnostic and **must not** be combined numerically with architecture scores. The definitive configuration is `fft64_benchmark/profiles/policy.json`.
 
-Use one frozen profile, protocol, backend and toolchain for an evaluation campaign. Do not replace a failed candidate's performance with a previous PASS or a result from another physical flow.
+## Calibration
 
-## 2. Commands
+Before evaluating Agents, measure accurate R2SDF and folded radix-2 baselines using the same backend, default mapping recipe, library, constraints, protocol and policy. The reference area is the smaller baseline mapped area. The throughput reference is mandatory II=384 service at 10 ns; its goal is twice the higher verified throughput of the accurate baselines. The latency reference is the 300-cycle first-output deadline; its goal is the larger of half the shorter accurate-baseline latency and 63 cycles. These independent anchors do **not** necessarily correspond to one circuit.
 
-From the private evaluator root:
+For each candidate,
+
+\[
+T_{\mathrm{eff}}=\frac{10^9}{II_{\mathrm{ver}}P_{\mathrm{STA}}}\quad\mathrm{FFTs/s},
+\]
+
+where \(II_{\mathrm{ver}}\) is the smallest passing integer interval in 64–384, established by at least 1,024 consecutive RTL frames per interval and a 128-frame representative mapped check at the selected interval. \(P_{\mathrm{STA}}\) is a setup/hold-passing period measured by a clock scan of the **same fixed mapped netlist**. The scan bracket is ≤0.01 ns unless the predefined lower scan bound is reached. The latency component uses the common **10 ns** clock, avoiding a second frequency reward. SQNR ≥50 dB is a hard constraint and receives no bonus.
+
+## Candidate-controlled synthesis
+
+Accurate reference designs use the frozen **default mapping recipe**. Agent candidates may optimize their own DC or Yosys/ABC recipe during public development and submit the resulting flattened ASAP7 mapped netlist. Private grading **never sources submitted Tcl/Yosys/ABC files**, trusts Agent PPA reports or resynthesizes that imported netlist. Instead, independently check legal standard-cell instances, aggregate cell area, 10 ns setup/hold timing, timing-frequency certification and mapped-to-RTL behavior. Candidate area gains due to a different legal synthesis strategy are intentionally counted.
+
+A manifest containing source, netlist, recipe and library hashes supports *content consistency*, not independent proof of the build command that produced the netlist. Retain independently captured tool logs if recipe provenance must be demonstrated. Optional P&R exploration is outside the current scored pre-layout flow.
+
+## Run commands
 
 ```bash
 bash run_evaluation.sh /absolute/path/to/submission \
   --backend auto --profile architecture --out /absolute/path/to/eval_run
 
 bash run_synopsys.sh /absolute/path/to/submission \
-  --backend commercial --profile architecture --out /absolute/path/to/eval_synopsys
+  --backend commercial --profile architecture --out /absolute/path/to/eval_commercial
 
-# Optional area-only diagnostic, in a SEPARATE output directory
-bash run_synopsys.sh /absolute/path/to/submission \
-  --backend commercial --profile area --out /absolute/path/to/eval_area
-```
-
-The private Docker wrapper is `run_synopsys_docker.sh`; see the operator environment configuration for its SSH/shared-mount requirements. Keep private credentials, accurate baselines, calibration, hidden inputs and results outside the agent checkout.
-
-## 3. Calibration and scoring
-
-Calibrate the accurate R2SDF and folded radix-2 baselines **before candidate scoring** with the chosen EDA measurement backend and provided default mapping recipe. Candidate synthesis recipes may differ; the independent measurement, library and constraints remain common. For `architecture`, the area reference is the smaller validated baseline area; the throughput reference is the mandatory II=384 service at 10 ns, while its goal is twice the highest *measured accurate-baseline* throughput; the latency reference is the 300-cycle deadline, with a goal tied to the fastest accurate baseline and a 63-cycle physical floor. These anchors are not necessarily obtained from one physical baseline circuit.
-
-A candidate's reported throughput is
-
-\[
-T_{\mathrm{eff}}=10^9/(II_{\mathrm{ver}}P_{\mathrm{STA}})\quad\text{FFTs/s}
-\]
-
-with \(II_{\mathrm{ver}}\) the empirically shortest passing integer II from 64–384, and \(P_{\mathrm{STA}}\) a setup/hold-passing certified period on the **fixed mapped netlist**. Each integer II is exercised with ≥1,024 consecutive RTL frames; the selected minimum is independently checked using a representative mapped subset (128 frames, plus the specified gap/reset behavior). The `frame_ii_cycles` value in `design_config.json` is a **hint**, not an independently scoring declared minimum. Clock certification brackets a passing/failing clock within 0.01 ns unless the configured scan floor is reached.
-
-The first-output latency score uses the maximum observed per-frame latency at the **common 10 ns clock**, avoiding a second frequency reward. Numerical quality is a hard SQNR ≥50 dB constraint with no precision bonus. Complete definitions are in [SCORING.md](../fft64_benchmark/SCORING.md).
-
-Default DC mapping performs area optimization followed by incremental hold repair. A custom implementation is instead imported without optimization or hold repair, so its actual cells are measured. Both paths use independent cell-area counting and the same ideal-interconnect setup/hold STA. All candidates must pass those final checks. Never source submitted recipes in the private evaluator. See [OPTIMIZATION.md](../OPTIMIZATION.md).
-
-## 4. Caches, grading, and result evidence
-
-Candidate runs are keyed by RTL source, any exported mapped netlist and recipe manifest, evaluation protocol/seed, backend/platform identity, profile and scoring policy. Mapping caches can be shared across profiles only when the input implementation and measurement flow are identical; **normalization and completed score caches cannot**. Store hashes and the raw measurement directory along with every result.
-
-The private DSBench attachment uses the filename `area_reference.json` for the calibrated profile. It is a **profile-specific calibration object**, not simply a scalar area denominator. Create it only after verifying a commercial baseline calibration:
-
-```bash
 python3 fft64_benchmark/grading/make_grader.py \
-  --profile architecture \
-  --calibration /private/calibration.json \
+  --profile architecture --calibration /private/calibration.json \
   --out /private/grader_attachment
 ```
 
-The official three-field result is `resolved`, `score`, and `reason`; internal reports must additionally preserve `score_valid`/infrastructure status, component scores, measured II, certified period, first/completion latencies, mapped area, worst-frame SQNR and reference hashes.
+The DSBench Code Grade attachment currently requires **commercial calibration**, even though the broader operator runner offers an open-source fallback. In the attachment, `area_reference.json` is a profile-specific calibration object. The three-field public result cannot encode `score_valid`; platform ranking logic must inspect `reason` and exclude any `UNSCORED_INFRASTRUCTURE` or incomplete output.
 
-Unit tests, nominal numerical simulation, a representative gate subset, full mapped long-stream tests, and full hidden numerical evaluation are **different evidence levels**. All hardware data are pre-layout synthesis and ideal-interconnect STA; no post-route, power, or silicon Fmax claim is supported.
+## Caches and reporting
 
-## Measurement outcomes and resume
+Store RTL and mapped source hashes, manifest, profile, backend, tool/library identities, random seeds, validation results and raw timing/area reports. Reusing an output directory is safe only when its full input identity matches. A design violating a mandatory specification is `DESIGN_INVALID` with a valid zero score; tool/measurement failures are `UNSCORED_INFRASTRUCTURE` and must not be ranked. Document completeness is reported separately.
 
-`score_valid=true` is required for ranking. A demonstrated design violation has outcome `DESIGN_INVALID` and a valid zero score. Tool crashes, license faults, timeouts, incomplete outputs and calibration mismatches have no valid score; their three-field `reason` starts with `UNSCORED_INFRASTRUCTURE:`. Quick or unfinished evaluations use `INCOMPLETE:`. The three-field format itself remains `resolved`, `score`, `reason`.
-
-All result directories bind their content identity before using checkpoints. Keep a separate directory when changing RTL, frames, seed, tools, libraries, policy, profile or mapping. A corrupt aggregate can be reconstructed from authenticated completed chunks. Incomplete tool attempts are retried, rather than cached as design failures. `long_intervals/progress.json` records elapsed time and Python-process peak RSS; tool execution receipts record command runtimes.
-
-`DESIGN_PLAN.md` and `measurements.csv` are checked separately in `submission_completeness.json`. Their absence is reported without changing electrical feasibility or hardware quality.
+These are synthesis-stage, ideal-interconnect measurements: do not report post-route timing, power or silicon Fmax. Complete long RTL tests and representative mapped tests have different coverage and should be reported distinctly.

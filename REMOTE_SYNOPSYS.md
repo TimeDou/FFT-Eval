@@ -1,109 +1,81 @@
-# 在本机 Synopsys 容器中开发
+# 通过 SSH 使用本机 Synopsys 容器
 
-## 部署目录
+## 目录和连接方式
+
+预期目录布局：
 
 ```text
 workspace/
-├── FFT-Bench/         # 本仓库
-├── Synopsys/          # 容器内挂载为 /mnt/mydata
-└── port.txt           # 只含 SSH 端口数字
+├── FFT-Bench/            # 公开 benchmark 仓库
+├── Synopsys/             # 挂载到容器内 /mnt/mydata
+└── port.txt              # 仅包含 SSH 端口号
 ```
 
-例如容器通过 `ssh -p 1234 root@localhost` 访问时，在 `port.txt` 中写入 `1234`。脚本自动读取该文件，默认使用 `root@localhost` 和密码 `passwd`。可用环境变量 `FFT_SSH_PASSWORD` 设置其他密码；密码不会写入运行记录。宿主机需要 Python 3.10+ 和 OpenSSH 客户端，不需要安装 NumPy、VCS、Yosys 或 Icarus，也不需要 `sshpass`。
+运行脚本从相邻的 `port.txt` 读取端口，默认连接 `root@localhost`，此实验部署的默认登录密码为 `passwd`；可以使用 `FFT_SSH_PASSWORD` 覆盖密码。**不要将密码写入提交内容、日志或结果文档。** 宿主机需要 Python 3.10+ 和 OpenSSH 客户端；商用工具在容器中执行，宿主机不需要安装 VCS/DC/PT。
 
-容器内需要可用的 VCS、Design Compiler、PrimeTime，以及 Python 3.10+。从 Liberty 生成 DB 时还需要 Library Compiler。脚本优先复用已带 NumPy 的解释器，再尝试用现有 Python 安装缺少的 NumPy 二进制包；不会构建 EDA 工具或 Python。已有环境配置和许可证设置优先保留。
-
-旧镜像的系统 Python 可能低于要求。部署方可以显式准备一个独立的预编译解释器：
+容器应具备可运行的 VCS、Design Compiler、PrimeTime、Python 3.10+ 和 NumPy，以及可用许可证。若须将 Liberty 转换为 DB，还需要 Library Compiler。缺少合适 Python 时，部署方可运行：
 
 ```bash
 bash check_env.sh --prepare-python
 ```
 
-已有合适的解释器时不下载；缺少时仅为 Linux x86_64 容器下载并校验固定 SHA-256 的二进制 Python，放在 `Synopsys/.fft64/runtime/python/`，不改变容器系统 Python。离线部署可再指定 `--python-archive /host/path/to/archive.tar.gz`，以及通过 `--remote-profile` 配置 pip 的外部离线轮子目录或包镜像。运行来源记录在共享 runtime 的 `python_source.json`。
+该操作使用经过 SHA-256 校验的独立 Python 二进制运行时，不替换容器系统 Python；离线部署可以额外提供 `--python-archive` 与包源/离线 wheel 配置。准备过程及来源保存在共享 runtime 中。
 
-## 一键检查
+## 预先验证环境
 
-在 `FFT-Bench/` 中运行：
-
-```bash
-bash check_env.sh
-```
-
-返回码为 0 且 `environment.json` 的 `status=READY`，表示以下检查全部通过：
-
-1. 读取端口、SSH 登录，共享目录在宿主机与容器之间双向读写。
-2. 找到容器内 Python、NumPy、VCS/DC/PT；准备 ASAP7 RVT/TT 组合及时序库的 DB。
-3. 使用 VCS 实际编译、运行一个小型时序电路。
-4. 对该电路执行 DC 映射和 PrimeTime setup/hold STA。
-5. 在三种时刻零寄存器初态下比较映射网表和 RTL。
-
-每次完整检查都会实际调用 VCS/DC/PT，不用已有映射结果替代许可证与执行检查；首次运行还可能需要编译库。结果和原始工具日志位于终端打印的 `Host results` 路径，默认是本仓库 `runs/synopsys_*/` 下的链接。例如固定结果名称：
+从 `FFT-Bench/` 运行：
 
 ```bash
 bash check_env.sh --out runs/environment
 cat runs/environment/environment.json
 ```
 
-`--inspect-only` 只检查安装项，不验证许可证或实际工具执行；其成功状态为 `INSTALLED`，不能代替 `READY`。检查失败返回非零。端口、SSH 或挂载错误直接在终端显示；任务启动后的详情保存在 `environment.json`、`ssh.log` 和相应工具日志中。
+`status=READY` 且返回码为 0 表示 SSH、双向共享目录、Python/NumPy、VCS 仿真、DC 映射以及 PrimeTime setup/hold 测试均已完成。仅使用 `--inspect-only` 时，成功状态为 `INSTALLED`，**不表示许可证或 EDA 执行已经验证**。原始工具日志位于结果目录，缺失环境、许可证或其他工具故障不得归类为 Agent 设计失败。
 
-## Agent 的开发命令
+## Agent 开发流程
 
 ```bash
-# 公开数值、协议和持续服务测试
-bash run_synopsys_debug.sh submission --quick --out runs/candidate_a_quick
+# 公开数值、协议和持续服务检查
+bash run_synopsys_debug.sh submission --quick --out runs/quick_a
 
-# 完整映射、STA、代表性映射网表检查；面积诊断
-bash run_synopsys_debug.sh submission --profile area --out runs/candidate_a_ppa
+# 完整映射面积和 STA；area 诊断 profile
+bash run_synopsys_debug.sh submission --profile area --out runs/area_a
 
-# 默认综合指标：额外包含完整 II 测量与频率认证，耗时较长
-bash run_synopsys_debug.sh submission --profile architecture --out runs/candidate_a_full
+# 默认综合评分 profile；包括长时间 II 扫描与频率认证
+bash run_synopsys_debug.sh submission --profile architecture --out runs/arch_a
 ```
 
-这些命令使用容器内的商业工具和公开测试数据。没有匹配的冻结校准时仍会提供数值、协议、面积和时序反馈，但不产生有效的正式分数。环境检查使用的小型电路不参与 FFT 评分。
+这些命令将当前提交快照复制到共享挂载内的独立工作目录，并通过 SSH 在容器中执行公开评价。结果链接与日志可在宿主机查看。未加载匹配校准时，工具仍能提供测量反馈，但不会产生正式有效的分数。
 
-脚本将公开评测工具与当前提交复制到独立目录后运行。宿主机的结果链接指向 `Synopsys/.fft64/jobs/<job>/output/`，无需复制大型波形或向量文件即可读取反馈。容器内路径会一并打印。库 DB 和满足相同物理流程身份的映射缓存可复用。
-
-修改设计时使用新的结果目录。若输入、工具和配置均未改变，可显式恢复相同任务：
+只在确认输入快照、工具及选项未改变时恢复任务：
 
 ```bash
 bash run_synopsys_debug.sh submission --profile architecture \
-  --out runs/candidate_a_full --resume
+  --out runs/arch_a --resume
 ```
 
-输入身份不一致会拒绝恢复，并保留已有结果。
+更换 RTL、recipe 或相关配置时请使用新目录；身份不一致的恢复应被拒绝。
 
-## 自定义综合流程
-
-默认模板可以修改或整体替换。在宿主机初始化并编辑 `submission/flow/dc_opt.tcl`：
+## 自定义优化流程
 
 ```bash
 bash build_implementation.sh submission --init-flow
+# 修改 submission/flow/dc_opt.tcl
 bash synopsys.sh build submission --export --out runs/custom_build
 bash run_synopsys_debug.sh submission --profile area --out runs/custom_check
 ```
 
-`build` 在容器中运行自己的优化 recipe，并导出 `submission/implementation/`。之后的评测直接导入该映射网表，使用统一库和 STA 条件测量，并验证 RTL 一致性。完整说明及 Yosys/ABC、可选 P&R 模板见 [OPTIMIZATION.md](OPTIMIZATION.md)。
+`build` 在**公开开发容器**执行 Agent 的优化 recipe，导出 `submission/implementation/mapped.v` 和 manifest；后续公开或隐藏评价只导入网表并独立计面积、STA、验证行为，**隐藏评分不会执行提交的优化脚本**。Yosys/ABC 与可选未评分 P&R 的用法见 [OPTIMIZATION.md](OPTIMIZATION.md)。
 
-## 直接调用工具进行调试
+## 直接使用工具
 
 ```bash
 bash synopsys.sh exec -- bash -c 'command -v vcs; command -v dc_shell; command -v pt_shell'
-bash synopsys.sh exec -- vcs -ID
-
-# 宿主机 Synopsys/debug.tcl 对应容器内 /mnt/mydata/debug.tcl
 bash synopsys.sh exec -- dc_shell -f /mnt/mydata/debug.tcl
 ```
 
-`exec` 默认工作目录为 `/mnt/mydata`，可通过 `--cwd` 指定容器内其他目录。它不要求先通过 Python 或数值环境检查。
+`exec` 默认在 `/mnt/mydata` 工作，可用 `--cwd` 指定其他容器目录。部署变体可指定 `--port`、`--port-file`、`--shared-dir`、`--mount`、`--ssh-host`、`--remote-python` 或 `--remote-profile`。更换容器 SSH 主机密钥时，应验证新密钥来源后仅更新相应主机记录。
 
-非标准部署可在 `synopsys.sh`、`check_env.sh` 或 `run_synopsys_debug.sh` 中指定 `--port`、`--port-file`、`--shared-dir`、`--mount`、`--ssh-host`、`--remote-python` 或 `--remote-profile`。例如：
+## 数据隔离
 
-```bash
-bash check_env.sh --remote-python /opt/dsbench/bin/python3
-```
-
-`--remote-profile` 是容器内 shell 配置文件路径。容器重新创建并更换 SSH 主机密钥时，脚本会报告密钥不匹配；只更新该容器对应的已知主机记录后重试。
-
-## 评测部署
-
-每个被测 Agent 使用独立的开发容器和 `Synopsys/` 目录。该目录及容器内只放公开开发工具与该 Agent 的文件。正式隐藏评测使用独立的 FFT-Eval 环境；具备容器 root SSH 权限的 Agent 不应与隐藏数据或其他 Agent 的结果共用文件系统。
+每个 Agent 必须拥有独立的 `submission/`、`runs/` 和共享挂载工作区。**拥有容器 root 权限的 Agent 不能与隐藏评测环境共用数据可见的文件系统**；FFT-Eval 的准确参考设计、隐藏种子与校准数据必须保持私有。

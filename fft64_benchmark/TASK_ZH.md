@@ -1,78 +1,65 @@
-# EDA Agent 任务：FFT64 架构与数值精度联合设计
+# FFT64-Quant：EDA Agent 设计任务
 
-## 1. 任务目标
+## 任务目标
 
-从零设计一套**完整、可综合的 64 点复数 FFT 处理器**，在满足功能与硬件规格的条件下改善面积、可持续吞吐率和首次输出延迟。本任务不提供完成的 FFT RTL。需要优化的是整个处理器，而非单个蝶形运算或乘法器；缓冲、寄存器、控制、数据交换和重排序均计入面积。
+根据公开规格，从零开发一套完整、可综合的 **64 点定点复数 FFT 处理器**。本任务不提供现成 FFT RTL。Agent 需要在满足全部强制约束后，自主探索 FFT 架构、内部数值精度、RTL 组织和可选综合策略，以真实测量结果改进硬件质量。评测对象是**整个电路**，包含运算单元、寄存器、缓冲、控制和数据重排序，而非单个蝶形运算。
 
-Agent 可自主比较不同架构和精度方案，并根据实际测量调整设计。**无需证明全局最优；测量后的设计决策比冗长报告更重要。**
+## 强制功能与硬件规格
 
-## 2. 必须满足的规格
+- **变换：** 64 点、正向、不缩放的复数 FFT；输入按自然采样顺序，输出按自然频率顺序。
+- **数据格式：** 输入实部/虚部各 signed 16-bit，输出各 signed 24-bit，均有 15 位小数。被测输入分量位于 [-0.5, 0.5]，非零帧复数 RMS ≥1/32。
+- **输入服务：** 每周期接收一个复数输入，连续 64 个有效周期构成一帧；必须在无反压条件下持续支持相邻帧起点间隔不小于 384 cycles 的合法输入。
+- **输出和延迟：** 每帧连续输出 64 个频点，首频点用 `out_start` 标记。以首输入为 cycle 0，首输出不得早于最后一个必需输入，且不晚于 cycle 300；最后一个输出不晚于 cycle 364。
+- **时钟与复位：** 单一上升沿时钟；同步高有效复位丢弃未完成帧；映射网表必须满足 10 ns 时序要求。
+- **数值精度：** 以**同一已量化输入帧**的 float64 FFT 为参考，每个被测非零帧 SQNR ≥50 dB；全零帧必须精确输出零。不得通过后处理拟合增益、相位、缩放或输出排列来提高分数。
 
-- **变换：** 64 点复数正向 FFT，不归一化，输入自然顺序，输出自然频率顺序。
-- **输入：** 每个有效周期接收一个复数，连续 64 个周期构成一帧；每个实部/虚部分量为带 15 个小数位的 signed 16-bit，范围 [-0.5, 0.5]。被测非零帧的复数 RMS 不低于 1/32。
-- **输出：** 连续 64 个有效周期，各分量为带 15 个小数位的 signed 24-bit；首频点用 `out_start` 标记。
-- **时钟：** 单一上升沿时钟；必须满足 10 ns 时序约束。
-- **最低服务能力：** 必须支持每 384 cycles 开始一帧及更长的合法间隔，无输入反压。
-- **延迟：** 从首输入周期（cycle 0）起算，首输出不晚于 cycle 300，最后一个输出不晚于 cycle 364；首输出不能早于最后一个必需输入。
-- **复位：** 同步高有效复位丢弃未完成帧，复位后的新帧须正确处理。
-
-384 cycles/frame 是**最低服务规格**，并不代表流水 FFT 的最大固有吞吐能力。若通过更短的帧启动间隔测试，可以获得更高的吞吐率评分。
-
-## 3. 数值约束
-
-准确参考使用**同一组已量化输入样本**的 float64 FFT。逐个非零帧计算：
-
+其中 X 为同输入的 float64 参考，X-hat 为硬件输出；每个完整复数帧的 SQNR 定义为：
 \[
 \mathrm{SQNR}_f=10\log_{10}\frac{\sum_{k=0}^{63}|X_f[k]|^2}{\sum_{k=0}^{63}|\hat X_f[k]-X_f[k]|^2}.
 \]
 
-所有非零测试帧必须满足 **SQNR ≥ 50 dB**，全零帧必须严格输出零。不能在测试后拟合增益、相位、输出顺序或缩放。有限的公开/隐藏样本测试不构成全输入域的形式化精度保证。
+384 cycles/frame 是**必须达到的最低服务能力**，不是对设计最大吞吐率的限制。更短的帧启动间隔只有经过评测器验证，才可能提高吞吐率评分。以 [SPEC.json](SPEC.json) 和 [INTERFACE.md](INTERFACE.md) 为准。
 
-## 4. 设计自由度与限制
+## 可探索的设计空间
 
-**允许：** R2SDF、R2²SDF、R4MDC、folded/iterative 等可行架构；各 stage 的数据与 twiddle 精度；明确的 truncation/rounding；guard bits、量化边界；不改变规定数值语义的存储 bank、常数旋转专用化、资源复用和合法流水设计。
+允许使用 R2SDF、R2²SDF、R4MDC、folded/iterative 或其他符合规格的 FFT 架构；可以调整中间数据/旋转系数位宽、舍入与截断、保护位、存储组织、流水调度、常数乘法专用化与资源复用。
 
-也允许自主选择综合优化命令、参数与 pass 顺序。运行 `bash build_implementation.sh submission --init-flow` 可获得可替换的 DC、Yosys/ABC 和可选 P&R 模板。自定义综合后需导出 `submission/implementation/`，评测会直接测量该网表并与 RTL 验证；统一的库、时序和数值条件保持不变。使用方法见 [OPTIMIZATION.md](../OPTIMIZATION.md)。当前 P&R 模板不参与评分。
+同时允许自主选择综合命令、优化参数、布尔重写及技术映射策略。执行 `bash build_implementation.sh submission --init-flow` 可获得 DC、Yosys/ABC 的可编辑模板。修改后须导出 `submission/implementation/mapped.v` 和 `manifest.json`。评测器会**直接导入该标准单元网表并独立计面积、做 STA、检查 RTL/网表一致性**；正式隐藏评分**不会执行** Agent 的 Tcl/Yosys/ABC 脚本，也不接受自报 PPA。操作方法见 [OPTIMIZATION.md](../OPTIMIZATION.md)。
 
-**禁止：** 门级 ALS、与量化无关的任意逻辑近似剪枝/替换、近似 compressor、仿真专用/查表作弊实现，以及更改外部 FFT 功能、数值格式、输出顺序和时钟协议。
+禁止门级 ALS、任意逻辑近似剪枝/替换、无关的近似 compressor、仿真专用查表实现、未计面积的外部存储，以及改变规定 FFT 功能、外部数据格式或流式协议。允许的数值近似仅限明确的定点精度和量化操作。可选 P&R 模板不进入当前布局前评分。
 
-面积必须来自**完整 top module 的标准单元映射**；不存在免费 SRAM。
+## 建议执行流程
 
-## 5. 建议工作过程
+1. 阅读 [SPEC.json](SPEC.json)、[INTERFACE.md](INTERFACE.md)、[ARCHITECTURE_GUIDE.md](ARCHITECTURE_GUIDE.md)、[SCORING.md](SCORING.md) 和 [EVALUATION.md](EVALUATION.md)。
+2. 自行建立 `submission/DESIGN_PLAN.md`，比较至少两种架构，并提出可通过测量验证的假设。
+3. 在 `submission/rtl/` 下实现正确的基线，优先通过公开数值、协议及复位测试。
+4. 自主调整 RTL、精度或综合 recipe，对有希望的候选进行完整映射面积与时序测量。
+5. 对候选开展持续多帧和 II 测试，将实验结果、失败原因及后续决策记录在 `measurements.csv`。
+6. 提交**已经验证**的最佳电路；若使用自定义综合，确保导出网表与最终 RTL、recipe 一致。
 
-如果仓库同级存在 `Synopsys/` 与 `port.txt`，应使用提供的 SSH 入口，不要在宿主机重复搭建 EDA 环境。在仓库根目录运行 `bash check_env.sh`，然后使用 `bash run_synopsys_debug.sh submission --quick --out runs/quick`。`--profile area` 提供映射与 STA 反馈，`--profile architecture` 执行完整吞吐率与频率评价。也可用 `bash synopsys.sh exec -- <命令>` 在容器中直接调试。详见仓库根目录的 `REMOTE_SYNOPSYS.md`。
-
-工具直接安装在当前环境中时，在**仓库根目录**执行：
+若存在同级 `Synopsys/` 和 `port.txt`，从 **FFT-Bench 仓库根目录**执行：
 
 ```bash
-bash fft64_benchmark/setup.sh --check-only
-bash fft64_benchmark/run_preview.sh submission runs/quick --quick --no-build
-bash fft64_benchmark/run_preview.sh submission runs/full --no-build
+bash check_env.sh
+bash run_synopsys_debug.sh submission --quick --out runs/quick
+bash run_synopsys_debug.sh submission --profile area --out runs/area
+bash run_synopsys_debug.sh submission --profile architecture --out runs/full
 ```
 
-1. 阅读 `fft64_benchmark/SPEC.json`、`fft64_benchmark/INTERFACE.md` 与 `fft64_benchmark/ARCHITECTURE_GUIDE.md`。
-2. 自行创建 `submission/DESIGN_PLAN.md`，比较至少两种架构思路，并给出可测量的假设。
-3. 先建立正确、具有足够精度的硬件实现，再尝试精度缩减。
-4. 对候选执行数值、协议、完整映射面积和时序评价。
-5. 在每次重要实验后记录实际结果、采纳或拒绝的理由以及下一次实验；将明细保存在 `measurements.csv`。
-6. 提交满足全部硬约束且硬件分数较好的设计。
+也可以使用 `bash synopsys.sh exec -- <命令>` 直接在容器内调试；详见 [REMOTE_SYNOPSYS.md](../REMOTE_SYNOPSYS.md)。使用本机已安装工具时可改用 `fft64_benchmark/run_preview.sh`。不同候选应使用独立输出目录；快速检查通过不代表全部硬件要求已通过。
 
-评测优先使用可用的 Synopsys 工具，否则使用已安装的开源仿真、综合和 STA 工具。没有同平台冻结校准时，公开预览可提供开发反馈，但不能视为正式分数。
+## 测量、评分与交付
 
-## 6. 通过与评分
+`resolved=true` 仅取决于 FFT、SQNR、协议、复位、II=384 服务、首/末输出延迟、映射网表一致性和 10 ns setup/hold 时序是否通过；**没有最低面积改善比例要求**。默认 `architecture` 分数由完整映射面积（60%）、实测可持续吞吐率（30%）和最大观测首输出延迟（10%）构成。SQNR 达标后不再额外加分。
 
-`resolved` 仅表示必选功能、SQNR、协议、复位、时序和映射网表要求全部通过，**不要求最低面积降幅或最低得分**。
+数值可行性使用所有非零测试帧中的**最低 SQNR**，延迟使用**逐帧最大观测值**；吞吐率使用 64–384 cycles 中经过连续多帧验证的最小整数 II，而不是 Agent 自报值。公开数值测试包含至少 1,024 个非零随机帧，隐藏测试包含至少 8,192 个，均另加定向样例。每个 II 至少连续运行 1,024 帧，选中的最短通过 II 再经代表性网表验证。这些结论是有限样本证据，不是形式化保证。正式分数必须使用同一后端、profile 和冻结校准。
 
-默认 `architecture` 分数：完整映射面积 **60%**、已验证可持续吞吐率 **30%**、实测最大首输出延迟 **10%**。SQNR 达标即可，不额外奖励更高精度。吞吐率使用 64–384 全部整数 II 中**至少 1,024 个连续帧验证通过的最小值**，并对选中 II 做映射网表抽样确认；`design_config.json` 的 II 仅作提示，不决定评分。可选的更短 II 失败不会否决 384-cycle 必选服务。
+提交内容：
 
-数值数据：公开至少 1,024 个非零随机帧、隐藏至少 8,192 个非零随机帧，均另含定向边界案例。可行性以非零帧**最小 SQNR**及逐帧**最大延迟**判断。详情见 [SCORING.md](SCORING.md) 和 [EVALUATION.md](EVALUATION.md)。
+- `submission/rtl/`：完整可综合 RTL，顶层 `fft64_top`；
+- `submission/DESIGN_PLAN.md`：关键假设、实验与设计决策；
+- `submission/measurements.csv`：实际测量及其来源；
+- `submission/design_config.json`（可选）：RTL 文件列表及不具评分权威性的 II 提示；
+- `submission/flow/` 和 `submission/implementation/`（自定义综合时）：recipe、完整映射网表和 manifest。
 
-## 7. 提交文件
-
-- `submission/rtl/`：自包含可综合 RTL，顶层为 `fft64_top`
-- `submission/DESIGN_PLAN.md`：重要设计假设与更新记录
-- `submission/measurements.csv`：主要候选的实际测量
-- `submission/design_config.json`（可选）：RTL 列表与帧间隔提示
-- `submission/flow/`、`submission/implementation/`（使用自定义综合时）：优化 recipe、完整映射网表和构建 manifest
-
-正式评分以评测器实测为准；提交后不得根据隐藏反馈重新切换候选设计。
+成绩由可信评测器决定。不得修改评分规则、隐藏数据或校准结果，不得编造实验数据，也不得根据隐藏反馈事后更换提交设计。

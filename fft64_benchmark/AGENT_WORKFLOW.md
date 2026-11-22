@@ -1,19 +1,23 @@
-# Evidence-Driven FFT Design Workflow
+# Evidence-Driven Design Workflow
 
-The benchmark evaluates a **working circuit and its measured hardware quality**, not the length of the design diary. Use the supplied tools and record the decisions that materially changed the design.
+The evaluation rewards the final verified FFT implementation, not the length of a design journal. Maintain a short decision record so that architecture, precision and tool-flow choices can be explained by **actual measurements**.
 
-With sibling `Synopsys/` and `port.txt`, start with `bash check_env.sh`. Use the remote public preview and `synopsys.sh exec` for container debugging; do not construct another host EDA toolchain. Read the repository's `REMOTE_SYNOPSYS.md` for commands and log locations.
+## Recommended process
 
-1. **Understand the contract.** Read `TASK_EN.md` or `TASK_ZH.md`, `SPEC.json`, and `INTERFACE.md`. Distinguish mandatory II=384 from optional faster service.
-2. **Compare candidate architectures.** Read `ARCHITECTURE_GUIDE.md`; propose at least two different organizations and explain the expected area/throughput/latency trade-off.
-3. **Establish a correct baseline.** Implement synthesizable RTL, pass the public numerical/protocol checks, then obtain mapped area and timing in one fixed backend.
-4. **Make one measurable change.** Adjust a structure, explicit quantization choice or [optimization recipe](../OPTIMIZATION.md); predict the expected effect on area, SQNR, II, or latency.
-5. **Evaluate and decide.** Run quick tests first, then hardware/throughput checks when worthwhile. Record a rejected result as well as an accepted one; never label a model estimate as a measured PPA result.
-6. **Revise the plan.** Update `DESIGN_PLAN.md` only when an experiment changes a decision. Record the actual candidate data in `measurements.csv`.
-7. **Freeze the final candidate.** Submit the self-contained RTL, any custom recipe and exported implementation, and a concise trace. Rebuild the implementation after changing RTL or recipes. Do not change the candidate after private evaluation feedback.
+1. **Read the contract.** Inspect `TASK_EN.md` or `TASK_ZH.md`, `SPEC.json` and `INTERFACE.md`. Separate mandatory II=384 service from optional higher throughput.
+2. **Form competing hypotheses.** Consider at least two FFT architectures with different area, storage, scheduling and throughput characteristics. The [architecture guide](ARCHITECTURE_GUIDE.md) provides options without prescribing a solution.
+3. **Create a working baseline.** Implement synthesizable RTL and pass public functional, protocol and SQNR tests before optimizing area or II.
+4. **Change one meaningful design choice.** Explore a hardware structure, explicit fixed-point quantization rule, or [EDA synthesis recipe](../OPTIMIZATION.md). State the expected effect and the measurement that could disprove it.
+5. **Measure and compare.** Start with quick checks; synthesize and evaluate promising candidates with the same backend and reference policy. Preserve negative experiments when they inform a decision.
+6. **Revise the plan.** Update `DESIGN_PLAN.md` after material changes and append measured configurations to `measurements.csv`. Distinguish estimates from EDA measurements and partial tests from full scores.
+7. **Freeze the best verified candidate.** Keep RTL, source and recipe hashes, and—when using custom synthesis—the exported structural netlist and manifest. Rebuild after changing RTL or recipe. Do not use private feedback to revise a submitted candidate.
 
-## Recommended measurement columns
+With sibling `Synopsys/` and `port.txt`, use `check_env.sh`, `run_synopsys_debug.sh` and `synopsys.sh exec` for publicly authorized container debugging. Work in a separate output directory for each design candidate. See [REMOTE_SYNOPSYS.md](../REMOTE_SYNOPSYS.md).
 
-`id,architecture,precision_policy,source_hash,recipe_hash,mapped_hash,backend,library_id,area_um2,worst_sqnr_db,verified_ii_cycles,certified_period_ns,maximum_first_cycles,maximum_completion_cycles,timing_pass,protocol_pass,status,notes`
+## Suggested measurement schema
 
-Use empty fields for unavailable results, not `0`. A locally mapped area cannot be combined with a commercial reference area; official scores require a matching backend and frozen calibration. `frame_ii_cycles` in an optional config is a hint only; the evaluator measures capacity independently.
+```text
+id,architecture,precision_policy,source_hash,recipe_hash,mapped_hash,backend,library_id,area_um2,worst_sqnr_db,verified_ii_cycles,certified_period_ns,maximum_first_cycles,maximum_completion_cycles,timing_pass,protocol_pass,status,notes
+```
+
+Leave unavailable values blank rather than using zero. The `frame_ii_cycles` configuration field is a hint; official throughput is independently measured. A custom implementation's area and timing must be evaluated using the same frozen library and constraints as competing designs. The design plan and experiment log support qualitative analysis but do **not** directly change the numerical score.

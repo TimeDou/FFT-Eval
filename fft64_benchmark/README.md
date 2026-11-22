@@ -1,22 +1,23 @@
-# FFT64-Quant: Public Task Package
+# FFT64-Quant: Public Benchmark Package
 
-**Purpose.** Design and improve a complete, synthesizable 64-point fixed-point complex FFT. This is an **open-design** task: the package provides a contract, interface declaration, architecture guidance, and test tools, but **no working FFT RTL**.
+This package defines an **open-design** EDA Agent task: design and optimize a complete, synthesizable 64-point fixed-point complex FFT. It provides specifications, RTL ports, testing infrastructure and design guidance, but **no completed FFT implementation**.
 
-## Documents
+## Read first
 
-- [TASK_EN.md](TASK_EN.md) / [TASK_ZH.md](TASK_ZH.md): the agent-facing task in English / Chinese
-- [SPEC.json](SPEC.json): machine-readable functional and measurement contract
-- [INTERFACE.md](INTERFACE.md): cycle-accurate RTL interface and reset semantics
-- [ARCHITECTURE_GUIDE.md](ARCHITECTURE_GUIDE.md): design alternatives, not a solution
-- [AGENT_WORKFLOW.md](AGENT_WORKFLOW.md) / [DESIGN_PLAN_TEMPLATE.md](DESIGN_PLAN_TEMPLATE.md): evidence-based design loop
-- [SCORING.md](SCORING.md) / [EVALUATION.md](EVALUATION.md): feasibility, score, and verification stages
-- [Editable optimization recipes](../OPTIMIZATION.md): DC, Yosys/ABC and optional P&R templates
+| Document | Purpose |
+|---|---|
+| [TASK_EN.md](TASK_EN.md) / [TASK_ZH.md](TASK_ZH.md) | Agent-facing task in English / Chinese |
+| [SPEC.json](SPEC.json) | Machine-readable FFT, numerical and I/O contract |
+| [INTERFACE.md](INTERFACE.md) | Cycle-accurate streaming and reset requirements |
+| [ARCHITECTURE_GUIDE.md](ARCHITECTURE_GUIDE.md) | FFT architecture and precision options |
+| [SCORING.md](SCORING.md) / [EVALUATION.md](EVALUATION.md) | Feasibility, quality scores and verification workload |
+| [AGENT_WORKFLOW.md](AGENT_WORKFLOW.md) / [DESIGN_PLAN_TEMPLATE.md](DESIGN_PLAN_TEMPLATE.md) | Evidence-driven iterative design record |
+| [OPTIMIZATION.md](../OPTIMIZATION.md) | Editable DC/Yosys/ABC flow and netlist export |
+| [Technical report](../docs/FFT64-Quant.pdf) / [report source](../docs/FFT64-Quant.md) | Architecture, precision, synthesis-flow and measurement methodology |
 
-## SSH container deployment
+## Development entrypoints
 
-With sibling `Synopsys/` and `port.txt`, run `bash check_env.sh` from the repository root. Use `bash run_synopsys_debug.sh submission --quick --out runs/quick` for public debugging in the container, or `bash synopsys.sh exec -- <command>` to call its tools directly. The host needs only Python and SSH. See [REMOTE_SYNOPSYS.md](../REMOTE_SYNOPSYS.md).
-
-## Tools installed in the current environment
+From the **FFT-Bench repository root**, with locally installed tools:
 
 ```bash
 bash fft64_benchmark/setup.sh --check-only
@@ -24,22 +25,28 @@ bash fft64_benchmark/run_preview.sh submission runs/quick --quick --no-build
 bash fft64_benchmark/run_preview.sh submission runs/full --no-build
 ```
 
-The `--quick` mode performs public numerical and mandatory sustained-protocol checks; the full mode additionally performs mapping, STA, mapped simulation, and the architecture-profile II/frequency measurements. **Quick PASS is not full hardware feasibility.** The full architecture search may be costly: it tests every integer frame interval from 64 to 384 using 1,024 consecutive frames per interval before representative mapped confirmation.
+With sibling `Synopsys/` and `port.txt`, commercial tools can instead be called in the running SSH container:
 
-The evaluation selects available commercial tools first (VCS/DC/PrimeTime). Otherwise it uses installed open-source tools (Icarus/Verilator, Yosys/ABC, OpenSTA). The latter is a **pre-layout mapping and STA fallback**, not a post-route OpenROAD result. Do not compare raw results or calibrated scores across backend identities.
+```bash
+bash check_env.sh
+bash run_synopsys_debug.sh submission --quick --out runs/quick
+bash run_synopsys_debug.sh submission --profile architecture --out runs/full
+```
 
-## Passing, scoring, and submission
+Details appear in [REMOTE_SYNOPSYS.md](../REMOTE_SYNOPSYS.md). The full architecture evaluation probes all integer frame intervals from 64 to 384 and may be resource-intensive. A quick PASS checks public numerical/protocol behavior, **not** full ASIC feasibility.
 
-Feasibility requires valid FFT behavior, per-frame SQNR ≥ 50 dB, protocol and reset correctness, 10 ns timing, and mapped-netlist consistency. The default `architecture` score combines area (60%), verified throughput (30%), and worst first-output latency (10%). A feasible design can receive zero score. Hidden calibration and input seeds are not part of this repository.
+## Custom synthesis
 
-Submit `rtl/`, `DESIGN_PLAN.md`, and `measurements.csv`; `design_config.json` is optional. Its `frame_ii_cycles` is a scheduling hint only, not the official throughput measurement. You may also submit an implementation produced with your own synthesis recipe; see below.
+Initialize editable templates with:
 
-## Choose the optimization flow
+```bash
+bash build_implementation.sh submission --init-flow
+```
 
-Run `bash build_implementation.sh submission --init-flow` from the repository root to copy editable DC, Yosys, ABC and P&R templates into `submission/flow/`. You may replace the optimization commands, pass order and tool settings. In the SSH deployment, build with `bash synopsys.sh build submission --out runs/build --export`, then use the usual public evaluator. For installed Yosys/ABC, use `bash build_implementation.sh submission --backend local --out runs/build --export`.
+Agents can explore synthesis recipes and export a flattened ASAP7 netlist as `submission/implementation/mapped.v` with a matching manifest. The evaluator imports and independently measures this circuit under fixed library, timing and verification requirements; it does **not** execute submitted Tcl/Yosys/ABC scripts in hidden grading. Without a complete custom export, the default mapping applies only when no custom recipe is submitted. Current scores are based on **pre-layout** standard-cell area and ideal-interconnect STA, not complete P&R.
 
-The export contains a structural `implementation/mapped.v` and its source/library manifest. Evaluation imports that netlist directly, independently counts cells, checks fixed-constraint timing and compares behavior with RTL. It does not execute submitted recipes or reuse self-reported PPA. With no custom implementation, the provided default mapping applies. The P&R template requires a matched physical kit and is outside the scored pre-layout flow. Full commands and template details are in [OPTIMIZATION.md](../OPTIMIZATION.md).
+## Feasibility and scoring
 
-## NumPy and EDA dependencies
+`resolved=true` means that every mandatory FFT, SQNR, reset, protocol, 384-cycle service, timing and representative RTL/mapped check passes. The default `architecture` score combines complete area (60%), measured sustainable throughput (30%) and maximum observed first-output latency (10%). A feasible design may receive zero score; SQNR above 50 dB gives no extra reward. The `area` profile is a separate diagnostic and needs its own calibration.
 
-The default runtime reuses the selected Python interpreter's NumPy. If absent, setup installs the binary-only pinned version from the configured pip source or external offline wheel cache. `--no-build` prevents building missing EDA tools; it does not guarantee that a missing NumPy wheel can be installed offline. Verify the environment before the timed agent run. Use [requirements.txt](requirements.txt) for the pinned NumPy version.
+Submit `rtl/`, `DESIGN_PLAN.md` and `measurements.csv`, with an optional `design_config.json`. If using custom synthesis, also keep `flow/` and `implementation/`. The public repository contains neither hidden data nor private calibration. Backend identity, tool/library version and scoring profile must be frozen for comparable measurements.

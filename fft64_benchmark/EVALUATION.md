@@ -1,22 +1,21 @@
-# Evaluation Protocol: FFT64-Quant
+# FFT64-Quant: Verification and Measurement Protocol
 
-The benchmark distinguishes **functional feasibility** from **hardware quality**. The public pipeline supports iterative design; hidden evaluation uses independent inputs and an operator-frozen configuration. The numerical metric is evaluated on the **complete 64-point frame**, not individual butterflies.
+The benchmark evaluates a **complete 64-point FFT**, not an isolated butterfly. Functional feasibility and hardware quality are measured separately. Public evaluations support iterative design; final hidden evaluation uses independent data and frozen operator settings.
 
-## Validation stages
+## 1. Validation stages
 
-| Stage | Inputs | What it establishes |
+| Stage | Test scope | Decision or measurement |
 |---|---|---|
-| Public numerical | ≥1,024 random nonzero frames plus directed cases | Minimum per-frame SQNR ≥50 dB; zero input gives zero output |
-| Mandatory service | ≥1,024 consecutive frames, II=384, plus reset and gap cases | No lost/extra frames; max first-output ≤300 and completion ≤364 cycles |
-| Hardware mapping/STA | Complete top RTL, or exported structural implementation | Full standard-cell area; 10 ns setup/hold requirements |
-| Mapped comparison | Representative numeric and protocol subset | Same output/control cycles and values as candidate RTL |
-| II capacity | All integer intervals 64–384, ≥1,024 RTL frames each | Smallest observed passing II; selected II receives 128-frame mapped confirmation |
-| Frequency certification | Reconstraint on a fixed mapped netlist | Setup/hold-passing period certificate, ≤0.01 ns bracket |
-| Hidden numerical | ≥8,192 independently generated nonzero frames plus directed cases | Final SQNR feasibility on independent data |
+| Numerical RTL | 1,024 public or 8,192 hidden random nonzero frames, plus directed inputs | Minimum per-frame SQNR ≥50 dB; zero input produces exact zero |
+| Mandatory service | At least 1,024 consecutive frames at II=384; reset and variable-gap cases | No lost/extra frames; per-frame first output ≤300 and last output ≤364 cycles |
+| Hardware implementation | Default synthesis or imported structural ASAP7 netlist | Complete mapped area; setup/hold at 10 ns |
+| RTL/mapped comparison | Representative numerical, protocol and reset cases | Same output data, valid/start signals and clock cycles |
+| Throughput search | All 321 integer intervals, II=64–384; at least 1,024 RTL frames each | Shortest passing II, followed by a mapped confirmation subset of 128 frames plus gap/reset probes |
+| STA period certification | Reconstraint of one fixed mapped netlist | Setup/hold-passing endpoint with ≤0.01 ns bracket, unless the configured scan floor is reached |
 
-The **minimum SQNR** over scored nonzero frames determines numerical feasibility; the **maximum observed per-frame first-output and completion delays** determine latency feasibility. Optional II intervals may fail without invalidating mandatory 384-cycle operation. The first-output latency score uses a common 10 ns clock; effective throughput uses the certified clock period.
+For numerical feasibility, use the **minimum SQNR over nonzero tested frames**, not the average. For latency, use the **maximum observed first-output and completion delays across frames**, not the first transaction. The throughput metric uses the smallest empirically verified II, not an Agent-declared value. Failure at an optional shorter II does not invalidate mandatory 384-cycle operation.
 
-## Running the public evaluator
+## 2. Public evaluation
 
 From the repository root:
 
@@ -26,20 +25,28 @@ bash fft64_benchmark/run_preview.sh submission runs/quick --quick --no-build
 bash fft64_benchmark/run_preview.sh submission runs/full --no-build
 ```
 
-Use `--backend commercial` or `--backend local` to select a backend explicitly. Automatic preparation prefers installed Synopsys tools with ready libraries, and otherwise selects installed open-source tools. A subsequent license or tool failure is unscored; it does not switch the backend during a run. Open-source fallback is **Yosys/ABC mapping plus OpenSTA timing and open-source simulation**; it is not a complete place-and-route OpenROAD implementation. Missing licenses, tools, or calibration make a run unscored; consult the run's `status` and `reason`.
+Use `--backend commercial` or `--backend local` to select explicitly. Automatic preparation prefers available commercial tools; otherwise the open-source fallback uses Icarus/Verilator, Yosys/ABC, and OpenSTA. This is **pre-layout** mapping and timing, not complete OpenROAD place-and-route. The selected backend is fixed during a run; tool or license failures do not trigger an undocumented switch. Missing calibration permits development feedback but not a valid official score.
 
-The complete architecture-profile II sweep is expensive; a quick PASS should not be described as a full PPA PASS. Reusing previous results is valid only when the RTL source, inputs, random seeds, backend/tool versions, libraries, and flow settings match. Hidden data and the private calibration must remain outside the agent workspace.
+The full architecture profile performs a long-stream test at every integer II. It batches at most eight intervals at a time and preallocates regular input schedules; all 321 intervals and 1,024 frames per interval are retained. Each completed chunk records array sizes, runtime and Python-process peak RSS; EDA subprocess memory requires separate measurement. Use quick numerical/protocol tests to reject unsuitable candidates before running ASIC and capacity evaluation. A quick PASS is **not** full hardware feasibility.
 
-## Custom synthesis
+## 3. Agent-controlled synthesis
 
-Agent-controlled recipes run in the public development environment and export `implementation/mapped.v` with a source/library manifest. The evaluator imports a submitted structural implementation without resynthesis, independently counts its standard cells, applies fixed STA constraints, and compares its behavior with the submitted RTL. It never executes submitted Tcl/YS/ABC scripts or adopts their PPA reports. The same process can measure a Yosys-produced ASAP7 netlist in Synopsys. Without an exported implementation or custom synthesis recipe, default mapping applies. Custom recipes without a complete export must be built before full evaluation; quick checks remain RTL-only. See [OPTIMIZATION.md](../OPTIMIZATION.md).
+To create editable optimization scripts:
 
-## Interpretation
+```bash
+bash build_implementation.sh submission --init-flow
+```
 
-Measurements are **finite-sample** and ASIC QoR is **pre-layout**. The tests are not a formal worst-case error proof, formal sequential equivalence proof, post-route frequency measurement, or power measurement. Different backends require independently frozen accurate baseline references; do not mix their raw QoR or scores.
+After editing `submission/flow/`, build and export `submission/implementation/mapped.v` and its manifest using [OPTIMIZATION.md](../OPTIMIZATION.md). An exported mapped netlist is imported for independent measurement. The evaluator does not run submitted Tcl, Yosys or ABC scripts in private scoring; it checks mapped-cell legality, source/manifest consistency, timing, and representative RTL/netlist behavior. With no custom export, the frozen default mapping is used. If custom recipes exist without a complete export, full evaluation requires the Agent to build first; quick checks remain RTL-only.
 
-## Checkpoints and outcomes
+## 4. What the evidence supports
 
-Caches bind the submitted RTL, any exported implementation and recipe manifest, exact input frames, seed, simulator/tool binaries, libraries, evaluator and flow scripts, and policy. Mapped qualification additionally binds its mapped source and initialization settings. Identity conflicts preserve the existing measurement and require a new output directory; incomplete or corrupt records cannot produce PASS.
+Long-stream capacity is a measured result over **finite frames and the tested II range**; it is not proof of a globally minimal II. Large RTL datasets and smaller mapped-netlist subsets establish different coverage. The tool flow gives **pre-layout**, ideal-interconnect standard-cell area and STA estimates, not post-route frequency, power or silicon performance. Optional formal equivalence is reported separately.
 
-A demonstrated design failure is `DESIGN_INVALID`. Failed tools, timeouts or missing/malformed measurement data are `UNSCORED_INFRASTRUCTURE` and have `score_valid=false`. Quick and unfinished runs are `INCOMPLETE`. Check submission-document completeness separately from the hardware score.
+Record the backend, tool and library identities, submitted RTL, imported netlist hash when present, selected profile, reference calibration, worst SQNR, maximum per-frame latency, verified II and certified period. Do not compare raw results or scores from different backends or profiles.
+
+## 5. Caches and evaluation outcomes
+
+Completed caches are tied to RTL, imported implementation, recipe manifest, input frames and seeds, simulator/tool versions, technology libraries, evaluation scripts and scoring policy. Changed inputs require a new output directory; corrupt or incomplete records must not become PASS results.
+
+A proven hardware violation is `DESIGN_INVALID` and receives a valid zero score. License errors, tool failures, timeouts and missing or inconsistent measurements are `UNSCORED_INFRASTRUCTURE` (`score_valid=false`) and must be excluded from ranking. Partial/quick checks are `INCOMPLETE`. Submission-document completeness is recorded separately from hardware score.

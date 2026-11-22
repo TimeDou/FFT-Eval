@@ -1,28 +1,28 @@
-# FFT64 Operator Reference and Evaluation Tools
+# FFT64-Quant: Operator Tools
 
-This directory is private. It contains **two accurate fixed-point FFT baseline implementations**, calibration utilities, and regression tests. These are for reference calibration only; **neither baseline nor the operator's prior optimized designs should be included in the agent's initial workspace**.
+The `operator/` directory is **private**. It includes two accurate fixed-point FFT baseline implementations (R2SDF and folded radix-2), calibration utilities and regression tests. Do not expose baseline RTL, hidden seeds, calibration values or private results to evaluated Agents.
 
-## Execution
-
-From the private repository root:
+## Main commands
 
 ```bash
-# Unit/control regressions (synthetic fixtures, not actual commercial PPA)
-python3 -m unittest discover -s operator/tests -v
+# Synthetic regression tests
+python3 -m unittest discover -s operator/tests -q
 
-# Full evaluation using a selected backend
+# Evaluate on the selected backend
 bash run_evaluation.sh /absolute/path/to/submission \
   --backend auto --profile architecture --out /absolute/path/to/evaluation
 
-# Force commercial Synopsys where available
+# Force the commercial backend
 bash run_synopsys.sh /absolute/path/to/submission \
-  --backend commercial --profile architecture --out /absolute/path/to/evaluation
+  --backend commercial --profile architecture --out /absolute/path/to/evaluation_synopsys
 ```
 
-The `architecture` profile is the **default**. The optional `area` profile is an independent diagnostic; its numeric score and calibration must not be mixed with architecture results. See [SCORING_PROFILES.md](SCORING_PROFILES.md) and [../fft64_benchmark/SCORING.md](../fft64_benchmark/SCORING.md).
+The default `architecture` profile combines complete mapped area, verified throughput and maximum first-output latency. The optional `area` profile needs separate calibration and must not be mixed into architecture rankings. See [SCORING_PROFILES.md](SCORING_PROFILES.md).
 
-Calibration measures accurate SDF and folded radix-2 designs using the same standard-cell library, protocol, timing constraints, tools, and profile as candidate designs. Separate backends require separate normalization anchors. The float64 FFT of the **same quantized input** is the numerical oracle; an accurate fixed-point baseline is not numerically exact relative to float64.
+## Independent verification and calibration
 
-## Evidence and limits
+Calibrate both accurate baselines using the same backend, libraries, fixed timing constraints, measurement protocol and default synthesis recipe. Candidate implementations may be generated with their own publicly executed synthesis recipes; **private evaluation imports their mapped netlists, rather than running the recipes**. Each candidate must pass mapped-cell legality, fixed-constraint STA, and representative RTL/netlist comparison before hardware results are accepted.
 
-Regression tests exercise scoring, cache/protocol logic, simulation drivers, and operator entrypoints using clearly identified fixtures. Real hardware evidence and its scope are described in [VALIDATION.md](../VALIDATION.md). A source-only main export and an agent's measurement bundle are separate review inputs.
+An Agent-supplied manifest provides internal consistency checks but is not trusted evidence of an executed EDA recipe. If recipe-to-netlist provenance is an experimental requirement, capture independent build logs and source hashes in a controlled build environment. Numerical evaluation always uses the same-input float64 reference, not one of the fixed-point baseline outputs.
+
+Use the [validation report](../VALIDATION.md) to distinguish code regression results from complete ASIC experiments. Tool failures and absent calibration are unscored and must be excluded from rankings.

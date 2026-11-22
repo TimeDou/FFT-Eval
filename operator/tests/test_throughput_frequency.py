@@ -54,6 +54,21 @@ class ThroughputTests(unittest.TestCase):
             with self.assertRaises(ValueError):validate_interval(x)
         self.assertEqual(validate_interval(64),64)
 
+    def test_preallocated_regular_stream_matches_cycle_contract(self):
+        frames=np.arange(3*64*2,dtype=np.int64).reshape(3,64,2)-192
+        for interval in [64,80,384]:
+            events,meta,actual=stream_schedule(frames,interval,tail=False,reset_probes=False)
+            # Reference construction from the original schedule, including
+            # its initial reset and trailing idle; data and cycles must agree.
+            expected=[[1,0,0,0,0]]*3+[[0,0,0,0,0]]*2
+            for j,frame in enumerate(frames):
+                expected.extend([0,1,int(k==0),int(z[0]),int(z[1])]for k,z in enumerate(frame))
+                if j<len(frames)-1:expected.extend([[0,0,0,0,0]]*(interval-64))
+            expected.extend([[0,0,0,0,0]]*400)
+            np.testing.assert_array_equal(events,np.asarray(expected,dtype=np.int64))
+            self.assertEqual(meta['frame_starts'],[5,5+interval,5+2*interval])
+            np.testing.assert_array_equal(actual,frames)
+
 
 class FrequencyTests(unittest.TestCase):
     def setUp(self):

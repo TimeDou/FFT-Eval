@@ -116,7 +116,7 @@
     "policy_file": "profiles/policy.json",
     "resolved": "all selected-profile numerical, protocol, timing and RTL/mapped requirements pass; independent of score",
     "area": "clip((A_ref-A)/(A_ref-0.5*A_ref),0,1); A_ref is smallest validated accurate mapped area",
-    "architecture": "0.6*area + 0.3*throughput + 0.1*latency, paper equations (6)-(8)",
+    "architecture": "0.6*area + 0.3*throughput + 0.1*latency; normalized terms and calibration defined in profiles/policy.json and SCORING.md",
     "frequency": "architecture only: passing setup/hold endpoint from reconstraint and STA clock scan on fixed mapped netlist; 0.01ns bracket",
     "throughput": "STA-certified frequency divided by smallest measured long-tested integer II; never agent claim",
     "latency_score": "maximum observed first-output cycles times common 10 ns, reference 300 cycles",

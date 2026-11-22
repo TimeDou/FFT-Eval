@@ -106,7 +106,7 @@ class RemoteTests(unittest.TestCase):
             self.assertEqual(kwargs['env']['FFT_SSH_PASSWORD'],'test-password')
             self.assertEqual(kwargs['env']['SSH_ASKPASS_REQUIRE'],'force')
             return subprocess.CompletedProcess(argv,0,'ok','')
-        with patch.object(remote.subprocess,'run',side_effect=fake_run),patch.dict(os.environ,FFT_SSH_PASSWORD='test-password'):
+        with patch.object(remote.shutil,'which',return_value='/fixture/ssh'),patch.object(remote.subprocess,'run',side_effect=fake_run),patch.dict(os.environ,FFT_SSH_PASSWORD='test-password'):
             result=connection.run('printf ok',capture=True)
         self.assertEqual(result.returncode,0)
         self.assertNotIn('test-password',str(captured['argv']))
@@ -144,7 +144,7 @@ class RemoteTests(unittest.TestCase):
 
     def test_command_arguments_are_quoted_without_local_shell_execution(self):
         connection=self.connection()
-        with patch.object(remote.subprocess,'run',return_value=subprocess.CompletedProcess([],0))as call:
+        with patch.object(remote.shutil,'which',return_value='/fixture/ssh'),patch.object(remote.subprocess,'run',return_value=subprocess.CompletedProcess([],0))as call:
             connection.run('printf %s '+__import__('shlex').quote('$(must_not_run); text'))
         argv=call.call_args.args[0]
         self.assertEqual(argv[-2],self.layout.host)

@@ -1,41 +1,38 @@
-# Architecture Guide: FFT64 Design Space
+# FFT64 Architecture and Precision Design Guide
 
-This is **background and design guidance**, not a prescribed solution. The agent remains responsible for the architecture, arithmetic, RTL, and precision choices.
+This guide identifies possible design directions; it is **not an implementation recipe or optimized solution**. All architectures must compute the same forward, unscaled, natural-order 64-point complex FFT under the specified external protocol.
 
-## Arithmetic organization
+## FFT computation versus hardware organization
 
-A 64-point FFT can be decomposed into six radix-2 stages, each with 32 two-input butterflies. Different hardware architectures implement the *same dependencies* using different degrees of parallelism and storage. The natural-order output requirement includes any necessary data reordering.
+A pure radix-2 decomposition contains six stages of 32 butterfly operations, or 192 butterfly **operations** per transform. The physical implementation need not contain 192 butterfly units: reuse, pipelining and parallelism determine how the computation is mapped to hardware.
 
-| Option | Main organization | Typical opportunity | Typical cost or risk |
+| Architecture | Main organization | Potential benefit | Main implementation cost |
 |---|---|---|---|
-| R2SDF | Single streaming path with feedback delays | Regular processing; stage-wise data handling | Feedback buffers, butterflies and stage control |
-| R2²SDF | Paired radix-2 stages with specialized twiddle handling | Reduce nontrivial rotations | Alignment and coefficient routing remain |
-| R4MDC | Several parallel paths with commutators | Higher intrinsic throughput | More arithmetic, data routing, buffers, and serial I/O adaptation |
-| Folded radix-2 | Reuse one or a few butterfly units | Reduce arithmetic duplication | Scheduling, memory port/bank conflicts, longer latency |
-| Fully parallel | Many concurrent butterflies | Low transform latency at sufficient I/O width | Significant complete-design area |
+| R2SDF | One streaming path with feedback delays | Regular pipeline | Stage butterflies, storage and control |
+| R2²SDF | Paired radix-2 stages with simplified rotations | Fewer nontrivial twiddle rotations | Feedback alignment and coefficient handling |
+| R4MDC | Multiple parallel paths and commutators | Higher intrinsic parallel throughput | Arithmetic duplication, data movement and serial interface adaptation |
+| Folded/iterative | Shared butterfly units with scheduled storage accesses | Reduced arithmetic duplication | Memory banking/ports, scheduling and latency |
+| Fully parallel | Many simultaneous operations | Short computation latency with sufficient interface bandwidth | High complete-design area and routing overhead |
 
-For radix-2, the six-stage computation comprises 192 butterfly *operations*, not necessarily 192 physical butterfly units. An architecture that reduces core arithmetic may still require substantial standard-cell storage, output permutation and multiplexing.
+The 384-cycle minimum service requirement and one-complex-sample-per-cycle interface apply to **every** candidate. A design with more internal parallelism may or may not achieve a better verified throughput after accounting for input/output adaptation.
 
-## Precision/quantization choices
+## Numerical precision choices
 
-- Different data widths at selected stage boundaries;
-- Twiddle coefficient precision, trivial rotations (e.g. ±1, ±j), and constant multiplication specialization;
-- Explicit truncation versus round-to-nearest-even, including sign/tie behavior;
-- Guard bits, intermediate scaling and overflow handling;
-- Coupled real/imaginary error and near-minimum-RMS input behavior.
+Candidate variables include intermediate data widths, guard bits, twiddle-factor widths, truncation or round-to-nearest-even, fixed-point scaling and quantization locations. Trivial rotations (such as multiplication by ±1 or ±j) can be specialized exactly. Any precision reduction must be evaluated on the **complete 64-point output**, using the float64 FFT of the same already-quantized input. Minimum per-frame SQNR—not local butterfly error or average SQNR—determines numerical feasibility.
 
-Keep **exact transformations** and **intentional numerical approximation** conceptually separate. All candidates must be evaluated on the *complete* FFT output against the same quantized-input float64 reference. Local butterfly error is not the whole-design SQNR.
-
-## Questions worth testing
-
-- Does a more parallel pipeline improve the scored throughput after accounting for the one-sample-per-cycle interface?
-- Does the proposed memory organization really support every required simultaneous read and write?
-- Are reordering and twiddle storage counted in area?
-- Can lower twiddle precision harm low-energy complex inputs despite good average SQNR?
-- Is an apparently faster circuit actually able to accept 1,024 consecutive frames at the claimed II?
-
-Prefer a short series of measured hypotheses to an unvalidated list of architecture names. This document contains no optimized RTL or winning precision schedule.
+Keep intentional **fixed-point quantization** distinct from **exact RTL or Boolean optimizations**. Approximate gate pruning, approximate compressors and arbitrary Boolean-function changes are outside the task.
 
 ## EDA optimization choices
 
-The default synthesis recipe is a starting point. Test Boolean rewriting, resource sharing, compile effort, hierarchy and mapping choices through the editable [optimization templates](../OPTIMIZATION.md). A change in logic count is a hypothesis; its benefit is established by complete mapped area, fixed-constraint STA and mapped-to-RTL checks. Record both the RTL and the recipe for each candidate. Placement/routing recipes require a matched physical kit and do not determine the current pre-layout score.
+The default DC or Yosys/ABC mapping is one possible strategy. Agent-controlled recipes can modify synthesis effort, hierarchy, resource sharing, Boolean rewriting and technology mapping. Use the public [optimization interface](../OPTIMIZATION.md) to export a structural netlist; private evaluation independently imports and measures it. A smaller logic count in an intermediate representation does not necessarily imply a smaller or faster complete mapped FFT.
+
+## Useful experimental questions
+
+- Does the memory organization support simultaneous accesses without conflicts?
+- Is the natural-order output permutation fully implemented and counted?
+- Does a shorter internal processing schedule pass long continuous-frame tests?
+- Does lower precision remain feasible for low-energy and sign-sensitive inputs?
+- Does a synthesis recipe improve final cell area or certified period after independent STA?
+- Is a result specific to one backend or stable across repeated runs of the same frozen flow?
+
+Prefer a few well-measured hypotheses to unsupported claims about an architecture's superiority. Physical placement/routing is optional and does not determine the present pre-layout score.

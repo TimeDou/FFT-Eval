@@ -1,6 +1,6 @@
 """FFT protocol: frame cardinality, worst-frame extrema, optional II."""
 from pathlib import Path
-import sys,tempfile,unittest,copy
+import sys,tempfile,unittest,copy,hashlib,json
 from unittest.mock import patch
 import numpy as np
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT/'fft64_benchmark/tools'))
@@ -14,11 +14,20 @@ class PaperProtocolTests(unittest.TestCase):
         for count in [1024,8192]:
             x,labels=evaluation_frames(1157,count)
             self.assertEqual(x.shape[1:],(64,2));self.assertGreater(len(x),count)
+            self.assertEqual(len(x),count+192)
             self.assertTrue(all(s.startswith('independent_random')for s in labels[:count]))
             self.assertTrue(np.all(np.sqrt(np.mean(np.sum((x[:count]/32768)**2,axis=-1),axis=-1))>=1/32))
             self.assertEqual(count*64,65536 if count==1024 else 524288)
         a,_=evaluation_frames(1);b,_=evaluation_frames(2)
         self.assertFalse(np.array_equal(a[:1024],b[:1024]))
+
+    def test_registration_binds_the_report_source_builder_and_policy(self):
+        record=json.loads((ROOT/'fft64_benchmark/profiles/PRE_REGISTERED.json').read_text())
+        for field,path in [('policy_sha256','fft64_benchmark/profiles/policy.json'),
+                           ('source_document_sha256','docs/FFT64-Quant.pdf'),
+                           ('report_source_sha256','docs/FFT64-Quant.md'),
+                           ('report_builder_sha256','docs/build_report.py')]:
+            self.assertEqual(record[field],hashlib.sha256((ROOT/path).read_bytes()).hexdigest())
 
     def test_quality_union_uses_minimum_not_mean_db(self):
         q=dict(frames=1024,minimum_frame_sqnr_db=60.,worst_frame_nmse=1e-6,zero_frame_exact=True,feasible=True)

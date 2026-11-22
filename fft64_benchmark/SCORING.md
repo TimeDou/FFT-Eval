@@ -1,59 +1,62 @@
-# FFT64-Quant: Feasibility and Scoring
+# FFT64-Quant: Feasibility and Hardware-Quality Scoring
 
-This document describes the **default `architecture` profile**. `--profile area` is a separate diagnostic profile and its scores must not be mixed with architecture-profile scores. The numerical contract is defined in [SPEC.json](SPEC.json); the equations below agree with the report in [FFT64-Quant.pdf](../docs/FFT64-Quant.pdf).
+The default `architecture` profile measures complete-circuit area, verified throughput, and first-output latency. The optional `area` profile is a separate diagnostic; **scores from different profiles or EDA backends are not comparable**. The numerical and I/O requirements are specified in [SPEC.json](SPEC.json).
 
-## 1. Feasibility is independent of optimization quality
+## 1. Feasibility
 
-`resolved=true` means that all mandatory checks pass: FFT function and natural-order outputs; minimum nonzero-frame SQNR ≥ 50 dB and exact zero for zero frames; reset and input/output protocol; service at II=384; first-output and completion deadlines; 10 ns setup/hold timing; and representative RTL-to-mapped-netlist consistency. No minimum area reduction or score is required. A feasible design may receive `score=0`.
+A design is feasible (`resolved=true`) only when it passes every mandatory test: FFT function and output ordering, per-frame SQNR of at least 50 dB for each evaluated nonzero frame, exact zero output for zero input, streaming protocol and reset behavior, sustained service at II=384, first-output/completion deadlines, 10 ns setup/hold timing, and representative RTL-to-mapped verification. **There is no minimum area saving or score required to pass.** A feasible design may have a score of zero.
 
-An infrastructure failure or missing valid calibration is **not** a hardware design failure; no official score is assigned. Internal results set `score_valid=false`. The three-field platform result uses the prefix `UNSCORED_INFRASTRUCTURE:` in `reason`; such results must be excluded from rankings even if its required numeric `score` field is zero.
+Infrastructure failures are different from design violations. The evaluator preserves `score_valid` internally: `DESIGN_INVALID` is a demonstrated violation and a valid zero-score result, whereas `UNSCORED_INFRASTRUCTURE` and `INCOMPLETE` are not ranked. The platform's three-field result includes the corresponding prefix in `reason` because it has no separate `score_valid` field.
 
-## 2. Measured hardware quantities
+## 2. Measured quantities
 
-- **Area,** \(A\): complete pre-layout mapped top-module standard-cell area, including sequential cells, control, reordering, and all standard-cell storage.
-- **Verified frame interval,** \(II_{\mathrm{ver}}\): the smallest passing integer II in **64–384 cycles/frame**, found from at least **1,024 consecutive RTL frames at every interval**, with a representative mapped-netlist check at the selected interval. Optional faster-II failures do not invalidate II=384 feasibility. The user-provided `frame_ii_cycles` is only a hint.
-- **Certified clock period,** \(P_{\mathrm{STA}}\): a setup/hold-passing PrimeTime or OpenSTA clock-scan endpoint on the same fixed mapped netlist, with a passing/failing bracket ≤ 0.01 ns unless the configured scan floor is reached. This is pre-layout estimated timing, **not silicon Fmax**.
-- **Throughput,** \(T_{\mathrm{eff}}=10^9/(II_{\mathrm{ver}}P_{\mathrm{STA}})\) FFTs/s, with the period in ns. Frequency contributes through this term once; no separate frequency bonus is added.
-- **Latency,** \(L\): the **maximum observed first-output latency** across scored completed frames, in cycles. The latency score uses the **common 10 ns target clock**, so frequency is not rewarded twice. Frame-completion latency is also checked per frame, but not scored separately.
+| Metric | Definition | Evaluation rule |
+|---|---|---|
+| Mapped area, \(A\) | Sum of the areas of all mapped top-level standard-cell instances | Includes registers, memory implemented in cells, reordering, routing logic, arithmetic and control |
+| Verified frame interval, \(II_{\rm ver}\) | Smallest tested integer interval in 64–384 cycles/frame that passes long-stream RTL verification and representative mapped confirmation | Each integer II is tested with at least 1,024 consecutive RTL frames; `frame_ii_cycles` in `design_config.json` is a hint only |
+| Certified period, \(P_{\rm STA}\) | Passing setup/hold period on the **fixed mapped netlist** | PrimeTime or OpenSTA scan; passing/failing bracket ≤ 0.01 ns unless the scan floor is reached |
+| Effective throughput, \(T\) | \(10^9/(II_{\rm ver}P_{\rm STA})\) FFTs/s, for period in ns | Uses verified II and STA-estimated frequency; not measured silicon frequency |
+| First-output latency, \(L\) | Maximum observed per-frame delay from first input to first valid output, in cycles | Measured across scored transactions at the common 10 ns target clock |
+
+The maximum observed frame-completion latency is also a mandatory feasibility check. The latency component uses the common target clock rather than the certified minimum period, so frequency is rewarded only through throughput.
 
 ## 3. Continuous score
 
-For every feasible candidate, normalize the three components to [0,1]:
+Let \([x]_0^1=\min(1,\max(0,x))\). For feasible designs, the default policy defines
 
 \[
-S_A=\operatorname{clip}\left(\frac{A_{\mathrm{ref}}-A}{A_{\mathrm{ref}}-A_{\mathrm{goal}}},0,1\right),\qquad A_{\mathrm{goal}}=0.5A_{\mathrm{ref}},
+S_A=\left[\frac{A_{\rm ref}-A}{A_{\rm ref}-A_{\rm goal}}\right]_0^1,
+\qquad A_{\rm goal}=0.5A_{\rm ref},
 \]
 \[
-S_T=\operatorname{clip}\left(\frac{T_{\mathrm{eff}}-T_{\mathrm{req}}}{T_{\mathrm{goal}}-T_{\mathrm{req}}},0,1\right),
+S_T=\left[\frac{T-T_{\rm req}}{T_{\rm goal}-T_{\rm req}}\right]_0^1,
+\qquad T_{\rm req}=\frac{10^9}{384\cdot10}\ \mathrm{FFTs/s},
 \]
 \[
-S_L=\operatorname{clip}\left(\frac{300-L}{300-L_{\mathrm{goal}}},0,1\right).
+S_L=\left[\frac{300-L}{300-L_{\rm goal}}\right]_0^1,
 \]
-
-Here \(T_{\mathrm{req}}=10^9/(384\cdot10)\) FFTs/s; \(T_{\mathrm{goal}}\) is twice the fastest measured throughput among the validated accurate calibration designs; and \(L_{\mathrm{goal}}\) is the larger of half the shortest accurate first-output latency and the physical lower bound of 63 cycles. All references and targets are **profile- and backend-specific**. The default combined score is
-
 \[
-\boxed{S=0.60S_A+0.30S_T+0.10S_L.}
+S=0.60S_A+0.30S_T+0.10S_L.
 \]
 
-A demonstrated violation of a mandatory hardware condition is `DESIGN_INVALID` and receives a valid score of zero. An interrupted or failed measurement is unscored. These normalization targets and weights come from `profiles/policy.json` and are frozen before scored agent runs; they are **not** re-tuned using the results of evaluated agents. Higher SQNR does not earn extra credit once the 50 dB threshold is passed.
+The accurate-reference set comprises two separately validated designs. \(A_{\rm ref}\) is their smaller mapped area; \(T_{\rm goal}\) is twice their higher verified effective throughput; and \(L_{\rm goal}\) is the greater of half their shorter first-output latency and 63 cycles. These reference values form a **component-wise envelope**, not necessarily one physical circuit. Higher SQNR earns no additional credit after the 50 dB requirement is met.
 
-## 4. Validation workload and comparability
+The independent `area` profile uses \(S=S_A\). All weights, goal ratios, backend calibration and measurement conditions are fixed before evaluated Agent runs; the final values live in [profiles/policy.json](profiles/policy.json).
 
-- Numerical: at least **1,024 public** / **8,192 hidden** independently generated nonzero 64-point frames, plus directed cases. Feasibility uses the **minimum** nonzero-frame SQNR; it is not based on the average.
-- Mandatory service: at least **1,024 consecutive frames** at II=384, with variable gaps, reset probes, and worst per-frame first/completion latency measured.
-- Architecture capacity: each integer II from 64 through 384 receives at least **1,024 consecutive RTL frames**; the selected shortest passing II is checked again against a representative **128-frame RTL/mapped subset**, including mixed gaps and reset cases. This is empirical capacity, not a proof that no shorter interval could work.
-- Mapped numerical/protocol comparison uses **representative subsets** and cannot be reported as 8,192 fully mapped frames.
-- Each backend is calibrated on two accurate FFT baselines using the **default mapping recipe and the same independent measurement flow**. Candidate synthesis recipes may differ: EDA optimization is part of the submitted design. Exported netlists are measured directly under the frozen library, STA and verification settings, without rerunning candidate recipes or trusting their reports. Freeze default reference anchors before evaluated runs. Commercial VCS/DC/PrimeTime and open-source Icarus/Verilator/Yosys/ABC/OpenSTA metrics are reported separately. All reported ASIC area/timing values are pre-layout/ideal-interconnect unless explicitly stated otherwise.
+## 4. Verification workload and flow choices
 
-## 5. Grader output
+The public numerical test contains 1,024 random nonzero frames plus directed cases; hidden evaluation uses 8,192 independently generated random nonzero frames plus directed cases. Feasibility uses the **minimum** SQNR across tested nonzero frames. At least 1,024 consecutive frames verify the mandatory 384-cycle service. The architecture profile probes every integer II from 64 through 384 with at least 1,024 RTL frames and checks the selected best passing interval again using a 128-frame representative RTL/mapped subset. These finite samples do not establish formal worst-case equivalence or optimal II.
 
-The platform writes `/eval/code_result.json` with exactly:
+Agents may tune RTL and synthesis recipes. The public builder exports a flattened ASAP7 standard-cell netlist and manifest; the evaluator **imports that netlist without executing submitted recipes or resynthesizing it**. It independently counts cells, performs fixed-constraint STA, and compares mapped behavior with RTL. Without a custom export, the trusted default mapping applies. Accurate reference implementations use the frozen default mapping recipe, while submitted candidates may use other recipes. Commercial and open-source evaluation backends require separate calibration; all current QoR values are **pre-layout** estimates.
+
+## 5. Official result
+
+The platform writes `/eval/code_result.json` with exactly `resolved`, `score`, and `reason`. For example:
 
 ```json
-{"resolved": true, "score": 0.0, "reason": "Mandatory specifications passed."}
+{"resolved": true, "score": 0.0, "reason": "All mandatory checks passed."}
 ```
 
-The example illustrates that **a zero score can still be feasible**, not an actual candidate result. Detailed measurements, backend identity, calibration fingerprint, per-frame errors, timing certificates, and cache identities are stored in the private evaluation output. Absence of calibrated tools or an interrupted run must be treated as **unscored infrastructure**, not a valid zero-performance design.
+This is an illustrative format, not a measured design result. A tool/license/calibration failure must instead be marked `UNSCORED_INFRASTRUCTURE` and excluded from ranking. Source hashes, tool identities, timing certificates, area reports and component scores are retained in private measurement records.
 
-Submission completeness is reported separately in `submission_completeness.json`. Missing design notes or a measurement table does not alter measured hardware feasibility or the hardware score. A warning records an invalid optional II hint; throughput remains measured.
+`submission_completeness.json` separately reports missing documentation or measurement tables. Their absence does not change electrical feasibility or hardware-quality scoring.

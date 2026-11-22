@@ -1,26 +1,23 @@
-# Validation and Measurement Evidence
+# FFT64-Quant: Validation Evidence and Limits
 
-## Regression coverage
+## Source regression suite
 
-From the repository root, run:
+From the private repository root:
 
 ```bash
 python3 -m unittest discover -s operator/tests -q
 ```
 
-The suite covers scoring, input-domain and protocol checks, cache identity and partial checkpoints, simulator drivers, tool entrypoints, and infrastructure outcomes. It also checks custom implementation manifests, independent import without running candidate recipes, source/netlist-specific caches, private source snapshots, and scalar STA alias compatibility. Tests use clearly identified synthetic traces or tool fixtures where licensed hardware measurement is unnecessary. They do not establish ASIC performance.
+Tests cover scoring, numerical/protocol fixtures, mapped implementation manifests, cache identity, grading entrypoints, SSH runner behavior, tool invocation and outcome classification. Synthetic stubs and tool mocks are used where commercial software is unavailable. **Passing these tests does not establish that a complete FFT has been synthesized and verified on the deployed EDA tools.** The exact count and outcome should be recorded from each environment's own run.
 
-## Hardware evidence
+## Hardware measurement evidence
 
-The private `Codex-GPT-6.1-Sol-Max` branch contains `submission/` and `evaluation/`. Its evaluation records include the executed source snapshot, per-frame quality and latency, interval sweeps, calibration, mapped results and setup/hold reports. The measurement source and policy hashes identify the executed implementation. A source-only export of `main` does not include these separate result files.
+Actual hardware claims must be supported by the candidate RTL source snapshot, imported or generated mapped netlist, library/tool versions, calibration, input seeds, per-frame numerical results, sustained II observations, representative gate comparisons, setup/hold reports, frequency scan and raw tool logs. A source-only export does not include evidence stored in a separate experimental branch or result directory.
 
-The measurement dataset uses 8,192 random nonzero frames plus 192 directed frames per design. The capacity sweep contains 321 integer intervals from 64 through 384, with 1,024 continuous RTL frames at every interval. Mapped checks cover representative numerical/protocol subsets and three binary initial-state modes. These are finite-sample measurements and pre-layout synthesis / ideal-interconnect STA.
+The private `Codex-GPT-6.1-Sol-Max` branch contains a submission and evaluation records. Main-branch source snapshots omit those result files. Use each measurement's recorded source, policy and tool identities when checking or reproducing it; do not treat it as validation of a different checkout.
 
-## Interpreting outcomes
+## Scope of a completed measurement
 
-- `FEASIBLE`: all selected-profile hardware requirements pass. A score of zero is allowed.
-- `DESIGN_INVALID`: an observed numerical, protocol, RTL or timing violation; a valid zero-score result.
-- `UNSCORED_INFRASTRUCTURE`: unavailable or failed tools, timeout, malformed measurement, or mismatched calibration; exclude from ranking and retry after diagnosis.
-- `INCOMPLETE`: quick checks or unfinished measurement; no final score.
+The configured hidden numerical workload includes 8,192 random nonzero frames plus directed cases. Architecture evaluation probes every integer II in 64–384 with at least 1,024 continuous RTL frames per interval; the selected shortest passing II receives mapped confirmation on a representative subset. Complete mapped numerical verification is **not** performed over every hidden frame. Hardware QoR refers to pre-layout mapped area and ideal-interconnect STA, not post-route PPA or silicon frequency.
 
-`score_valid` determines whether a numeric score may enter ranking. Commercial and open-source backends require separate matching calibrations. All ASIC timing and area are pre-layout; no P&R, power, silicon-frequency or formal worst-case numerical claim is made.
+An outcome is rankable only when `score_valid=true` and an appropriate frozen calibration is available. Tool/license failure, timeout or missing measurement is `UNSCORED_INFRASTRUCTURE`, not design failure; quick or partial execution is `INCOMPLETE`. Document completeness is evaluated separately.

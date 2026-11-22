@@ -22,6 +22,20 @@ def validate_interval(interval):
 def stream_schedule(frames,interval,seed=11,tail=True,reset_probes=True):
     validate_interval(interval)
     frames=np.asarray(frames,dtype=np.int64);rng=np.random.default_rng(seed)
+    if not tail and not reset_probes and len(frames):
+        # The exhaustive scan needs a regular stream. Allocate it directly:
+        # avoid a large temporary Python list of per-cycle rows.
+        starts=5+np.arange(len(frames),dtype=np.int64)*interval
+        events=np.zeros((int(starts[-1])+64+400,5),dtype=np.int64)
+        events[:3,0]=1
+        for start,frame in zip(starts,frames):
+            events[start:start+64,1]=1;events[start,2]=1
+            events[start:start+64,3:5]=frame
+        metadata=dict(frame_starts=starts.tolist(),offered_min_frame_II=interval,clock_period_ns=10,
+            ignore_before_cycle=5,cancelled_partial_start=None,reset_probes=[],
+            continuous_frames=len(frames),mixed_gap_tail_frames=0,
+            offered_frame_intervals=[interval]if len(frames)>1 else[])
+        return events,metadata,frames
     ev=[[1,0,0,0,0]]*3+[[0,0,0,0,0]]*2;probes=[]
     if reset_probes:
         for count,partial in [(8,False),(4,True)]:
@@ -80,11 +94,12 @@ def _probe_intervals(source,frames,out,backend,seed,identity):
     cached=load_cached(checkpoint,identity)
     if valid(cached,lo,hi+1):return cached
     rng=np.random.default_rng(seed);indices=rng.choice(len(frames),size=count,replace=False)
-    selected=np.asarray(frames)[indices];results=[];compiled=None
+    selected=np.asarray(frames)[indices];results=[];compiled=None;maximum_batch_input_bytes=0
     chunk_size=settings['chunk_intervals'];(out/'latencies').mkdir(exist_ok=True)
     save(out/'probe_protocol.json',dict(intervals=[lo,hi],frame_indices=indices.tolist(),frames_per_interval=count,
         fft_length=64,method='exhaustive integer-II long RTL measurements; no claimed-II score'))
     for begin in range(lo,hi+1,chunk_size):
+        chunk_started=time.monotonic()
         end=min(hi+1,begin+chunk_size);chunk=out/('intervals_'+str(begin)+'_'+str(end-1));chunk.mkdir(exist_ok=True)
         saved=chunk/'results.json'
         chunk_identity=dict(identity,intervals=[begin,end-1])
@@ -98,6 +113,7 @@ def _probe_intervals(source,frames,out,backend,seed,identity):
             e,m,_=stream_schedule(selected,interval,seed,tail=False,reset_probes=False)
             events.append(e);epochs.append((interval,offset,len(e),m));offset+=len(e)
         batch=np.concatenate(events,axis=0);del events
+        maximum_batch_input_bytes=max(maximum_batch_input_bytes,batch.nbytes)
         raw=simulate(source,batch,chunk/'simulation',backend,probe=True,reuse_compiled_from=compiled)
         if compiled is None:compiled=chunk/'simulation'
         measured=[]
@@ -115,14 +131,22 @@ def _probe_intervals(source,frames,out,backend,seed,identity):
             except (AssertionError,ValueError)as exc:item['reason']=str(exc)[:400]
             measured.append(item)
         save_cached(saved,measured,chunk_identity);results.extend(measured)
+        save(chunk/'resources.json',dict(intervals=[begin,end-1],cycles=len(batch),
+            input_array_bytes=batch.nbytes,output_array_bytes=raw.nbytes,
+            wall_seconds=time.monotonic()-chunk_started,
+            python_process_peak_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
+            scope='Python process lifetime peak; excludes EDA subprocess memory'))
         save(out/'progress.json',dict(status='RUNNING',completed_intervals=len(results),total_intervals=hi-lo+1,
-                                     frames_per_interval=count,last_interval=end-1))
+            frames_per_interval=count,last_interval=end-1,chunk_intervals=chunk_size,
+            maximum_batch_input_bytes=maximum_batch_input_bytes,
+            process_peak_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss))
         del raw,batch
     with(out/'intervals.csv').open('w',newline='')as stream:
         writer=csv.DictWriter(stream,['frame_ii_cycles','tested_frames','pass_rtl','minimum_sqnr_db','maximum_first_output_cycles','maximum_completion_cycles','reason'],extrasaction='ignore')
         writer.writeheader();writer.writerows(results)
     save(out/'progress.json',dict(status='COMPLETE',completed_intervals=len(results),frames_per_interval=count,
         wall_seconds=time.monotonic()-started,process_peak_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
+        chunk_intervals=chunk_size,maximum_batch_input_bytes=maximum_batch_input_bytes,
         resource_scope='current Python process; tool subprocess resources are recorded separately'))
     save_cached(checkpoint,results,identity)
     return results

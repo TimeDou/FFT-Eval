@@ -1,78 +1,65 @@
-# EDA Agent Task: FFT64 Architecture and Precision Co-Design
+# FFT64-Quant: EDA Agent Design Task
 
-## 1. Goal
+## Objective
 
-Design a **complete synthesizable 64-point complex FFT processor** that satisfies the functional and hardware contract and improves area, sustained throughput, and first-output latency. The task is open-design: no completed FFT RTL is provided. The evaluation rewards measured circuit quality, not the number of candidate designs or the length of a design report.
+Develop a complete, synthesizable **64-point fixed-point complex FFT processor** from the public specification. The task is open-design: no working FFT RTL is supplied. Your objective is to satisfy every mandatory specification and improve the measured hardware quality through architecture selection, precision allocation, RTL optimization and, optionally, synthesis-flow exploration. The evaluated circuit includes its storage, control, data reordering and input/output logic—not only butterfly arithmetic.
 
-An FFT circuit includes more than butterfly arithmetic: all buffers, register state, routing, control, twiddle-factor storage, and output reordering are part of the hardware cost. You may compare architectures and change the design strategy as measurements become available; no globally optimal solution is required.
+## Mandatory contract
 
-## 2. Mandatory functional contract
+- **Transform:** forward, unscaled, 64-point complex FFT; natural-order input and natural-frequency-order output.
+- **Data:** 16-bit signed input components and 24-bit signed output components, each with 15 fractional bits. Tested input components lie in [-0.5, 0.5]; nonzero frames have complex RMS ≥1/32.
+- **Input service:** one valid complex sample per cycle for 64 consecutive cycles. Frames starting at least 384 cycles apart must be accepted without backpressure.
+- **Output:** 64 consecutive valid samples in natural frequency order; `out_start` marks the first output. The first output cannot precede the final required input and must occur by cycle 300, and the last by cycle 364, relative to the first input edge (cycle 0).
+- **Reset and clock:** synchronous, active-high reset aborts incomplete work. Only the specified rising-edge clock is allowed; mapped timing must pass the 10 ns requirement.
+- **Numerical quality:** every evaluated nonzero frame must achieve SQNR ≥50 dB against the float64 FFT of the **same already-quantized input**. A zero input must produce exactly zero output. No fitted gain, phase, scaling or frequency permutation is permitted.
 
-- **Transform:** 64-point, forward, unscaled complex FFT, natural-order input and natural-frequency-order output.
-- **Input:** one complex sample per valid clock edge for 64 consecutive edges; each real/imaginary component is signed 16-bit with 15 fractional bits, within [-0.5, 0.5]. Tested nonzero frames have complex RMS ≥ 1/32.
-- **Output:** 64 consecutive valid frequency bins; each component is signed 24-bit with 15 fractional bits. The first output has `out_start=1`.
-- **Clock:** one synchronous rising-edge `clk`; mandatory 10 ns timing constraint, no extra clock.
-- **Service rate:** accept frames starting every 384 clock cycles, and legal larger gaps, without backpressure.
-- **Latency:** first valid output no later than cycle 300 and last valid output no later than cycle 364, measured from the first input edge (cycle 0). The first output cannot precede the last required input.
-- **Reset:** synchronous active-high reset aborts incomplete frames. Later frames must be processed correctly.
-
-The 384-cycle interval is the **mandatory workload**, not a limit on the maximum capability of SDF/MDC architectures. A design may earn higher throughput credit by successfully handling shorter frame intervals.
-
-## 3. Numerical accuracy
-
-The numerical reference is a float64 FFT of the **same quantized input**, not the signal before input quantization. For each nonzero 64-point frame:
-
+Here X is the same-input float64 reference and X-hat is the hardware output. SQNR is computed per complete complex frame:
 \[
-\mathrm{SQNR}_f = 10\log_{10}\frac{\sum_{k=0}^{63}|X_f[k]|^2}{\sum_{k=0}^{63}|\hat{X}_f[k]-X_f[k]|^2}.
+\mathrm{SQNR}_f=10\log_{10}\frac{\sum_{k=0}^{63}|X_f[k]|^2}{\sum_{k=0}^{63}|\hat X_f[k]-X_f[k]|^2}.
 \]
 
-**Every nonzero test frame must achieve SQNR ≥ 50 dB.** A zero input frame must yield exactly zero output. Gain, phase, frequency permutation, and output scaling cannot be fitted after simulation to improve the score. Public and hidden finite-sample tests are not a formal guarantee over the entire input domain.
+The 384-cycle frame interval is the **mandatory minimum service capability**, not a limit on the throughput an architecture may achieve. Faster frame intervals are optional and contribute to the architecture score only when the evaluator verifies them. See [SPEC.json](SPEC.json) and [INTERFACE.md](INTERFACE.md) for the authoritative contract.
 
-## 4. Allowed design decisions
+## Design freedom and restrictions
 
-**Allowed:** R2SDF, R2²SDF, R4MDC, folded/iterative FFT, and other valid architectures; stage-dependent data/twiddle precision; explicit truncation or rounding (including round-to-nearest-even); guard bits and quantization boundaries; exact resource sharing, twiddle specialization, memory banking, and legal retiming/pipelining.
+Choose a valid FFT architecture, including R2SDF, R2²SDF, R4MDC, folded/iterative designs or other implementations. You may change internal data/twiddle widths, rounding and truncation rules, guard bits, memory organization, pipeline scheduling, exact twiddle specialization and resource sharing. You may also explore synthesis effort, Boolean rewriting, optimization pass ordering and technology mapping.
 
-You may also choose synthesis commands, tool parameters and pass ordering. From the repository root, `bash build_implementation.sh submission --init-flow` creates replaceable DC, Yosys/ABC and optional P&R templates. Export custom synthesis to `submission/implementation/`; evaluation directly measures that netlist and checks it against RTL, using the common library, timing and numerical contract. See [OPTIMIZATION.md](../OPTIMIZATION.md). P&R is currently outside the scored flow.
+To use a custom synthesis recipe, initialize `submission/flow/` with `bash build_implementation.sh submission --init-flow`, edit the provided DC or Yosys/ABC templates, and export `submission/implementation/mapped.v` together with `manifest.json`. The evaluator then **imports and measures the mapped standard-cell netlist**, checks it against the submitted RTL and enforces its own technology library, STA and numerical requirements. **Private scoring never executes submitted optimization scripts** or trusts self-reported PPA. For commands and build requirements, read [OPTIMIZATION.md](../OPTIMIZATION.md).
 
-**Not allowed:** approximate logic synthesis (ALS), arbitrary approximate gate pruning/replacement, approximate compressors unrelated to explicit quantization, simulation-only/lookup implementations, or modifications to the external FFT function, I/O ordering, numerical domain, or service contract.
+Approximate gate pruning, arbitrary approximate Boolean transformations, unrelated approximate compressors, simulation-only lookup implementations and modifications to the external FFT/streaming contract are forbidden. Explicit fixed-point quantization is permitted, but SQNR must remain feasible. Uncounted external SRAM or logic is not allowed. Optional P&R recipes are for development and do not affect the current pre-layout score.
 
-All area calculations include the **complete top-level mapped implementation**, including standard-cell memories, controls, registers, multiplexers, and output reordering. There is no free SRAM.
+## Recommended execution
 
-## 5. Recommended workflow
+1. Read [SPEC.json](SPEC.json), [INTERFACE.md](INTERFACE.md), [ARCHITECTURE_GUIDE.md](ARCHITECTURE_GUIDE.md), [SCORING.md](SCORING.md) and [EVALUATION.md](EVALUATION.md).
+2. Create `submission/DESIGN_PLAN.md` with at least two architecture hypotheses and measurable expected trade-offs.
+3. Implement a correct baseline in `submission/rtl/` and run public numerical/protocol checks.
+4. Explore promising RTL, quantization and synthesis-recipe changes; measure complete mapped area and timing on the same backend.
+5. Use long multi-frame capacity tests for promising candidates. Record measured results, failures and revised design decisions in `measurements.csv`.
+6. Submit the best **verified** implementation, including a rebuilt mapped export if custom synthesis was used.
 
-When sibling `Synopsys/` and `port.txt` are present, use the provided SSH transport instead of installing EDA tools on the host. From the repository root, run `bash check_env.sh`, then `bash run_synopsys_debug.sh submission --quick --out runs/quick`. Use `--profile area` for mapping/STA feedback and `--profile architecture` for the full throughput/frequency profile. `bash synopsys.sh exec -- <command>` calls tools directly in the container. See the repository's `REMOTE_SYNOPSYS.md`.
-
-For tools installed directly in the current environment, run from the **repository root**:
+With a sibling `Synopsys/` mount and `port.txt`, run from the **FFT-Bench repository root**:
 
 ```bash
-bash fft64_benchmark/setup.sh --check-only
-bash fft64_benchmark/run_preview.sh submission runs/quick --quick --no-build
-bash fft64_benchmark/run_preview.sh submission runs/full --no-build
+bash check_env.sh
+bash run_synopsys_debug.sh submission --quick --out runs/quick
+bash run_synopsys_debug.sh submission --profile area --out runs/area
+bash run_synopsys_debug.sh submission --profile architecture --out runs/full
 ```
 
-1. Read `fft64_benchmark/SPEC.json`, `fft64_benchmark/INTERFACE.md`, and `fft64_benchmark/ARCHITECTURE_GUIDE.md`.
-2. Create `submission/DESIGN_PLAN.md`: compare at least two architecture ideas and state measurable hypotheses.
-3. Build an initially correct, sufficiently precise design before changing numerical precision.
-4. Measure complete-design numerical quality and ASIC results; compare alternatives using the same backend.
-5. After each meaningful experiment, update the plan with the measured outcome, decision, and next test; record data in `measurements.csv`.
-6. Submit your best feasible RTL and its concise design record.
+You may invoke the container's tools directly using `bash synopsys.sh exec -- <command>`. See [REMOTE_SYNOPSYS.md](../REMOTE_SYNOPSYS.md). If tools are installed locally, use `fft64_benchmark/run_preview.sh`. Use separate run directories for different RTL or recipes; a quick PASS is not full ASIC feasibility.
 
-The evaluator may use installed Synopsys tools, otherwise installed open-source simulation/mapping/STA tools. A preview run without matching frozen calibration can report useful measurements but **not an official score**. Do not rebuild the EDA toolchain unless necessary and permitted.
+## Evaluation and deliverables
 
-## 6. Evaluation and score
+`resolved=true` requires numerical correctness, streaming/reset behavior, mandatory II=384 service, first/completion latency, mapped-netlist checks and 10 ns setup/hold timing. There is **no minimum area-reduction threshold**. The default `architecture` score combines complete mapped area (60%), verified sustainable throughput (30%) and maximum observed first-output latency (10%). SQNR above 50 dB does not earn a bonus. Numerical feasibility uses the minimum frame-level SQNR, latency uses the maximum observed per-frame value, and throughput uses the smallest **tested and verified** integer II in 64–384—not a value declared by the Agent.
 
-**Feasibility (`resolved`) is separate from optimization quality (`score`).** There is no minimum area reduction or minimum score to pass. Mandatory numerical, protocol, reset, timing, and mapped-netlist checks must all succeed.
+The public evaluation uses at least 1,024 random nonzero frames; private hidden evaluation uses at least 8,192, both supplemented by directed inputs. Each candidate II is tested with at least 1,024 consecutive RTL frames, followed by representative mapped confirmation at the selected shortest passing II. These are empirical checks, not formal guarantees. Scores require a matching frozen calibration and cannot be compared across backends or scoring profiles.
 
-The default `architecture` score combines mapped area **60%**, measured sustainable throughput **30%**, and maximum observed first-output latency **10%**. SQNR is a hard constraint; higher SQNR is not rewarded. Official throughput is based on the **smallest verified integer frame interval** in 64–384, not a claim in `design_config.json`. Each interval is exercised by at least 1,024 consecutive frames; the winning interval receives additional mapped-netlist confirmation. Optional faster intervals may fail without invalidating the mandatory 384-cycle service.
+Submit:
 
-Numerical test sizes: ≥1,024 public nonzero random frames and ≥8,192 hidden nonzero random frames, each supplemented by directed cases. Worst-frame SQNR and worst observed per-frame latency determine feasibility. See [SCORING.md](SCORING.md) and [EVALUATION.md](EVALUATION.md).
+- `submission/rtl/`: self-contained synthesizable RTL with top module `fft64_top`;
+- `submission/DESIGN_PLAN.md`: short hypothesis/experiment/decision record;
+- `submission/measurements.csv`: actual measurements of significant candidates;
+- `submission/design_config.json` (optional): RTL source list and non-authoritative II hint;
+- `submission/flow/` and `submission/implementation/` when using custom synthesis: optimization recipe, complete mapped netlist and manifest.
 
-## 7. Deliverables
-
-- `submission/rtl/`: self-contained synthesizable modules, top `fft64_top`
-- `submission/DESIGN_PLAN.md`: updated hypotheses and design choices
-- `submission/measurements.csv`: reproducible candidate measurements
-- `submission/design_config.json` (optional): source files and scheduling hint
-- `submission/flow/` and `submission/implementation/` (for custom synthesis): optimization recipes, complete mapped netlist and build manifest
-
-The evaluator remeasures circuit quality; self-reported numbers do not determine the grade. No hidden feedback is provided for changing the final submission.
+The grader determines results independently. Do not alter the specification, scoring scripts, hidden data or calibration; do not fabricate measurements or change the submission after private feedback.

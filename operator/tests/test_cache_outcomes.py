@@ -51,6 +51,15 @@ class ThroughputCacheTests(unittest.TestCase):
         self.assertEqual(self.probe(),first);self.assertEqual(self.calls,2)
         self.assertTrue(all(r['pass_rtl']for r in first))
 
+    def test_batch_size_preserves_every_interval_and_frame_result(self):
+        separate=self.probe(outdir=self.root/'separate')
+        self.policy['ii_calibration']['chunk_intervals']=2
+        together=self.probe(outdir=self.root/'together')
+        self.assertEqual(separate,together)
+        self.assertEqual(self.calls,3)
+        for name in ['separate','together']:
+            self.assertEqual(common.read(self.root/name/'probe_protocol.json')['frames_per_interval'],1024)
+
     def test_changed_rtl_data_seed_backend_policy_and_driver_are_rejected(self):
         self.probe();before=(self.root/'probe/probe_results.json').read_bytes()
         changed=self.frames.copy();changed[0,0,0]=1

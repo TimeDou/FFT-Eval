@@ -6,3 +6,6 @@ fft64_solution/measurements.csv -text -whitespace
 
 # Preserve native tool reports and CSV receipts byte for byte.
 operator/results/** -text -whitespace
+
+# PDF reports are binary artifacts; preserve exact bytes.
+docs/*.pdf binary

@@ -1,0 +1,4 @@
+# Expanded resyn2 sequence followed by Liberty mapping.
+strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;
+refactor -z; rewrite -z; balance;
+map {D}; buffer; upsize {D}; dnsize {D}; stime -p;

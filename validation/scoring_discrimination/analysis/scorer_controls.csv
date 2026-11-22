@@ -1,0 +1,12 @@
+kind,control,value,score,score_valid,expected,pass_check
+SCORER_REPLAY_ONLY,agent_claimed_ii,64,0.09919892871702367,True,same score as measured exact folded,True
+SCORER_REPLAY_ONLY,agent_claimed_ii,128,0.09919892871702367,True,same score as measured exact folded,True
+SCORER_REPLAY_ONLY,agent_claimed_ii,320,0.09919892871702367,True,same score as measured exact folded,True
+SCORER_REPLAY_ONLY,agent_claimed_ii,384,0.09919892871702367,True,same score as measured exact folded,True
+SCORER_REPLAY_ONLY,sqnr_above_threshold_no_bonus,50.0,0.09919892871702367,True,,True
+SCORER_REPLAY_ONLY,sqnr_above_threshold_no_bonus,60.0,0.09919892871702367,True,,True
+SCORER_REPLAY_ONLY,sqnr_above_threshold_no_bonus,100.0,0.09919892871702367,True,,True
+SCORER_REPLAY_ONLY,informational_frequency_estimate,,0.09919892871702367,True,Informational claim cannot replace measured cells or the existing STA certificate,True
+SCORER_REPLAY_ONLY,producer_reported_area,,0.09919892871702367,True,Informational claim cannot replace measured cells or the existing STA certificate,True
+SCORER_REPLAY_ONLY,mismatched_calibration,,0.0,False,exclude from ranking,True
+SCORER_REPLAY_ONLY,infrastructure_outcome,,0.0,False,exclude from ranking,True

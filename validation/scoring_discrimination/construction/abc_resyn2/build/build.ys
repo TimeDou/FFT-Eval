@@ -1,0 +1,17 @@
+read_liberty -lib "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/scoring_checks/scoring_20261122_115331/engine/fft64_benchmark/tech/ASAP7_RVT_TT_nldm_NO_FAHA.lib"
+read_liberty -lib "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/scoring_checks/scoring_20261122_115331/engine/fft64_benchmark/tech/ASAP7_SEQ_RVT_TT_nldm_220123.lib"
+read_verilog -sv "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/scoring_checks/scoring_20261122_115331/supplementary/abc_resyn2/build/build/source.sv"
+# Default RTL optimization. Copy to submission/flow/yosys_opt.ys and replace.
+# RTL and library blackboxes have already been read, top is fft64_top.
+# You may choose FSM/memory/optimization passes and their order here.
+# The wrapper subsequently applies dfflibmap, ABC, and structural export.
+# Boolean rewriting such as rewrite/resyn2 belongs in abc_opt.script.
+synth -top fft64_top -flatten -noabc
+
+dfflibmap -liberty "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/scoring_checks/scoring_20261122_115331/engine/fft64_benchmark/tech/ASAP7_SEQ_RVT_TT_nldm_220123.lib"
+abc -exe "/usr/bin/yosys-abc" -liberty "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/scoring_checks/scoring_20261122_115331/engine/fft64_benchmark/tech/ASAP7_RVT_TT_nldm_NO_FAHA.lib" -constr abc.constr -D 10000 -script abc_opt.script
+flatten
+clean
+check
+write_verilog -noattr -noexpr "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/scoring_checks/scoring_20261122_115331/supplementary/abc_resyn2/build/build/mapped.v"
+stat

@@ -1,0 +1,12 @@
+{
+  "fft_length": 64,
+  "fractional_bits": 15,
+  "input_dtype": "int16",
+  "output_dtype": "int32",
+  "components": "last axis: real, imaginary",
+  "reference": "float64 FFT of the same quantized input",
+  "random_nonzero_frames": 8192,
+  "directed_frames": 192,
+  "inputs_sha256": "d559e1c980d435118dd73002c3e5d9125ee442d787067873b78e73141c3fe589",
+  "scope": "Actual numerical RTL observations; mapped and capacity proof are stored separately"
+}

@@ -1,0 +1,31 @@
+{
+  "rtl_sha256": "11bc67b460ffd93c3bc1cfd2c106abcda1f19886350db58705e4728d5fa770ca",
+  "backend": "local",
+  "abc_delay_ps": 10000,
+  "recipes": {
+    "yosys_opt.ys": "932aa7edfac65f8f1ccbee908b6c282c8420043fe8711c693bfb17b03e4e6de9",
+    "abc_opt.script": "d32178698122b46737a153e75500a1271ac9f6692a42942394ac6847296b9e45"
+  },
+  "custom_files": {
+    "abc_opt.script": "d32178698122b46737a153e75500a1271ac9f6692a42942394ac6847296b9e45",
+    "dc_opt.tcl": "eb12efcff7113da578a70204edc3a5e8c1aa601e7631245aa2d75b4778bbd659",
+    "pnr_opt.tcl": "c87e99fe26a3cd556e6d3a5552ea493d681cad46f7f2563f70fef409e3ec830c",
+    "yosys_opt.ys": "932aa7edfac65f8f1ccbee908b6c282c8420043fe8711c693bfb17b03e4e6de9"
+  },
+  "libraries": {
+    "ASAP7_RVT_TT_nldm_NO_FAHA.lib": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "ASAP7_SEQ_RVT_TT_nldm_220123.lib": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3"
+  },
+  "tools": {
+    "yosys": {
+      "path": "/usr/bin/yosys",
+      "sha256": "dab84e88b53146fe22d675a142de32b1e545ee9b7fe1054238f6220245b24c8d"
+    },
+    "abc": {
+      "path": "/usr/bin/yosys-abc",
+      "sha256": "9f8539df83c751324a16ee98878b0e7e200a7ed4916d5270da3d9b2390c5ffc7"
+    }
+  },
+  "worker_sha256": "ce566784974241e4be7e1cb5b57a621109e6b20b774fa09943068574a4204c2f",
+  "dc_driver_sha256": "32f192ec64caf2231903f123cc25b4110829e70db0dc8d9fa184c4eccfffb0ea"
+}

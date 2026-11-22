@@ -1,0 +1,22 @@
+{
+  "parent_campaign_sha256": "3cf572c804e288cadab1311050fac1612b85ebc5ac672673e42406aaffeaa26b",
+  "cases": [
+    {
+      "id": "abc_default",
+      "source_sha256": "11bc67b460ffd93c3bc1cfd2c106abcda1f19886350db58705e4728d5fa770ca",
+      "abc_recipe_sha256": "aa6ab4f913de069ca489ab89723e7a980a018c445c4f93e3a86a5cdfb12e1bc2",
+      "construction_backend": "Yosys/ABC",
+      "evaluation_backend": "VCS/DC/PrimeTime",
+      "mapping_target_ps": 10000
+    },
+    {
+      "id": "abc_resyn2",
+      "source_sha256": "11bc67b460ffd93c3bc1cfd2c106abcda1f19886350db58705e4728d5fa770ca",
+      "abc_recipe_sha256": "d32178698122b46737a153e75500a1271ac9f6692a42942394ac6847296b9e45",
+      "construction_backend": "Yosys/ABC",
+      "evaluation_backend": "VCS/DC/PrimeTime",
+      "mapping_target_ps": 10000
+    }
+  ],
+  "scope": "Same exact RTL and hidden protocol; varied ABC recipes, independently imported/scored mapped netlists; no additional RTL capacity search"
+}

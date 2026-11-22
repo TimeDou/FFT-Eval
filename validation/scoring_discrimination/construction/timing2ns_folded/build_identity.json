@@ -1,0 +1,23 @@
+{
+  "rtl_sha256": "11bc67b460ffd93c3bc1cfd2c106abcda1f19886350db58705e4728d5fa770ca",
+  "backend": "commercial",
+  "abc_delay_ps": 10000,
+  "recipes": {
+    "dc_opt.tcl": "ad1965973794a358a4a49a6852fc1cdc7c7e9584219dd73968ca9c628b0ee74a"
+  },
+  "custom_files": {
+    "dc_opt.tcl": "ad1965973794a358a4a49a6852fc1cdc7c7e9584219dd73968ca9c628b0ee74a"
+  },
+  "libraries": {
+    "ASAP7_RVT_TT_nldm_NO_FAHA.lib": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "ASAP7_SEQ_RVT_TT_nldm_220123.lib": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3"
+  },
+  "tools": {
+    "dc_shell": {
+      "path": "/usr/synopsys/dc-L-2016.03-SP1/bin/dc_shell",
+      "sha256": "9f02911939ed5da9be588569bf74ae4a36b0ed5f48d67f4e9f36aa7110d7f5f5"
+    }
+  },
+  "worker_sha256": "ce566784974241e4be7e1cb5b57a621109e6b20b774fa09943068574a4204c2f",
+  "dc_driver_sha256": "32f192ec64caf2231903f123cc25b4110829e70db0dc8d9fa184c4eccfffb0ea"
+}

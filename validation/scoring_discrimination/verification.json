@@ -1,0 +1,106 @@
+{
+  "status": "PASS",
+  "scope": "Archive hashes, score replay, observed numerical outputs, mapped-netlist hash binding and full capacity summaries; no new EDA execution",
+  "files_checked": 2785,
+  "observed_frames_per_design": 8384,
+  "complex_samples_per_design": 536576,
+  "cases": [
+    {
+      "id": "exact_folded",
+      "score": 0.09919892871702367,
+      "resolved": true,
+      "score_valid": true,
+      "observed_qor_replay": "PASS"
+    },
+    {
+      "id": "exact_sdf",
+      "score": 0.20261612498970855,
+      "resolved": true,
+      "score_valid": true,
+      "observed_qor_replay": "PASS"
+    },
+    {
+      "id": "twiddle9_folded",
+      "score": 0.18929243498051107,
+      "resolved": true,
+      "score_valid": true,
+      "observed_qor_replay": "PASS"
+    },
+    {
+      "id": "quantized_banked",
+      "score": 0.504748235981329,
+      "resolved": true,
+      "score_valid": true,
+      "observed_qor_replay": "PASS"
+    },
+    {
+      "id": "pipelined_folded",
+      "score": 0.11162553939343504,
+      "resolved": true,
+      "score_valid": true,
+      "observed_qor_replay": "PASS"
+    },
+    {
+      "id": "timing2ns_folded",
+      "score": 0.20766454164089415,
+      "resolved": true,
+      "score_valid": true,
+      "observed_qor_replay": "PASS"
+    },
+    {
+      "id": "invalid_precision",
+      "score": 0.0,
+      "resolved": false,
+      "score_valid": true,
+      "observed_qor_replay": "PASS"
+    },
+    {
+      "id": "abc_default",
+      "score": 0.15800508015720177,
+      "resolved": true,
+      "score_valid": true,
+      "observed_qor_replay": "PASS"
+    },
+    {
+      "id": "abc_resyn2",
+      "score": 0.15045453940368325,
+      "resolved": true,
+      "score_valid": true,
+      "observed_qor_replay": "PASS"
+    }
+  ],
+  "capacities": [
+    {
+      "identity": "1d5c4f03c0972ae5f6f36e948e802de8d1678a5d8520dc01187144fdfed10a1d",
+      "intervals": 321,
+      "frames_per_interval": 1024,
+      "minimum_passing_ii": 326
+    },
+    {
+      "identity": "1ff771a3971474eba353e910a8c7a4638d6d55fb640642b124a7c3847895a29f",
+      "intervals": 321,
+      "frames_per_interval": 1024,
+      "minimum_passing_ii": 320
+    },
+    {
+      "identity": "564329308c50d1d00050f78fb897cc2d6514448bd0e4b27060793e2d06223fc3",
+      "intervals": 321,
+      "frames_per_interval": 1024,
+      "minimum_passing_ii": 197
+    },
+    {
+      "identity": "a214c9890da3b59d4e387c731bff9430b02d10c0d08fbfe40ff6468fe6291d7a",
+      "intervals": 321,
+      "frames_per_interval": 1024,
+      "minimum_passing_ii": 320
+    },
+    {
+      "identity": "bb701e2e1d38505be56d030975d3af6882e952c3cdf1416048764eee8fb9993b",
+      "intervals": 321,
+      "frames_per_interval": 1024,
+      "minimum_passing_ii": 320
+    }
+  ],
+  "scorer_replay_controls": 11,
+  "policy_sha256": "5a631febe570d77dc6b197ac25840df641813933349bb5ee0cfbe0c5a6302e56"
+}

@@ -1,0 +1,147 @@
+{
+  "backend": "vcs",
+  "source_sha256": "a49835042c8f5347189ec4ddb38b2194b5c28c79ed495bd0ed73683c2e299b20",
+  "mapped_source_sha256": "81ecb10c529b8c346fe28a9bc614545c230765c4d3833f9bec50c4d3fd2c418e",
+  "frames": {
+    "sha256": "159d19983c50b300a6ef74fde227bef01adadaf4601f19145256d1bcbc3b28ee",
+    "shape": [
+      128,
+      64,
+      2
+    ],
+    "dtype": "<i8"
+  },
+  "interval": 320,
+  "seed": 30896596,
+  "runtime": {
+    "backend": "vcs",
+    "tools": {
+      "vcs": {
+        "path": "/usr/synopsys/vcs-L-2016.06/bin/vcs",
+        "sha256": "862dbb6504c06be76841c3ee5f2ac896e31a6b85d9763a43d1b788e1e77eda04"
+      }
+    },
+    "python_version": "3.12.10 (main, May 30 2025, 05:37:37) [Clang 20.1.4 ]",
+    "python_sha256": "d17344654e51cf1a30ab2d36aaf6a7d9e64937b13f0150cbcf17d1f60036e210",
+    "numpy_version": "2.2.6",
+    "drivers": {
+      "cache.py": "6067238d9479e8822b0fee193ae2d2fa99440a967bb00bf008d56bb9cbd539b0",
+      "common.py": "e5fb851cb01259798d19e5d0930db224747efabce7a4950cdb809e8beb405f29",
+      "throughput.py": "2b1bc417aea6429fc4af4c6fe72d5989ffc57c6642518ef5054c9cc91eb30d37",
+      "simulate.py": "ec0329d48febf07234d8ffa35aa320747c93e2964fc6f45e0443fc128955acc8",
+      "model.py": "ccfcadaaeb0a2f3fde13935aa95467493fedac9d45905911c2f4e883c2e45fa5",
+      "numeric_io.py": "f6360367969b926463e746a6fafaf8ea06b3cdb9c36b9be5022000082256a526",
+      "toolchain.py": "782395e156a56841417b54e11b74d96027ae628d02f64ff2f6e018d249b06ca2",
+      "scoring.py": "d7f040e0b1da8757f9a5a41170e1f37c06522770f9489747a6d546f9d3a22026",
+      "evaluate.py": "ad72e8b8d842f99f5117e2bd48de3d745ff81ec488af0e3a2c588eed6e4b11e2",
+      "commercial.py": "a7a43321fc10b82d9f870fb077b13edf42ef41177d694a18083f67c1301a8a6e",
+      "local_asic.py": "0c1b799da25d2cb642d21cecb62782a18919eefd377b861f2e82362aa8e31327",
+      "frequency.py": "7e2b62b4f5403c2f78aef06a97f40b73d1fb6ebf429da5e2b24b3f39ba829671",
+      "local_frequency.py": "a879a5e2f30a406df9c8850a9ce64e01b06b2a6f1645f81d638eade9ec7ab9c6",
+      "implementation.py": "43574a888d760099db9a8a4e1db900f8e23036e05527b7c27708edd9a247f289"
+    },
+    "flow_scripts": {
+      "build_dc.tcl": "32f192ec64caf2231903f123cc25b4110829e70db0dc8d9fa184c4eccfffb0ea",
+      "compile_libraries.tcl": "3bb51d0c7709ec625a3e7e438cd2ed6bc516bd0027221888585bcd59b547cd78",
+      "constraints.sdc": "adeb7a7eee2356c5d4196af1757ab0ff80251f4ddd24299d3a1fad6cd01aead0",
+      "fmax_pt.tcl": "42d666491dbcb3ed48717595e3ae596b04dac470c590e67303e3438f15c1022a",
+      "formality.tcl": "45fabbab6cf7dbec43217cc0dd770d3fee28edbf935cdf43f49785b9b214bac8",
+      "paths.tcl": "29c6c52221928250ba0719671d6bf57814993e3d85ff97dcf35fc3445fe13327",
+      "pnr_config.example.tcl": "0923e401d432705e664137fbd63de7580451285d8029fb5820910391159011bc",
+      "pnr_innovus.tcl": "36b8e15c197176bf235294b55a118c9351ef9f6b4e9ef0b614a30cf139f209c9",
+      "synth_dc.tcl": "c7cc3696a078640a50ca604674c763d17584782f509478c9c85a5ff46d33c48b",
+      "templates/abc_opt.script": "aa6ab4f913de069ca489ab89723e7a980a018c445c4f93e3a86a5cdfb12e1bc2",
+      "templates/dc_opt.tcl": "eb12efcff7113da578a70204edc3a5e8c1aa601e7631245aa2d75b4778bbd659",
+      "templates/pnr_opt.tcl": "c87e99fe26a3cd556e6d3a5552ea493d681cad46f7f2563f70fef409e3ec830c",
+      "templates/yosys_opt.ys": "932aa7edfac65f8f1ccbee908b6c282c8420043fe8711c693bfb17b03e4e6de9",
+      "timing_pt.tcl": "ddd3679b076ac260243672e99ddaebe8c506f23d8fb62493c49c69095eb48c4c"
+    },
+    "policy_sha256": "5a631febe570d77dc6b197ac25840df641813933349bb5ee0cfbe0c5a6302e56",
+    "specification_sha256": "33ee0567351a9c6c9498abf940fb14dde868f657c9a7b21a40049c1e2b6c1540",
+    "libraries": {
+      "ASAP7_RVT_TT_nldm_NO_FAHA.lib": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+      "ASAP7_SEQ_RVT_TT_nldm_220123.lib": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+      "cells_sim.v": "1f7a09709beae0cfcf39ae3c19248dc464041f7f487d1b7227f5ac4c3835fe59",
+      "comb_rvt_tt.db": "c8171398cd7a4beac6878b04adc7267eedaf9ebdc0f2652eef99b56022ad9d1a",
+      "seq_rvt_tt.db": "30cea877d1fc051bdaf7c4ef27f8d5d5ced7178d4af8e674f5629edbcae6295d"
+    },
+    "environment": {
+      "FFT_TECH_DIR": "/mnt/mydata/.fft64/tech/99619e6e51b75f151556",
+      "FFT_TOOLS_PREFIX": "/mnt/mydata/.fft64/runtime",
+      "VCS_HOME": "/usr/synopsys/vcs-L-2016.06",
+      "SYNOPSYS": null,
+      "FFT_VCS": null,
+      "FFT_IVL": null,
+      "FFT_ABC": null,
+      "FFT_STA": null
+    }
+  },
+  "mapped_runtime": {
+    "backend": "vcs",
+    "tools": {
+      "vcs": {
+        "path": "/usr/synopsys/vcs-L-2016.06/bin/vcs",
+        "sha256": "862dbb6504c06be76841c3ee5f2ac896e31a6b85d9763a43d1b788e1e77eda04"
+      }
+    },
+    "python_version": "3.12.10 (main, May 30 2025, 05:37:37) [Clang 20.1.4 ]",
+    "python_sha256": "d17344654e51cf1a30ab2d36aaf6a7d9e64937b13f0150cbcf17d1f60036e210",
+    "numpy_version": "2.2.6",
+    "drivers": {
+      "cache.py": "6067238d9479e8822b0fee193ae2d2fa99440a967bb00bf008d56bb9cbd539b0",
+      "common.py": "e5fb851cb01259798d19e5d0930db224747efabce7a4950cdb809e8beb405f29",
+      "throughput.py": "2b1bc417aea6429fc4af4c6fe72d5989ffc57c6642518ef5054c9cc91eb30d37",
+      "simulate.py": "ec0329d48febf07234d8ffa35aa320747c93e2964fc6f45e0443fc128955acc8",
+      "model.py": "ccfcadaaeb0a2f3fde13935aa95467493fedac9d45905911c2f4e883c2e45fa5",
+      "numeric_io.py": "f6360367969b926463e746a6fafaf8ea06b3cdb9c36b9be5022000082256a526",
+      "toolchain.py": "782395e156a56841417b54e11b74d96027ae628d02f64ff2f6e018d249b06ca2",
+      "scoring.py": "d7f040e0b1da8757f9a5a41170e1f37c06522770f9489747a6d546f9d3a22026",
+      "evaluate.py": "ad72e8b8d842f99f5117e2bd48de3d745ff81ec488af0e3a2c588eed6e4b11e2",
+      "commercial.py": "a7a43321fc10b82d9f870fb077b13edf42ef41177d694a18083f67c1301a8a6e",
+      "local_asic.py": "0c1b799da25d2cb642d21cecb62782a18919eefd377b861f2e82362aa8e31327",
+      "frequency.py": "7e2b62b4f5403c2f78aef06a97f40b73d1fb6ebf429da5e2b24b3f39ba829671",
+      "local_frequency.py": "a879a5e2f30a406df9c8850a9ce64e01b06b2a6f1645f81d638eade9ec7ab9c6",
+      "implementation.py": "43574a888d760099db9a8a4e1db900f8e23036e05527b7c27708edd9a247f289"
+    },
+    "flow_scripts": {
+      "build_dc.tcl": "32f192ec64caf2231903f123cc25b4110829e70db0dc8d9fa184c4eccfffb0ea",
+      "compile_libraries.tcl": "3bb51d0c7709ec625a3e7e438cd2ed6bc516bd0027221888585bcd59b547cd78",
+      "constraints.sdc": "adeb7a7eee2356c5d4196af1757ab0ff80251f4ddd24299d3a1fad6cd01aead0",
+      "fmax_pt.tcl": "42d666491dbcb3ed48717595e3ae596b04dac470c590e67303e3438f15c1022a",
+      "formality.tcl": "45fabbab6cf7dbec43217cc0dd770d3fee28edbf935cdf43f49785b9b214bac8",
+      "paths.tcl": "29c6c52221928250ba0719671d6bf57814993e3d85ff97dcf35fc3445fe13327",
+      "pnr_config.example.tcl": "0923e401d432705e664137fbd63de7580451285d8029fb5820910391159011bc",
+      "pnr_innovus.tcl": "36b8e15c197176bf235294b55a118c9351ef9f6b4e9ef0b614a30cf139f209c9",
+      "synth_dc.tcl": "c7cc3696a078640a50ca604674c763d17584782f509478c9c85a5ff46d33c48b",
+      "templates/abc_opt.script": "aa6ab4f913de069ca489ab89723e7a980a018c445c4f93e3a86a5cdfb12e1bc2",
+      "templates/dc_opt.tcl": "eb12efcff7113da578a70204edc3a5e8c1aa601e7631245aa2d75b4778bbd659",
+      "templates/pnr_opt.tcl": "c87e99fe26a3cd556e6d3a5552ea493d681cad46f7f2563f70fef409e3ec830c",
+      "templates/yosys_opt.ys": "932aa7edfac65f8f1ccbee908b6c282c8420043fe8711c693bfb17b03e4e6de9",
+      "timing_pt.tcl": "ddd3679b076ac260243672e99ddaebe8c506f23d8fb62493c49c69095eb48c4c"
+    },
+    "policy_sha256": "5a631febe570d77dc6b197ac25840df641813933349bb5ee0cfbe0c5a6302e56",
+    "specification_sha256": "33ee0567351a9c6c9498abf940fb14dde868f657c9a7b21a40049c1e2b6c1540",
+    "libraries": {
+      "ASAP7_RVT_TT_nldm_NO_FAHA.lib": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+      "ASAP7_SEQ_RVT_TT_nldm_220123.lib": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+      "cells_sim.v": "1f7a09709beae0cfcf39ae3c19248dc464041f7f487d1b7227f5ac4c3835fe59",
+      "comb_rvt_tt.db": "c8171398cd7a4beac6878b04adc7267eedaf9ebdc0f2652eef99b56022ad9d1a",
+      "seq_rvt_tt.db": "30cea877d1fc051bdaf7c4ef27f8d5d5ced7178d4af8e674f5629edbcae6295d"
+    },
+    "environment": {
+      "FFT_TECH_DIR": "/mnt/mydata/.fft64/tech/99619e6e51b75f151556",
+      "FFT_TOOLS_PREFIX": "/mnt/mydata/.fft64/runtime",
+      "VCS_HOME": "/usr/synopsys/vcs-L-2016.06",
+      "SYNOPSYS": null,
+      "FFT_VCS": null,
+      "FFT_IVL": null,
+      "FFT_ABC": null,
+      "FFT_STA": null
+    }
+  },
+  "gate_initial_state_modes": [
+    0,
+    1,
+    20261121
+  ]
+}

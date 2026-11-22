@@ -1,0 +1,93 @@
+{
+  "created_utc": "2026-11-22T03:53:31.349580+00:00",
+  "source_commit": "38a69c08b520eed4b724866f53e2e50a3965cf15",
+  "source_snapshot_sha256": "d81826dbc007ab4b9574f39737ea6134f91ba306ded7d54117280689099b854f",
+  "policy_sha256": "5a631febe570d77dc6b197ac25840df641813933349bb5ee0cfbe0c5a6302e56",
+  "seed": 30896565,
+  "audience": "hidden",
+  "profile": "architecture",
+  "backend": "commercial",
+  "scale": 1,
+  "max_workers": 6,
+  "calibration_designs": [
+    "exact_folded",
+    "exact_sdf"
+  ],
+  "reference_policy": "Current fixed anchors and weights; accurate designs only; no candidate-dependent tuning",
+  "cases": [
+    {
+      "id": "exact_folded",
+      "name": "Accurate folded FFT, default synthesis",
+      "role": "calibration",
+      "config": {
+        "architecture": "folded"
+      },
+      "rtl_sha256": "11bc67b460ffd93c3bc1cfd2c106abcda1f19886350db58705e4728d5fa770ca"
+    },
+    {
+      "id": "exact_sdf",
+      "name": "Accurate block-scheduled R2SDF, default synthesis",
+      "role": "calibration",
+      "config": {
+        "architecture": "sdf"
+      },
+      "rtl_sha256": "c342a5dedfec900f97e98ebceb7f71b696d8280a72f83da74f59a90272478943"
+    },
+    {
+      "id": "twiddle9_folded",
+      "name": "Folded FFT, 9-bit fractional twiddles",
+      "role": "candidate",
+      "config": {
+        "architecture": "folded",
+        "twiddle": 9
+      },
+      "rtl_sha256": "a49835042c8f5347189ec4ddb38b2194b5c28c79ed495bd0ed73683c2e299b20"
+    },
+    {
+      "id": "quantized_banked",
+      "name": "Folded FFT, parity banking and precision reduction",
+      "role": "candidate",
+      "config": {
+        "architecture": "folded",
+        "banked": true,
+        "drop": 1,
+        "twiddle": 9
+      },
+      "rtl_sha256": "24531ad017e292cfa4371581a81a75d677fa5b0cbfeb63c05222a3c9d2973b06"
+    },
+    {
+      "id": "pipelined_folded",
+      "name": "Folded FFT, pipelined butterfly",
+      "role": "candidate",
+      "config": {
+        "architecture": "folded",
+        "pipeline": true
+      },
+      "rtl_sha256": "6ac4a48205f79998c9f5f838cec278207853b2005b3a4443b546e1d0271c00aa"
+    },
+    {
+      "id": "timing2ns_folded",
+      "name": "Accurate folded FFT, timing-oriented DC with 2 ns synthesis target",
+      "role": "candidate",
+      "config": {
+        "architecture": "folded"
+      },
+      "custom_build": true,
+      "rtl_sha256": "11bc67b460ffd93c3bc1cfd2c106abcda1f19886350db58705e4728d5fa770ca"
+    },
+    {
+      "id": "invalid_precision",
+      "name": "Aggressive quantization, numerical-feasibility control",
+      "role": "negative_control",
+      "config": {
+        "architecture": "folded",
+        "banked": true,
+        "drop": 6,
+        "twiddle": 5
+      },
+      "quick": true,
+      "rtl_sha256": "8a94e66174519b22f0cfff229dd9bed807131149fedb9972882b701b23a560f1"
+    }
+  ],
+  "retention": "Keep source, manifests, summary/trace metrics, mapped netlist and tool reports; simulator vectors/observations may be losslessly compressed or regenerated"
+}

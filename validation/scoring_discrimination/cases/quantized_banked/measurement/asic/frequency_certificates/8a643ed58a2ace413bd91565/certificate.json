@@ -1,0 +1,40 @@
+{
+  "status": "CERTIFIED",
+  "passing_period_ns": 3.820556640625,
+  "failing_period_ns": 3.81103515625,
+  "passing_setup_slack_ns": 0.005543701,
+  "passing_hold_slack_ns": 0.037591587,
+  "hold_pass": true,
+  "capped_at_minimum_period": false,
+  "trials": 13,
+  "mapped_sha256": "98efc1627b9d1b5b492af1c0c5183be175ad727d190397abb0e88f08530830f7",
+  "script_sha256": "42d666491dbcb3ed48717595e3ae596b04dac470c590e67303e3438f15c1022a",
+  "pt_path": "/usr/synopsys/pt-M-2016.12-SP1/bin/pt_shell",
+  "pt_sha256": "4628e991bb7477042adc7b8af31cad457af59054ea4a757d4cd2dbcf9c138e2f",
+  "scan": {
+    "minimum_period_ns": 0.25,
+    "maximum_period_ns": 10.0,
+    "resolution_ns": 0.01,
+    "maximum_iterations": 24,
+    "method": "clock reconstraint and full STA update on the fixed mapped netlist; score uses passing endpoint",
+    "hold": "report min-path slack; certification requires no observed negative hold slack"
+  },
+  "policy_sha256": "5a631febe570d77dc6b197ac25840df641813933349bb5ee0cfbe0c5a6302e56",
+  "mapping_signature": {
+    "source": "24531ad017e292cfa4371581a81a75d677fa5b0cbfeb63c05222a3c9d2973b06",
+    "comb": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "seq": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+    "db": [
+      "c8171398cd7a4beac6878b04adc7267eedaf9ebdc0f2652eef99b56022ad9d1a",
+      "30cea877d1fc051bdaf7c4ef27f8d5d5ced7178d4af8e674f5629edbcae6295d"
+    ],
+    "flow": "DC-PT-setup-hold",
+    "identity": "c3ed26f5cf9c42979cbe565e50c02b4f5dbf1498b58eae2a1853ebdbe84b4f3b",
+    "formal": false,
+    "imported_sha256": null
+  },
+  "trial_trace_sha256": "9337ed9e6571932b022be587692ddc4868fd55137a52d7844734f148c6d08c07",
+  "certified_frequency_MHz": 261.7419643427695,
+  "measurement": "PrimeTime setup/hold passing endpoint on a fixed mapped netlist; pre-layout",
+  "certificate_directory": "/mnt/mydata/scoring_checks/scoring_20261122_115331/measurements/quantized_banked/asic/frequency_certificates/8a643ed58a2ace413bd91565"
+}

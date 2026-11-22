@@ -1,0 +1,780 @@
+{
+  "status": "PASS",
+  "original_claim": "No fixed two-bit banking function can avoid conflicts across all three radix-4 stages",
+  "claim_supported": false,
+  "bank_function": "a[1:0] XOR a[3:2] XOR a[5:4]",
+  "row_function": "a[3:0]",
+  "unique_bank_row_pairs": 64,
+  "butterflies_checked": 48,
+  "checks": [
+    {
+      "stage": 0,
+      "butterfly": 0,
+      "addresses": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "banks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 1,
+      "addresses": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "banks": [
+        1,
+        0,
+        3,
+        2
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 2,
+      "addresses": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "banks": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 3,
+      "addresses": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "banks": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 4,
+      "addresses": [
+        16,
+        17,
+        18,
+        19
+      ],
+      "banks": [
+        1,
+        0,
+        3,
+        2
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 5,
+      "addresses": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "banks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 6,
+      "addresses": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "banks": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 7,
+      "addresses": [
+        28,
+        29,
+        30,
+        31
+      ],
+      "banks": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 8,
+      "addresses": [
+        32,
+        33,
+        34,
+        35
+      ],
+      "banks": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 9,
+      "addresses": [
+        36,
+        37,
+        38,
+        39
+      ],
+      "banks": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 10,
+      "addresses": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "banks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 11,
+      "addresses": [
+        44,
+        45,
+        46,
+        47
+      ],
+      "banks": [
+        1,
+        0,
+        3,
+        2
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 12,
+      "addresses": [
+        48,
+        49,
+        50,
+        51
+      ],
+      "banks": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 13,
+      "addresses": [
+        52,
+        53,
+        54,
+        55
+      ],
+      "banks": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 14,
+      "addresses": [
+        56,
+        57,
+        58,
+        59
+      ],
+      "banks": [
+        1,
+        0,
+        3,
+        2
+      ]
+    },
+    {
+      "stage": 0,
+      "butterfly": 15,
+      "addresses": [
+        60,
+        61,
+        62,
+        63
+      ],
+      "banks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 0,
+      "addresses": [
+        0,
+        4,
+        8,
+        12
+      ],
+      "banks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 1,
+      "addresses": [
+        1,
+        5,
+        9,
+        13
+      ],
+      "banks": [
+        1,
+        0,
+        3,
+        2
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 2,
+      "addresses": [
+        2,
+        6,
+        10,
+        14
+      ],
+      "banks": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 3,
+      "addresses": [
+        3,
+        7,
+        11,
+        15
+      ],
+      "banks": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 4,
+      "addresses": [
+        16,
+        20,
+        24,
+        28
+      ],
+      "banks": [
+        1,
+        0,
+        3,
+        2
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 5,
+      "addresses": [
+        17,
+        21,
+        25,
+        29
+      ],
+      "banks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 6,
+      "addresses": [
+        18,
+        22,
+        26,
+        30
+      ],
+      "banks": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 7,
+      "addresses": [
+        19,
+        23,
+        27,
+        31
+      ],
+      "banks": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 8,
+      "addresses": [
+        32,
+        36,
+        40,
+        44
+      ],
+      "banks": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 9,
+      "addresses": [
+        33,
+        37,
+        41,
+        45
+      ],
+      "banks": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 10,
+      "addresses": [
+        34,
+        38,
+        42,
+        46
+      ],
+      "banks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 11,
+      "addresses": [
+        35,
+        39,
+        43,
+        47
+      ],
+      "banks": [
+        1,
+        0,
+        3,
+        2
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 12,
+      "addresses": [
+        48,
+        52,
+        56,
+        60
+      ],
+      "banks": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 13,
+      "addresses": [
+        49,
+        53,
+        57,
+        61
+      ],
+      "banks": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 14,
+      "addresses": [
+        50,
+        54,
+        58,
+        62
+      ],
+      "banks": [
+        1,
+        0,
+        3,
+        2
+      ]
+    },
+    {
+      "stage": 1,
+      "butterfly": 15,
+      "addresses": [
+        51,
+        55,
+        59,
+        63
+      ],
+      "banks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 0,
+      "addresses": [
+        0,
+        16,
+        32,
+        48
+      ],
+      "banks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 1,
+      "addresses": [
+        1,
+        17,
+        33,
+        49
+      ],
+      "banks": [
+        1,
+        0,
+        3,
+        2
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 2,
+      "addresses": [
+        2,
+        18,
+        34,
+        50
+      ],
+      "banks": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 3,
+      "addresses": [
+        3,
+        19,
+        35,
+        51
+      ],
+      "banks": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 4,
+      "addresses": [
+        4,
+        20,
+        36,
+        52
+      ],
+      "banks": [
+        1,
+        0,
+        3,
+        2
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 5,
+      "addresses": [
+        5,
+        21,
+        37,
+        53
+      ],
+      "banks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 6,
+      "addresses": [
+        6,
+        22,
+        38,
+        54
+      ],
+      "banks": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 7,
+      "addresses": [
+        7,
+        23,
+        39,
+        55
+      ],
+      "banks": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 8,
+      "addresses": [
+        8,
+        24,
+        40,
+        56
+      ],
+      "banks": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 9,
+      "addresses": [
+        9,
+        25,
+        41,
+        57
+      ],
+      "banks": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 10,
+      "addresses": [
+        10,
+        26,
+        42,
+        58
+      ],
+      "banks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 11,
+      "addresses": [
+        11,
+        27,
+        43,
+        59
+      ],
+      "banks": [
+        1,
+        0,
+        3,
+        2
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 12,
+      "addresses": [
+        12,
+        28,
+        44,
+        60
+      ],
+      "banks": [
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 13,
+      "addresses": [
+        13,
+        29,
+        45,
+        61
+      ],
+      "banks": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 14,
+      "addresses": [
+        14,
+        30,
+        46,
+        62
+      ],
+      "banks": [
+        1,
+        0,
+        3,
+        2
+      ]
+    },
+    {
+      "stage": 2,
+      "butterfly": 15,
+      "addresses": [
+        15,
+        31,
+        47,
+        63
+      ],
+      "banks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "scope": "Exact combinational address-allocation counterexample only; no new RTL, synthesis, score or PPA claim"
+}

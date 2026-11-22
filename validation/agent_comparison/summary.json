@@ -1,0 +1,60 @@
+{
+  "status": "COMPLETE",
+  "cases": [
+    {
+      "id": "Claude-DS-Flash",
+      "status": "COMPLETE",
+      "resolved": true,
+      "score_valid": true,
+      "score": 0.1612772528220328,
+      "area_um2": 2662.24968,
+      "minimum_sqnr_db": 67.49704794882703,
+      "period_ns": 2.468505859375,
+      "frame_ii": 324,
+      "throughput_ffts_s": 1250318.990074372,
+      "first_output_cycles": 259,
+      "completion_cycles": 322,
+      "area_component": 0.0,
+      "throughput_component": 0.4790612210413228,
+      "latency_component": 0.17558886509635974,
+      "reason": "All required profile specifications passed; continuous hardware score has no pass threshold."
+    },
+    {
+      "id": "Codex-GPT-6.1-Sol-Max",
+      "status": "COMPLETE",
+      "resolved": true,
+      "score_valid": true,
+      "score": 0.9173856650101562,
+      "area_um2": 1275.5313,
+      "minimum_sqnr_db": 54.80909592589072,
+      "period_ns": 1.5068359375,
+      "frame_ii": 258,
+      "throughput_ffts_s": 2572256.8036694853,
+      "first_output_cycles": 194,
+      "completion_cycles": 257,
+      "area_component": 0.9533158656664632,
+      "throughput_component": 1.0,
+      "latency_component": 0.4539614561027837,
+      "reason": "All required profile specifications passed; continuous hardware score has no pass threshold."
+    },
+    {
+      "id": "Codex-GPT-6.2-Sol-Max",
+      "status": "COMPLETE",
+      "resolved": true,
+      "score_valid": true,
+      "score": 0.3845920713614161,
+      "area_um2": 2415.949740001,
+      "minimum_sqnr_db": 56.0290715219125,
+      "period_ns": 1.2021484375,
+      "frame_ii": 64,
+      "throughput_ffts_s": 12997562.956945572,
+      "first_output_cycles": 127,
+      "completion_cycles": 190,
+      "area_component": 0.017503559335408023,
+      "throughput_component": 1.0,
+      "latency_component": 0.7408993576017131,
+      "reason": "All required profile specifications passed; continuous hardware score has no pass threshold."
+    }
+  ],
+  "elapsed_seconds": 1610.2012756471522
+}

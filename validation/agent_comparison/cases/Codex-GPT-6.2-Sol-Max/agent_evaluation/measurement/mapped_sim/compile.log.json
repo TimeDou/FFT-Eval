@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/usr/synopsys/vcs-L-2016.06/bin/vcs",
+    "-sverilog",
+    "-full64",
+    "+vcs+initreg+random",
+    "-timescale=1ns/1ps",
+    "-top",
+    "tb",
+    "/mnt/mydata/agent_reviews/review_20261122_065445/measurements/Codex-GPT-6.2-Sol-Max/mapped_sim/source.sv",
+    "/mnt/mydata/agent_reviews/review_20261122_065445/measurements/Codex-GPT-6.2-Sol-Max/mapped_sim/tb.sv",
+    "-o",
+    "/mnt/mydata/agent_reviews/review_20261122_065445/measurements/Codex-GPT-6.2-Sol-Max/mapped_sim/simv"
+  ],
+  "seconds": 42.65858079306781,
+  "returncode": 0
+}

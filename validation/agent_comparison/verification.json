@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "files_checked": 1830,
+  "cases": [
+    {
+      "agent": "Claude-DS-Flash",
+      "resolved": true,
+      "score_valid": true,
+      "score": 0.1612772528220328,
+      "numerical_frames": 8384,
+      "intervals": 321,
+      "verified_ii": 324
+    },
+    {
+      "agent": "Codex-GPT-6.1-Sol-Max",
+      "resolved": true,
+      "score_valid": true,
+      "score": 0.9173856650101562,
+      "numerical_frames": 8384,
+      "intervals": 321,
+      "verified_ii": 258
+    },
+    {
+      "agent": "Codex-GPT-6.2-Sol-Max",
+      "resolved": true,
+      "score_valid": true,
+      "score": 0.3845920713614161,
+      "numerical_frames": 8384,
+      "intervals": 321,
+      "verified_ii": 64
+    }
+  ],
+  "policy_sha256": "5a631febe570d77dc6b197ac25840df641813933349bb5ee0cfbe0c5a6302e56",
+  "scope": "Archive hashes, regenerated input identity, observed numerical replay, original source and mapped hash binding, clock trace validation, capacity summaries and score replay; no new EDA execution"
+}

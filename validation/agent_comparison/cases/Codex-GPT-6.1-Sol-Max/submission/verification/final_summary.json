@@ -1,0 +1,32 @@
+{
+  "status": "PUBLIC_ARCHITECTURE_FEASIBLE",
+  "profile": "architecture",
+  "backend": "commercial VCS/DC/PrimeTime",
+  "area_um2": 1275.5313,
+  "register_area_um2": 634.24458,
+  "cells": 9749,
+  "worst_public_sqnr_db": 55.00007072260026,
+  "additional_public_sqnr_db": 54.86810870854668,
+  "verified_frame_ii_cycles": 258,
+  "maximum_first_output_cycles": 194,
+  "maximum_completion_cycles": 257,
+  "certified_period_ns": 1.5068359375,
+  "certified_frequency_MHz": 663.6422553467272,
+  "effective_throughput_ffts_per_second": 2572256.8036694853,
+  "setup_slack_at_10ns": 8.500350586,
+  "hold_slack_at_10ns": 0.012975995,
+  "all_integer_intervals_tested": 321,
+  "rtl_frames_per_interval": 1024,
+  "mapped_subset_frames_at_best_ii": 128,
+  "gate_initial_state_modes": [
+    0,
+    1,
+    20261121
+  ],
+  "area_reduction_vs_own_initial_baseline_percent": 27.868244218163817,
+  "area_cost_vs_minimum_area_candidate_percent": 4.925759792751094,
+  "throughput_ratio_vs_minimum_area_candidate": 2.428049656613765,
+  "score_valid": false,
+  "score_limitation": "No matching frozen calibration; no official hidden score",
+  "measurement_scope": "pre-layout ideal-interconnect ASAP7 RVT TT"
+}

@@ -1,6 +1,6 @@
 # FFT64-Quant: Private Operator Protocol
 
-This document applies to **FFT-Eval operators only**. Keep accurate baseline RTL, private input seeds, calibration anchors and all grading results inaccessible to Agents. The separate FFT-Bench repository is the only public task source.
+This document applies to **FFT-Eval operators only**. Keep accurate baseline RTL, private input seeds, private platform/protocol calibration and all grading results inaccessible to Agents. Score formulas and numeric anchors are public. The separate FFT-Bench repository is the only public task source.
 
 ## Freeze before scoring
 

@@ -115,13 +115,13 @@
   "scoring": {
     "policy_file": "profiles/policy.json",
     "resolved": "all selected-profile numerical, protocol, timing and RTL/mapped requirements pass; independent of score",
-    "area": "clip((A_ref-A)/(A_ref-0.5*A_ref),0,1); A_ref is smallest validated accurate mapped area",
-    "architecture": "0.6*area + 0.3*throughput + 0.1*latency; normalized terms and calibration defined in profiles/policy.json and SCORING.md",
+    "area": "clip((A_half-A_ideal)/(A+A_half-2*A_ideal),0,1); public A_ideal=500 um2 and A_half=4000 um2; accurate baseline area does not set the score scale",
+    "architecture": "0.60*S_A + 0.30*S_T + 0.10*S_L; published rational-area, logarithmic-throughput and linear-latency functions and fixed numeric anchors in profiles/policy.json and SCORING.md",
     "frequency": "architecture only: passing setup/hold endpoint from reconstraint and STA clock scan on fixed mapped netlist; 0.01ns bracket",
     "throughput": "STA-certified frequency divided by smallest measured long-tested integer II; never agent claim",
-    "latency_score": "maximum observed first-output cycles times common 10 ns, reference 300 cycles",
+    "latency_score": "clip((300-L)/(300-63),0,1); L is maximum observed first-output cycles at the common 10 ns clock",
     "SQNR": "hard constraint only; no bonus above threshold",
-    "missing_calibration": "score_valid=false; hardware feasibility remains separately available",
+    "missing_calibration": "complete public previews compute component and combined scores from fixed public anchors without private calibration; official hidden grading requires matching platform/protocol validation; otherwise the hidden score is invalid",
     "measurement_stage": "pre-layout synthesis and ideal-interconnect STA; not post-route or silicon Fmax"
   },
   "verification": {

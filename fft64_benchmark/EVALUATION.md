@@ -25,7 +25,7 @@ bash fft64_benchmark/run_preview.sh submission runs/quick --quick --no-build
 bash fft64_benchmark/run_preview.sh submission runs/full --no-build
 ```
 
-Use `--backend commercial` or `--backend local` to select explicitly. Automatic preparation prefers available commercial tools; otherwise the open-source fallback uses Icarus/Verilator, Yosys/ABC, and OpenSTA. This is **pre-layout** mapping and timing, not complete OpenROAD place-and-route. The selected backend is fixed during a run; tool or license failures do not trigger an undocumented switch. Missing calibration permits development feedback but not a valid official score.
+Use `--backend commercial` or `--backend local` to select explicitly. Automatic preparation prefers available commercial tools; otherwise the open-source fallback uses Icarus/Verilator, Yosys/ABC, and OpenSTA. This is **pre-layout** mapping and timing, not complete OpenROAD place-and-route. The selected backend is fixed during a run; tool or license failures do not trigger an undocumented switch. Complete public evaluations return valid component and combined preview scores using the published numeric scales, without private calibration. Final hidden grading also requires matching private platform/protocol validation.
 
 The full architecture profile performs a long-stream test at every integer II. It batches at most eight intervals at a time and preallocates regular input schedules; all 321 intervals and 1,024 frames per interval are retained. Each completed chunk records array sizes, runtime and Python-process peak RSS; EDA subprocess memory requires separate measurement. Use quick numerical/protocol tests to reject unsuitable candidates before running ASIC and capacity evaluation. A quick PASS is **not** full hardware feasibility.
 
@@ -43,7 +43,7 @@ After editing `submission/flow/`, build and export `submission/implementation/ma
 
 Long-stream capacity is a measured result over **finite frames and the tested II range**; it is not proof of a globally minimal II. Large RTL datasets and smaller mapped-netlist subsets establish different coverage. The tool flow gives **pre-layout**, ideal-interconnect standard-cell area and STA estimates, not post-route frequency, power or silicon performance. Optional formal equivalence is reported separately.
 
-Record the backend, tool and library identities, submitted RTL, imported netlist hash when present, selected profile, reference calibration, worst SQNR, maximum per-frame latency, verified II and certified period. Do not compare raw results or scores from different backends or profiles.
+Record the backend, tool and library identities, submitted RTL, imported netlist hash when present, selected profile, private platform/protocol calibration when grading hidden data, worst SQNR, maximum per-frame latency, verified II and certified period. Do not compare raw results or scores from different backends or profiles.
 
 ## 5. Caches and evaluation outcomes
 

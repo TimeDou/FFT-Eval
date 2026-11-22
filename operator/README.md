@@ -1,6 +1,6 @@
 # FFT64-Quant: Operator Tools
 
-The `operator/` directory is **private**. It includes two accurate fixed-point FFT baseline implementations (R2SDF and folded radix-2), calibration utilities and regression tests. Do not expose baseline RTL, hidden seeds, calibration values or private results to evaluated Agents.
+The `operator/` directory is **private**. It includes two accurate fixed-point FFT baseline implementations (R2SDF and folded radix-2), calibration utilities and regression tests. Publish the numerical score scales and functions. Keep baseline RTL, hidden seeds, private validation calibration and other Agent results inaccessible to evaluated Agents.
 
 ## Main commands
 

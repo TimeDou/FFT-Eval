@@ -1,0 +1,176 @@
+
+                             Library Compiler (TM)
+                                 DesignWare (R)
+
+                 Version M-2016.12 for linux64 - Nov 15, 2016 
+
+                    Copyright (c) 1988 - 2016 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+            or distribution of this software is strictly prohibited.
+
+Initializing...
+# Run once in the commercial container: lc_shell -f compile_libraries.tcl.
+# This script is exported but cannot be executed in the local open-source host.
+set TASK_ROOT [file normalize [file join [file dirname [info script]] ..]]
+/mnt/mydata/fft64_work
+set TECH_DIR [file join $TASK_ROOT tech]
+/mnt/mydata/fft64_work/tech
+if {[info exists ::env(FFT_TECH_DIR)]} {set TECH_DIR [file normalize $::env(FFT_TECH_DIR)]}
+/mnt/mydata/.fft64/tech/99619e6e51b75f151556
+file mkdir [file join $TECH_DIR db]
+foreach pair {{ASAP7_RVT_TT_nldm_NO_FAHA.lib comb_rvt_tt.db} {ASAP7_SEQ_RVT_TT_nldm_220123.lib seq_rvt_tt.db}} {
+    set src [file join $TECH_DIR [lindex $pair 0]]
+    set f [open $src r];set text [read $f];close $f
+    if {![regexp {library\s*\(\s*([^\s\)]+)\s*\)} $text unused libname]} {error "No Liberty library name: $src"}
+    read_lib $src
+    write_lib $libname -format db -output [file join $TECH_DIR db [lindex $pair 1]]
+}
+Reading '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/ASAP7_RVT_TT_nldm_NO_FAHA.lib' ...
+Warning: Line 34, The 'default_inout_pin_cap' attribute is not specified. Using 1.00. (LBDB-172)
+Warning: Line 34, The 'default_input_pin_cap' attribute is not specified. Using 1.00. (LBDB-172)
+Warning: Line 34, The 'default_leakage_power_density' attribute is not specified. Using 0.00. (LBDB-172)
+Information: Line 44966, Cell 'TIEHIx1_ASAP7_75t_R', No internal_power information for the 'TIEHIx1_ASAP7_75t_R' cell. (LBDB-301)
+Warning: Line 45006, Cell 'TIEHIx1_ASAP7_75t_R', pin 'H', The pin 'H' does not have a internal_power group. (LBDB-607)
+Information: Line 45015, Cell 'TIELOx1_ASAP7_75t_R', No internal_power information for the 'TIELOx1_ASAP7_75t_R' cell. (LBDB-301)
+Warning: Line 45055, Cell 'TIELOx1_ASAP7_75t_R', pin 'L', The pin 'L' does not have a internal_power group. (LBDB-607)
+Warning: Line 45617, Cell 'XNOR2x1_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 45632, Cell 'XNOR2x1_ASAP7_75t_R', pin 'B', The pin 'B' does not have a internal_power group. (LBDB-607)
+Warning: Line 46201, Cell 'XNOR2x2_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 46216, Cell 'XNOR2x2_ASAP7_75t_R', pin 'B', The pin 'B' does not have a internal_power group. (LBDB-607)
+Warning: Line 46785, Cell 'XNOR2xp5_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 46800, Cell 'XNOR2xp5_ASAP7_75t_R', pin 'B', The pin 'B' does not have a internal_power group. (LBDB-607)
+Warning: Line 47369, Cell 'XOR2x1_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 47384, Cell 'XOR2x1_ASAP7_75t_R', pin 'B', The pin 'B' does not have a internal_power group. (LBDB-607)
+Warning: Line 47953, Cell 'XOR2x2_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 47968, Cell 'XOR2x2_ASAP7_75t_R', pin 'B', The pin 'B' does not have a internal_power group. (LBDB-607)
+Warning: Line 48537, Cell 'XOR2xp5_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 48552, Cell 'XOR2xp5_ASAP7_75t_R', pin 'B', The pin 'B' does not have a internal_power group. (LBDB-607)
+Warning: Line 48734, Cell 'BUFx10_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 48915, Cell 'BUFx12_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 49096, Cell 'BUFx12f_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 49277, Cell 'BUFx16f_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 49458, Cell 'BUFx24_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 49639, Cell 'BUFx2_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 49820, Cell 'BUFx3_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 50001, Cell 'BUFx4_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 50182, Cell 'BUFx4f_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 50363, Cell 'BUFx5_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 50544, Cell 'BUFx6f_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 50725, Cell 'BUFx8_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 50906, Cell 'CKINVDCx10_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 51087, Cell 'CKINVDCx11_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 51268, Cell 'CKINVDCx12_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 51449, Cell 'CKINVDCx14_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 51630, Cell 'CKINVDCx16_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 51811, Cell 'CKINVDCx20_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 51992, Cell 'CKINVDCx5p33_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 52173, Cell 'CKINVDCx6p67_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 52354, Cell 'CKINVDCx8_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 52535, Cell 'CKINVDCx9p33_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 52716, Cell 'HB1xp67_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 52897, Cell 'HB2xp67_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 53078, Cell 'HB3xp67_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 53259, Cell 'HB4xp67_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 53440, Cell 'INVx11_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 53621, Cell 'INVx13_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 53802, Cell 'INVx1_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 53983, Cell 'INVx2_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 54164, Cell 'INVx3_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 54345, Cell 'INVx4_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 54526, Cell 'INVx5_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 54707, Cell 'INVx6_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 54888, Cell 'INVx8_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 55069, Cell 'INVxp33_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Warning: Line 55250, Cell 'INVxp67_ASAP7_75t_R', pin 'A', The pin 'A' does not have a internal_power group. (LBDB-607)
+Technology library 'asap7sc7p5t_ALL_RVT_TT_nldm_211120' read successfully
+Wrote the 'asap7sc7p5t_ALL_RVT_TT_nldm_211120' library to '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db' successfully
+Reading '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/ASAP7_SEQ_RVT_TT_nldm_220123.lib' ...
+Warning: Line 35, The 'default_inout_pin_cap' attribute is not specified. Using 1.00. (LBDB-172)
+Warning: Line 35, The 'default_input_pin_cap' attribute is not specified. Using 1.00. (LBDB-172)
+Warning: Line 35, The 'default_leakage_power_density' attribute is not specified. Using 0.00. (LBDB-172)
+Warning: Line 805, Cell 'DFFASRHQNx1_ASAP7_75t_R', pin 'QN', The when attribute uses 'CLK * !RESETN' pins
+	that cannot be found in the preset attribute !RESETN. (LIBG-115)
+Warning: Line 838, Cell 'DFFASRHQNx1_ASAP7_75t_R', pin 'QN', The when attribute uses '!CLK * D * !RESETN' pins
+	that cannot be found in the preset attribute !RESETN. (LIBG-115)
+Warning: Line 838, Cell 'DFFASRHQNx1_ASAP7_75t_R', pin 'QN', The when attribute uses '!CLK * D * !RESETN' pins
+	that cannot be found in the preset attribute !RESETN. (LIBG-115)
+Warning: Line 871, Cell 'DFFASRHQNx1_ASAP7_75t_R', pin 'QN', The when attribute uses '!CLK * !D * !RESETN' pins
+	that cannot be found in the preset attribute !RESETN. (LIBG-115)
+Warning: Line 871, Cell 'DFFASRHQNx1_ASAP7_75t_R', pin 'QN', The when attribute uses '!CLK * !D * !RESETN' pins
+	that cannot be found in the preset attribute !RESETN. (LIBG-115)
+Warning: Line 800, Cell 'DFFASRHQNx1_ASAP7_75t_R', pin 'QN', The 'SETN' asynchronous input of the 'DFFASRHQNx1_ASAP7_75t_R' cell is inconsistent in active level. (LIBG-39)
+Warning: Line 10289, Cell 'ICGx1_ASAP7_75t_R', Cell(ICGx1_ASAP7_75t_R): The function cannot be recognized 
+	during functional optimization by Design Compiler. (LIBG-205)
+Information: Line 10289, Cell 'ICGx1_ASAP7_75t_R', Complex function sequential cell will skip
+ sequential cell timing consistency check. (LIBG-275)
+Information: Line 10289, Cell 'ICGx1_ASAP7_75t_R', Derived ICG type for cell 'ICGx1_ASAP7_75t_R' is 'latch_posedge_precontrol'. (LIBG-265)
+Warning: Line 11245, Cell 'ICGx2_ASAP7_75t_R', Cell(ICGx2_ASAP7_75t_R): The function cannot be recognized 
+	during functional optimization by Design Compiler. (LIBG-205)
+Information: Line 11245, Cell 'ICGx2_ASAP7_75t_R', Complex function sequential cell will skip
+ sequential cell timing consistency check. (LIBG-275)
+Information: Line 11245, Cell 'ICGx2_ASAP7_75t_R', Derived ICG type for cell 'ICGx2_ASAP7_75t_R' is 'latch_posedge_precontrol'. (LIBG-265)
+Warning: Line 12201, Cell 'ICGx2p67DC_ASAP7_75t_R', Cell(ICGx2p67DC_ASAP7_75t_R): The function cannot be recognized 
+	during functional optimization by Design Compiler. (LIBG-205)
+Information: Line 12201, Cell 'ICGx2p67DC_ASAP7_75t_R', Complex function sequential cell will skip
+ sequential cell timing consistency check. (LIBG-275)
+Information: Line 12201, Cell 'ICGx2p67DC_ASAP7_75t_R', Derived ICG type for cell 'ICGx2p67DC_ASAP7_75t_R' is 'latch_posedge_precontrol'. (LIBG-265)
+Warning: Line 13157, Cell 'ICGx3_ASAP7_75t_R', Cell(ICGx3_ASAP7_75t_R): The function cannot be recognized 
+	during functional optimization by Design Compiler. (LIBG-205)
+Information: Line 13157, Cell 'ICGx3_ASAP7_75t_R', Complex function sequential cell will skip
+ sequential cell timing consistency check. (LIBG-275)
+Information: Line 13157, Cell 'ICGx3_ASAP7_75t_R', Derived ICG type for cell 'ICGx3_ASAP7_75t_R' is 'latch_posedge_precontrol'. (LIBG-265)
+Warning: Line 14113, Cell 'ICGx4DC_ASAP7_75t_R', Cell(ICGx4DC_ASAP7_75t_R): The function cannot be recognized 
+	during functional optimization by Design Compiler. (LIBG-205)
+Information: Line 14113, Cell 'ICGx4DC_ASAP7_75t_R', Complex function sequential cell will skip
+ sequential cell timing consistency check. (LIBG-275)
+Information: Line 14113, Cell 'ICGx4DC_ASAP7_75t_R', Derived ICG type for cell 'ICGx4DC_ASAP7_75t_R' is 'latch_posedge_precontrol'. (LIBG-265)
+Warning: Line 15069, Cell 'ICGx4_ASAP7_75t_R', Cell(ICGx4_ASAP7_75t_R): The function cannot be recognized 
+	during functional optimization by Design Compiler. (LIBG-205)
+Information: Line 15069, Cell 'ICGx4_ASAP7_75t_R', Complex function sequential cell will skip
+ sequential cell timing consistency check. (LIBG-275)
+Information: Line 15069, Cell 'ICGx4_ASAP7_75t_R', Derived ICG type for cell 'ICGx4_ASAP7_75t_R' is 'latch_posedge_precontrol'. (LIBG-265)
+Warning: Line 16025, Cell 'ICGx5_ASAP7_75t_R', Cell(ICGx5_ASAP7_75t_R): The function cannot be recognized 
+	during functional optimization by Design Compiler. (LIBG-205)
+Information: Line 16025, Cell 'ICGx5_ASAP7_75t_R', Complex function sequential cell will skip
+ sequential cell timing consistency check. (LIBG-275)
+Information: Line 16025, Cell 'ICGx5_ASAP7_75t_R', Derived ICG type for cell 'ICGx5_ASAP7_75t_R' is 'latch_posedge_precontrol'. (LIBG-265)
+Warning: Line 16981, Cell 'ICGx5p33DC_ASAP7_75t_R', Cell(ICGx5p33DC_ASAP7_75t_R): The function cannot be recognized 
+	during functional optimization by Design Compiler. (LIBG-205)
+Information: Line 16981, Cell 'ICGx5p33DC_ASAP7_75t_R', Complex function sequential cell will skip
+ sequential cell timing consistency check. (LIBG-275)
+Information: Line 16981, Cell 'ICGx5p33DC_ASAP7_75t_R', Derived ICG type for cell 'ICGx5p33DC_ASAP7_75t_R' is 'latch_posedge_precontrol'. (LIBG-265)
+Warning: Line 17937, Cell 'ICGx6p67DC_ASAP7_75t_R', Cell(ICGx6p67DC_ASAP7_75t_R): The function cannot be recognized 
+	during functional optimization by Design Compiler. (LIBG-205)
+Information: Line 17937, Cell 'ICGx6p67DC_ASAP7_75t_R', Complex function sequential cell will skip
+ sequential cell timing consistency check. (LIBG-275)
+Information: Line 17937, Cell 'ICGx6p67DC_ASAP7_75t_R', Derived ICG type for cell 'ICGx6p67DC_ASAP7_75t_R' is 'latch_posedge_precontrol'. (LIBG-265)
+Warning: Line 18893, Cell 'ICGx8DC_ASAP7_75t_R', Cell(ICGx8DC_ASAP7_75t_R): The function cannot be recognized 
+	during functional optimization by Design Compiler. (LIBG-205)
+Information: Line 18893, Cell 'ICGx8DC_ASAP7_75t_R', Complex function sequential cell will skip
+ sequential cell timing consistency check. (LIBG-275)
+Information: Line 18893, Cell 'ICGx8DC_ASAP7_75t_R', Derived ICG type for cell 'ICGx8DC_ASAP7_75t_R' is 'latch_posedge_precontrol'. (LIBG-265)
+Warning: Line 19849, Cell 'SDFHx1_ASAP7_75t_R', The 'SDFHx1_ASAP7_75t_R' cell is missing the 'nextstate_type' attribute
+	for some input pin(s) specified in 'next_state' of its ff/ff_bank group. (LIBG-243)
+Warning: Line 22118, Cell 'SDFHx2_ASAP7_75t_R', The 'SDFHx2_ASAP7_75t_R' cell is missing the 'nextstate_type' attribute
+	for some input pin(s) specified in 'next_state' of its ff/ff_bank group. (LIBG-243)
+Warning: Line 24387, Cell 'SDFHx3_ASAP7_75t_R', The 'SDFHx3_ASAP7_75t_R' cell is missing the 'nextstate_type' attribute
+	for some input pin(s) specified in 'next_state' of its ff/ff_bank group. (LIBG-243)
+Warning: Line 26656, Cell 'SDFHx4_ASAP7_75t_R', The 'SDFHx4_ASAP7_75t_R' cell is missing the 'nextstate_type' attribute
+	for some input pin(s) specified in 'next_state' of its ff/ff_bank group. (LIBG-243)
+Warning: Line 28925, Cell 'SDFLx1_ASAP7_75t_R', The 'SDFLx1_ASAP7_75t_R' cell is missing the 'nextstate_type' attribute
+	for some input pin(s) specified in 'next_state' of its ff/ff_bank group. (LIBG-243)
+Warning: Line 31194, Cell 'SDFLx2_ASAP7_75t_R', The 'SDFLx2_ASAP7_75t_R' cell is missing the 'nextstate_type' attribute
+	for some input pin(s) specified in 'next_state' of its ff/ff_bank group. (LIBG-243)
+Warning: Line 33463, Cell 'SDFLx3_ASAP7_75t_R', The 'SDFLx3_ASAP7_75t_R' cell is missing the 'nextstate_type' attribute
+	for some input pin(s) specified in 'next_state' of its ff/ff_bank group. (LIBG-243)
+Warning: Line 35732, Cell 'SDFLx4_ASAP7_75t_R', The 'SDFLx4_ASAP7_75t_R' cell is missing the 'nextstate_type' attribute
+	for some input pin(s) specified in 'next_state' of its ff/ff_bank group. (LIBG-243)
+Technology library 'asap7sc7p5t_SEQ_RVT_TT_nldm_220123' read successfully
+Wrote the 'asap7sc7p5t_SEQ_RVT_TT_nldm_220123' library to '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db' successfully
+exit
+Memory usage for this session 451 Mbytes.
+CPU usage for this session 4 seconds ( 0.00 hours ).
+
+Thank you...

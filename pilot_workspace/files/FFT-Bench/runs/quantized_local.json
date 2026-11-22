@@ -1,0 +1,44 @@
+{
+  "source": {
+    "top": "fft64_top",
+    "files": {
+      "rtl/fft64_reorder.sv": "ed3906aca84fbea1ac2e428ac53fd0fce39af82a0423cbf80950e0ecdffe8eb1",
+      "rtl/fft64_sdf.sv": "f8adfe92785595083595813341d066e59f4b784c934f5c57dd793f8b7a470b4e",
+      "rtl/fft64_top.sv": "f119c406f587dab765592391b2118dd1c2e5405078ec59346d32baabf508fcbf",
+      "rtl/fft64_twiddle.sv": "fc555f328f6864969be8f17132f66f782cb62017006717bae79f0aedd2fe3f52"
+    },
+    "frame_ii_cycles": 64,
+    "warnings": [],
+    "source_sha256": "15716801fef25a4ad4d40c071936c001ba7e91d9ed9c88db987553fa95199998"
+  },
+  "numerical": {
+    "quality": {
+      "frames": 1216,
+      "minimum_frame_sqnr_db": 56.284042580169576,
+      "pooled_sqnr_db": 73.42354796255923,
+      "worst_frame_nmse": 2.3528581333536892e-06,
+      "zero_frame_exact": true,
+      "failed_frames": [],
+      "feasible": true
+    },
+    "latency": {
+      "maximum_first_output_latency_cycles": 125,
+      "maximum_frame_completion_cycles": 188
+    }
+  },
+  "ii64": {
+    "quality": {
+      "frames": 1040,
+      "minimum_frame_sqnr_db": 56.284042580169576,
+      "pooled_sqnr_db": 73.11774629090505,
+      "worst_frame_nmse": 2.3528581333536892e-06,
+      "zero_frame_exact": true,
+      "failed_frames": [],
+      "feasible": true
+    },
+    "latency": {
+      "maximum_first_output_latency_cycles": 125,
+      "maximum_frame_completion_cycles": 188
+    }
+  }
+}

@@ -1,0 +1,9 @@
+make: Entering directory '/mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max/FFT-Bench/runs/quantized_local_ii64/obj'
+g++  -I.  -MMD -I/usr/share/verilator/include -I/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow      -Os -c -o driver.o /mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max/FFT-Bench/runs/quantized_local_ii64/driver.cpp
+g++  -I.  -MMD -I/usr/share/verilator/include -I/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow      -Os -c -o verilated.o /usr/share/verilator/include/verilated.cpp
+/usr/bin/perl /usr/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vfft64_top.cpp Vfft64_top__Slow.cpp Vfft64_top__Syms.cpp > Vfft64_top__ALL.cpp
+g++  -I.  -MMD -I/usr/share/verilator/include -I/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow      -Os -c -o Vfft64_top__ALL.o Vfft64_top__ALL.cpp
+ar -cr Vfft64_top__ALL.a Vfft64_top__ALL.o
+ranlib Vfft64_top__ALL.a
+g++    driver.o verilated.o Vfft64_top__ALL.a      -o Vfft64_top
+make: Leaving directory '/mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max/FFT-Bench/runs/quantized_local_ii64/obj'

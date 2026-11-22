@@ -1,0 +1,105 @@
+module fft64_twiddle #(
+    parameter integer WIDTH = 18,
+    parameter integer LOG_SPAN = 4,
+    parameter integer DROP = 0
+) (
+    input  wire clk,
+    input  wire rst,
+    input  wire in_valid,
+    input  wire signed [WIDTH-1:0] in_re,
+    input  wire signed [WIDTH-1:0] in_im,
+    output reg  out_valid,
+    output reg  signed [WIDTH-DROP-1:0] out_re,
+    output reg  signed [WIDTH-DROP-1:0] out_im
+);
+    localparam integer FRACTION = 11;
+    localparam integer SHIFT = FRACTION + DROP;
+    localparam integer COEFF_WIDTH = FRACTION + 2;
+    localparam integer PRODUCT_WIDTH = WIDTH + COEFF_WIDTH;
+
+    reg [LOG_SPAN-1:0] phase;
+    wire [LOG_SPAN-1:0] offset = {{2{1'b0}}, phase[LOG_SPAN-3:0]};
+    reg [LOG_SPAN-1:0] power;
+    always @* begin
+        case (phase[LOG_SPAN-1 -: 2])
+            2'd0: power = 0;
+            2'd1: power = offset << 1;
+            2'd2: power = offset;
+            2'd3: power = (offset << 1) + offset;
+        endcase
+    end
+    wire [5:0] exponent = {power, {(6-LOG_SPAN){1'b0}}};
+
+    // The first quadrant of sin(2*pi*k/64), rounded to 11 fraction bits.
+    function automatic signed [COEFF_WIDTH-1:0] sine(input [5:0] angle);
+        reg [4:0] index;
+        reg [FRACTION:0] magnitude;
+        begin
+            index = angle[4] ? (5'd16 - {1'b0, angle[3:0]})
+                             : {1'b0, angle[3:0]};
+            case (index)
+                5'd0:  magnitude = 12'd0;
+                5'd1:  magnitude = 12'd201;
+                5'd2:  magnitude = 12'd400;
+                5'd3:  magnitude = 12'd595;
+                5'd4:  magnitude = 12'd784;
+                5'd5:  magnitude = 12'd965;
+                5'd6:  magnitude = 12'd1138;
+                5'd7:  magnitude = 12'd1299;
+                5'd8:  magnitude = 12'd1448;
+                5'd9:  magnitude = 12'd1583;
+                5'd10: magnitude = 12'd1703;
+                5'd11: magnitude = 12'd1806;
+                5'd12: magnitude = 12'd1892;
+                5'd13: magnitude = 12'd1960;
+                5'd14: magnitude = 12'd2009;
+                5'd15: magnitude = 12'd2038;
+                5'd16: magnitude = 12'd2048;
+                default: magnitude = 12'd0;
+            endcase
+            sine = angle[5] ? -$signed({1'b0, magnitude}) : $signed({1'b0, magnitude});
+        end
+    endfunction
+
+    function automatic signed [WIDTH-DROP-1:0] round_even(input signed [PRODUCT_WIDTH:0] x);
+        reg increment;
+        begin
+            increment = x[SHIFT-1] && ((|x[SHIFT-2:0]) || x[SHIFT]);
+            round_even = x[SHIFT +: WIDTH-DROP] + {{(WIDTH-DROP-1){1'b0}}, increment};
+        end
+    endfunction
+
+    reg valid_coeff, valid_product;
+    reg signed [WIDTH-1:0] data_re, data_im;
+    reg signed [COEFF_WIDTH-1:0] coeff_cos, coeff_sin;
+    reg signed [PRODUCT_WIDTH-1:0] re_cos, re_sin, im_cos, im_sin;
+    wire signed [PRODUCT_WIDTH:0] combined_re = re_cos + im_sin;
+    wire signed [PRODUCT_WIDTH:0] combined_im = im_cos - re_sin;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            phase <= {LOG_SPAN{1'b0}};
+            valid_coeff <= 1'b0;
+            valid_product <= 1'b0;
+            out_valid <= 1'b0;
+        end else begin
+            if (in_valid) phase <= phase + 1'b1;
+            valid_coeff <= in_valid;
+            valid_product <= valid_coeff;
+            out_valid <= valid_product;
+        end
+
+        coeff_sin <= sine(exponent);
+        coeff_cos <= sine(exponent + 6'd16);
+        data_re <= in_re;
+        data_im <= in_im;
+
+        re_cos <= data_re * coeff_cos;
+        re_sin <= data_re * coeff_sin;
+        im_cos <= data_im * coeff_cos;
+        im_sin <= data_im * coeff_sin;
+
+        out_re <= round_even(combined_re);
+        out_im <= round_even(combined_im);
+    end
+endmodule

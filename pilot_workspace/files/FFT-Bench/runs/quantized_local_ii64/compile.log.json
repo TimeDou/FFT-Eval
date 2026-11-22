@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/usr/bin/verilator",
+    "--cc",
+    "--exe",
+    "--build",
+    "-j",
+    "2",
+    "-Wno-fatal",
+    "--top-module",
+    "fft64_top",
+    "--Mdir",
+    "/mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max/FFT-Bench/runs/quantized_local_ii64/obj",
+    "/mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max/FFT-Bench/runs/quantized_local_ii64/source.sv",
+    "/mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max/FFT-Bench/runs/quantized_local_ii64/driver.cpp"
+  ],
+  "seconds": 1.616755658062175,
+  "returncode": 0
+}

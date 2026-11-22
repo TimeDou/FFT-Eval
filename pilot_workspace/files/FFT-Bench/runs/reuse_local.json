@@ -1,0 +1,27 @@
+{
+  "source": {
+    "top": "fft64_top",
+    "files": {
+      "rtl/fft64_reorder.sv": "2bab867d90296868f10645c68971c1d73232254315e6bae57306265a4efd2d92",
+      "rtl/fft64_sdf.sv": "f8adfe92785595083595813341d066e59f4b784c934f5c57dd793f8b7a470b4e",
+      "rtl/fft64_top.sv": "f703d330ca223a56ffda21dea94b1ea76e8466b0bcb4824721842da06de3c912",
+      "rtl/fft64_twiddle.sv": "d0e07c7a8e09672d79c310b241a728b7eac06f7d9e021a48da8af9be64baa456"
+    },
+    "frame_ii_cycles": 64,
+    "warnings": [],
+    "source_sha256": "9ce44cf33c18e21101b1ae307b9b665043b6b8f31decf3c5c5e4438cc6c68787"
+  },
+  "quality": {
+    "frames": 8400,
+    "minimum_frame_sqnr_db": 55.80729399432119,
+    "pooled_sqnr_db": 73.0324810438316,
+    "worst_frame_nmse": 2.6258541531680557e-06,
+    "zero_frame_exact": true,
+    "failed_frames": [],
+    "feasible": true
+  },
+  "latency": {
+    "maximum_first_output_latency_cycles": 127,
+    "maximum_frame_completion_cycles": 190
+  }
+}

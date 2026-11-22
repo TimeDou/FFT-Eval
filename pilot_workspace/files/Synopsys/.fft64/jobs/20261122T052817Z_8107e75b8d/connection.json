@@ -1,0 +1,12 @@
+{
+  "ssh_host": "root@localhost",
+  "ssh_port": 2205,
+  "port_file": "/mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max/port.txt",
+  "shared_directory": "/mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max/Synopsys",
+  "container_mount": "/mnt/mydata",
+  "checks": {
+    "ssh": true,
+    "shared_read": true,
+    "shared_write": true
+  }
+}

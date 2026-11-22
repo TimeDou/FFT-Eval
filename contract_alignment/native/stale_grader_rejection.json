@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "returncode": 1,
+  "reason": "DSBench requires a matching hidden-data calibration from the private operator runner; a public-preview reference cannot score hidden inputs.",
+  "old_specification_sha256": "33ee0567351a9c6c9498abf940fb14dde868f657c9a7b21a40049c1e2b6c1540",
+  "new_specification_sha256": "ddb6077e204fde38ea6bb22cd5a3279abe6939124c443f8253e16f3ecb62f011",
+  "same_seed_scale_generator_and_policy": true,
+  "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+  "scope": "Actual Code Grade packager rejects an original native calibration; changing only the specification hash in its protocol definition breaks the fingerprint"
+}

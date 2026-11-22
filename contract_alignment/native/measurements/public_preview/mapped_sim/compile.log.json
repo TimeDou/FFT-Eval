@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/usr/synopsys/vcs-L-2016.06/bin/vcs",
+    "-sverilog",
+    "-full64",
+    "+vcs+initreg+random",
+    "-timescale=1ns/1ps",
+    "-top",
+    "tb",
+    "/mnt/mydata/contract_alignment/run_20261122_094646/measurements/public_preview/mapped_sim/source.sv",
+    "/mnt/mydata/contract_alignment/run_20261122_094646/measurements/public_preview/mapped_sim/tb.sv",
+    "-o",
+    "/mnt/mydata/contract_alignment/run_20261122_094646/measurements/public_preview/mapped_sim/simv"
+  ],
+  "seconds": 42.59789768001065,
+  "returncode": 0
+}

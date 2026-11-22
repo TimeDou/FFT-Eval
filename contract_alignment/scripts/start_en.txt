@@ -1,0 +1,74 @@
+# FFT64-Quant: Autonomous, Score-Guided EDA Design
+
+You are an autonomous EDA Agent responsible for digital hardware design, fixed-point numerical optimization, ASIC synthesis and static timing analysis. Execute the FFT64-Quant benchmark: read the public task, implement complete synthesizable RTL, run simulation and EDA tools, analyze the measurements, and iteratively improve the combined hardware score. Deliver measured results rather than design advice or unverified estimates.
+
+## 1. Workspace and task material
+
+The workspace contains sibling `FFT-Bench/`, `Synopsys/` and `port.txt`. `Synopsys/` is mounted as `/mnt/mydata` inside the Docker container; `port.txt` supplies its SSH port. Start in the FFT-Bench repository root, run `bash check_env.sh`, and use `REMOTE_SYNOPSYS.md` to check SSH, tools and licenses. Invoke the container's tools with `bash synopsys.sh exec -- <command>`. You may debug, revise designs and run synthesis recipes autonomously in your own work directories. Do not affect other Agents, the global environment or hidden evaluation files.
+
+Before coding, read the root `README.md`, `OPTIMIZATION.md`, `REMOTE_SYNOPSYS.md` and `START_PROMPT.md`, together with `fft64_benchmark/TASK_EN.md`, `SPEC.json`, `INTERFACE.md`, `ARCHITECTURE_GUIDE.md`, `AGENT_WORKFLOW.md`, `EVALUATION.md`, `SCORING.md` and `profiles/policy.json`. Follow the frozen public specification and actual interface. Do not alter the specification, scorer or public tests to obtain a better score.
+
+## 2. Mandatory hardware contract
+
+Implement a complete synthesizable **64-point forward, unscaled, fixed-point complex FFT** under `submission/rtl/`, with top module `fft64_top`. Input samples and output frequency bins use natural order. Real and imaginary input components are signed 16-bit; output components are signed 24-bit; both have 15 fractional bits. Tested input components lie in [-0.5, 0.5], and nonzero frames have complex RMS at least 1/32. The numerical reference is the float64 FFT of the same already-quantized input.
+
+Every tested nonzero frame must achieve **SQNR >=50 dB**, and zero input must produce exactly zero output. Implement the specified `in_valid/frame_start/out_valid/out_start` stream protocol and synchronous active-high reset. Meet 10 ns setup/hold timing and sustained service with frame starts every **384 cycles**. Taking the first input edge as cycle 0, produce the first output no later than cycle 300 and the last output no later than cycle 364. Count every storage element, buffer, control circuit and reordering resource in the full circuit area.
+
+These are hard requirements. `resolved=true` means that the mandatory specifications pass; there is **no minimum area reduction or score threshold**. SQNR above 50 dB earns no bonus.
+
+## 3. Public, fixed combined score
+
+Use the default `architecture` profile and maximize the **combined normalized score**, rather than optimizing throughput, area or latency in isolation:
+
+\[
+S=0.60S_A+0.30S_T+0.10S_L.
+\]
+
+The components are:
+
+\[
+S_A=\left[\frac{3500}{A+3000}\right]_0^1,\quad
+S_T=\left[\frac{\ln(T_{\mathrm{eff}}/T_{\min})}{\ln(240)}\right]_0^1,\quad
+S_L=\left[\frac{300-L}{237}\right]_0^1.
+\]
+
+Here `[·]_0^1` clips to [0,1]. Area A is in um2, T_min=10^9/(384*10) FFT/s, T_eff=10^9/(II_ver*P_STA), P_STA is in ns, and L is the maximum observed first-output latency in cycles.
+
+The public ideal combination is **500 um2, 62,500,000 FFT/s and 63 cycles**; **4000 um2 gives half area credit**. These intentionally demanding score anchors do not describe an already measured circuit. Area above 4000 um2 still receives positive area credit. Throughput is logarithmically normalized, and improving a component beyond its saturation at one earns no additional combined credit.
+
+**After each important change, compare 0.60 ΔS_A, 0.30 ΔS_T, 0.10 ΔS_L and the change in total score.** If throughput credit is outweighed by the weighted area penalty, retain the better-area alternative. Complete public `architecture` evaluation returns `grade.components`, `grade.weighted_components` and `grade.score` without private calibration. This is valid **public preview** feedback, not an official hidden result. Quick or incomplete tests have no complete combined hardware score.
+
+## 4. Three design spaces
+
+Choose and combine **(a) FFT architecture** such as R2SDF, R2²SDF, R4MDC, folded/iterative or another valid structure; **(b) numerical precision**, including internal stage widths, twiddle precision, guard bits, rounding/truncation and quantization boundaries; and **(c) EDA synthesis flow**, including legal DC commands and effort, Yosys/ABC rewriting, refactoring, balancing, resyn2-style sequences, pass ordering, sharing and mapping. Exact RTL, storage and pipeline optimization is also allowed.
+
+ALS, arbitrary approximate gate pruning, function-corrupting Boolean changes, simulation-only oracle tables, uncounted external storage, and changes to external functionality or protocol are forbidden. Do not assume one architecture or recipe is best; select using numerical and hardware measurements.
+
+## 5. Implementation, debugging and feedback
+
+First establish a correct baseline. From the repository root, use:
+
+```bash
+bash run_synopsys_debug.sh submission --quick --out runs/quick_001
+bash run_synopsys_debug.sh submission --profile area --out runs/area_001
+bash run_synopsys_debug.sh submission --profile architecture --out runs/arch_001
+```
+
+Full architecture testing covers all 321 integer IIs from 64 through 384 using long consecutive-frame streams and is expensive. Screen candidates using quick numerical/protocol checks before fully evaluating the most promising ones. **The evaluator verifies minimum II, certifies the STA period, and uses the worst observed frame for latency and SQNR.** Agent claims do not replace measurements. Keep different candidates in different output directories; do not mix caches or reports.
+
+For custom synthesis:
+
+```bash
+bash build_implementation.sh submission --init-flow
+# Edit the legal DC or Yosys/ABC recipes under submission/flow/
+bash synopsys.sh build submission --export --out runs/build_001
+bash run_synopsys_debug.sh submission --profile architecture --out runs/custom_arch_001
+```
+
+Export `submission/implementation/mapped.v`, `manifest.json` and the corresponding recipes. **Hidden evaluation imports and independently verifies the mapped netlist; it does not execute your synthesis scripts.** Rebuild and revalidate after changing RTL, recipes or the implementation. P&R is outside the current official score; do not present its measurements as the scored pre-layout metrics.
+
+## 6. Records and final delivery
+
+Maintain `submission/DESIGN_PLAN.md` with initial hypotheses, architecture/precision/flow choices, significant experiments, real observations and revised decisions. Record each important candidate in `submission/measurements.csv`: minimum per-frame SQNR, full mapped area, verified II, certified period, maximum observed latency, and component/combined scores when complete valid public feedback is available. Preserve `submission/flow/` and `submission/implementation/` for custom synthesis. Do not report estimates, partial tests or invalid scores as complete measurements.
+
+**Begin implementation and testing.** Within the execution budget, obtain a fully compliant circuit first, then optimize using the public weighted component feedback. Submit the **highest-combined-score candidate that completed public verification**. Briefly report its architecture, precision, synthesis recipe, measured metrics, material design iterations and remaining unverified issues. Do not access private FFT-Eval or hidden inputs, and do not call public preview feedback an official hidden score.

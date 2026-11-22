@@ -1,0 +1,40 @@
+mesg: ttyname failed: Inappropriate ioctl for device
+{
+  "status": "COMPLETE",
+  "backend": "commercial",
+  "profile": "area",
+  "functional_pass": true,
+  "worst_frame_sqnr_db": 74.96692940024468,
+  "first_output_cycles": [
+    256
+  ],
+  "completion_cycles": [
+    319
+  ],
+  "timing_pass": true,
+  "worst_slack_ns": 6.25275293,
+  "full_mapped_area_um2": 1768.3353,
+  "mapped_simulation_pass": true,
+  "area_ratio": null,
+  "grade": {
+    "resolved": true,
+    "feasible": true,
+    "score": 0.0,
+    "score_valid": false,
+    "evaluation_outcome": "FEASIBLE",
+    "scoring_policy_id": "fft64_quant",
+    "profile": "area",
+    "policy_sha256": "5a631febe570d77dc6b197ac25840df641813933349bb5ee0cfbe0c5a6302e56",
+    "area_ratio": null,
+    "performance": {
+      "area_um2": 1768.3353,
+      "first_output_cycles": 256,
+      "first_output_latency_ns": 2560.0,
+      "target_clock_period_ns": 10.0,
+      "base_frame_II_cycles": 384,
+      "measured_frequency_in_score": false
+    },
+    "reason": "UNSCORED_INFRASTRUCTURE: Hardware checks passed; matching frozen profile calibration is required."
+  },
+  "failure": null
+}

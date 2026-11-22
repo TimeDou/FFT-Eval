@@ -1,0 +1,39 @@
+{
+  "status": "COMPLETE",
+  "backend": "commercial",
+  "profile": "area",
+  "functional_pass": true,
+  "worst_frame_sqnr_db": 55.00007072260026,
+  "first_output_cycles": [
+    192
+  ],
+  "completion_cycles": [
+    255
+  ],
+  "timing_pass": true,
+  "worst_slack_ns": 8.000279297,
+  "full_mapped_area_um2": 1318.3965,
+  "mapped_simulation_pass": true,
+  "area_ratio": null,
+  "grade": {
+    "resolved": true,
+    "feasible": true,
+    "score": 0.0,
+    "score_valid": false,
+    "evaluation_outcome": "FEASIBLE",
+    "scoring_policy_id": "fft64_quant",
+    "profile": "area",
+    "policy_sha256": "5a631febe570d77dc6b197ac25840df641813933349bb5ee0cfbe0c5a6302e56",
+    "area_ratio": null,
+    "performance": {
+      "area_um2": 1318.3965,
+      "first_output_cycles": 192,
+      "first_output_latency_ns": 1920.0,
+      "target_clock_period_ns": 10.0,
+      "base_frame_II_cycles": 384,
+      "measured_frequency_in_score": false
+    },
+    "reason": "UNSCORED_INFRASTRUCTURE: Hardware checks passed; matching frozen profile calibration is required."
+  },
+  "failure": null
+}

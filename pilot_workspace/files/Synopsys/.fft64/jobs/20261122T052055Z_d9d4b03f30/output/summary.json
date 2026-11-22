@@ -1,0 +1,27 @@
+{
+  "status": "UNSCORED_INFRASTRUCTURE",
+  "backend": "commercial",
+  "profile": "architecture",
+  "functional_pass": false,
+  "worst_frame_sqnr_db": null,
+  "first_output_cycles": null,
+  "completion_cycles": null,
+  "timing_pass": null,
+  "worst_slack_ns": null,
+  "full_mapped_area_um2": null,
+  "mapped_simulation_pass": null,
+  "area_ratio": null,
+  "grade": {
+    "resolved": false,
+    "feasible": false,
+    "score": 0.0,
+    "score_valid": false,
+    "evaluation_outcome": "UNSCORED_INFRASTRUCTURE",
+    "scoring_policy_id": "fft64_quant",
+    "profile": "architecture",
+    "policy_sha256": "5a631febe570d77dc6b197ac25840df641813933349bb5ee0cfbe0c5a6302e56",
+    "area_ratio": null,
+    "reason": "UNSCORED_INFRASTRUCTURE: /mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/compile.log\n\nWarning-[LINX_KRNL] Unsupported Linux kernel\n  Linux kernel '6.8.0-138-generic' is not supported.\n  Supported versions are 2.4* or 2.6*.\n\n                         Chronologic VCS (TM)\n         Version L-2016.06_Full64 -- Sun Nov 22 13:20:57 2026\n               Copyright (c) 1991-2016 by Synopsys Inc.\n                         ALL RIGHTS RESERVED\n\nThis program is proprietary and confidential information of Synopsys Inc.\nand may be used and disclosed only as authorized in a license agreement\ncontrolling such use and disclosure.\n\nParsing design file '/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/source.sv'\n\nError-[IND] Identifier not declared\n/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/source.sv, 96\n  Identifier 'current_shift' has not been declared yet. If this error is not \n  expected, please check if you have set `default_nettype to none.\n  \n\n\nError-[IND] Identifier not declared\n/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/source.sv, 97\n  Identifier 'current_shift' has not been declared yet. If this error is not \n  expected, please check if you have set `default_nettype to none.\n  \n\n\nError-[IND] Identifier not declared\n/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/source.sv, 98\n  Identifier 'current_shift' has not been declared yet. If this error is not \n  expected, please check if you have set `default_nettype to none.\n  \n\n\nError-[IND] Identifier not declared\n/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/source.sv, 99\n  Identifier 'current_shift' has not been declared yet. If this error is not \n  expected, please check if you have set `default_nettype to none.\n  \n\nParsing design file '/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/tb.sv'\n4 errors\nCPU time: .082 seconds to compile\n"
+  },
+  "failure": "/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/compile.log\n\nWarning-[LINX_KRNL] Unsupported Linux kernel\n  Linux kernel '6.8.0-138-generic' is not supported.\n  Supported versions are 2.4* or 2.6*.\n\n                         Chronologic VCS (TM)\n         Version L-2016.06_Full64 -- Sun Nov 22 13:20:57 2026\n               Copyright (c) 1991-2016 by Synopsys Inc.\n                         ALL RIGHTS RESERVED\n\nThis program is proprietary and confidential information of Synopsys Inc.\nand may be used and disclosed only as authorized in a license agreement\ncontrolling such use and disclosure.\n\nParsing design file '/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/source.sv'\n\nError-[IND] Identifier not declared\n/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/source.sv, 96\n  Identifier 'current_shift' has not been declared yet. If this error is not \n  expected, please check if you have set `default_nettype to none.\n  \n\n\nError-[IND] Identifier not declared\n/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/source.sv, 97\n  Identifier 'current_shift' has not been declared yet. If this error is not \n  expected, please check if you have set `default_nettype to none.\n  \n\n\nError-[IND] Identifier not declared\n/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/source.sv, 98\n  Identifier 'current_shift' has not been declared yet. If this error is not \n  expected, please check if you have set `default_nettype to none.\n  \n\n\nError-[IND] Identifier not declared\n/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/source.sv, 99\n  Identifier 'current_shift' has not been declared yet. If this error is not \n  expected, please check if you have set `default_nettype to none.\n  \n\nParsing design file '/mnt/mydata/.fft64/jobs/20261122T052055Z_d9d4b03f30/output/rtl_sim/tb.sv'\n4 errors\nCPU time: .082 seconds to compile\n"
+}

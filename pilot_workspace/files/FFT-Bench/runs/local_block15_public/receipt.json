@@ -1,0 +1,24 @@
+{
+  "signature": {
+    "source_sha256": "b0b445359ac158c57878e3671eb25d18ae6e2310f70f51e3cf6272366d98609e",
+    "backend": "iverilog",
+    "driver_sha256": "ec0329d48febf07234d8ffa35aa320747c93e2964fc6f45e0443fc128955acc8",
+    "initialized_gate": false,
+    "probe_capture": false,
+    "tools": {
+      "iverilog": {
+        "path": "/usr/bin/iverilog",
+        "sha256": "1ba67856249142771239573b5d51c7f6e4d67a1e7931a0d0fab56e0d473d2167"
+      },
+      "vvp": {
+        "path": "/usr/bin/vvp",
+        "sha256": "075b114070eed3bc72e0e4559decf40520f3b693b1da9c94bba1defe8896966d"
+      }
+    }
+  },
+  "input_sha256": "80bdced8c1f82458bbaff890edac715405102f2e91fe3dec4da7e20e5f415e52",
+  "output_sha256": "93fd4732da89ffc6fd951e009b8ee5d34e7c5dbd49f51a19d14b5173e929ccb3",
+  "cycles": 543310,
+  "initialization": null,
+  "compiled_from": null
+}

@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/usr/synopsys/vcs-L-2016.06/bin/vcs",
+    "-sverilog",
+    "-full64",
+    "+vcs+initreg+random",
+    "-timescale=1ns/1ps",
+    "-top",
+    "tb",
+    "/mnt/mydata/.fft64/jobs/20261122T051807Z_dd5d5f25bb/output/smoke/1795324696542118833/mapped/source.sv",
+    "/mnt/mydata/.fft64/jobs/20261122T051807Z_dd5d5f25bb/output/smoke/1795324696542118833/mapped/tb.sv",
+    "-o",
+    "/mnt/mydata/.fft64/jobs/20261122T051807Z_dd5d5f25bb/output/smoke/1795324696542118833/mapped/simv"
+  ],
+  "seconds": 1.0655533149838448,
+  "returncode": 0
+}

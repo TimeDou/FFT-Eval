@@ -44,7 +44,7 @@ A demonstrated violation of a mandatory hardware condition is `DESIGN_INVALID` a
 - Mandatory service: at least **1,024 consecutive frames** at II=384, with variable gaps, reset probes, and worst per-frame first/completion latency measured.
 - Architecture capacity: each integer II from 64 through 384 receives at least **1,024 consecutive RTL frames**; the selected shortest passing II is checked again against a representative **128-frame RTL/mapped subset**, including mixed gaps and reset cases. This is empirical capacity, not a proof that no shorter interval could work.
 - Mapped numerical/protocol comparison uses **representative subsets** and cannot be reported as 8,192 fully mapped frames.
-- Each backend is calibrated on two accurate FFT baselines using the **same flow** as the candidate. Commercial VCS/DC/PrimeTime and open-source Icarus/Verilator/Yosys/ABC/OpenSTA metrics are reported separately. All reported ASIC area/timing values are pre-layout/ideal-interconnect unless explicitly stated otherwise.
+- Each backend is calibrated on two accurate FFT baselines using the **default mapping recipe and the same independent measurement flow**. Candidate synthesis recipes may differ: EDA optimization is part of the submitted design. Exported netlists are measured directly under the frozen library, STA and verification settings, without rerunning candidate recipes or trusting their reports. Freeze default reference anchors before evaluated runs. Commercial VCS/DC/PrimeTime and open-source Icarus/Verilator/Yosys/ABC/OpenSTA metrics are reported separately. All reported ASIC area/timing values are pre-layout/ideal-interconnect unless explicitly stated otherwise.
 
 ## 5. Grader output
 

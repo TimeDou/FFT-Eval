@@ -26,7 +26,7 @@ The private Docker wrapper is `run_synopsys_docker.sh`; see the operator environ
 
 ## 3. Calibration and scoring
 
-Calibrate the accurate R2SDF and folded radix-2 baselines **before candidate scoring** with the identical EDA backend. For `architecture`, the area reference is the smaller validated baseline area; the throughput reference is the mandatory II=384 service at 10 ns, while its goal is twice the highest *measured accurate-baseline* throughput; the latency reference is the 300-cycle deadline, with a goal tied to the fastest accurate baseline and a 63-cycle physical floor. These anchors are not necessarily obtained from one physical baseline circuit.
+Calibrate the accurate R2SDF and folded radix-2 baselines **before candidate scoring** with the chosen EDA measurement backend and provided default mapping recipe. Candidate synthesis recipes may differ; the independent measurement, library and constraints remain common. For `architecture`, the area reference is the smaller validated baseline area; the throughput reference is the mandatory II=384 service at 10 ns, while its goal is twice the highest *measured accurate-baseline* throughput; the latency reference is the 300-cycle deadline, with a goal tied to the fastest accurate baseline and a 63-cycle physical floor. These anchors are not necessarily obtained from one physical baseline circuit.
 
 A candidate's reported throughput is
 
@@ -38,11 +38,11 @@ with \(II_{\mathrm{ver}}\) the empirically shortest passing integer II from 64â€
 
 The first-output latency score uses the maximum observed per-frame latency at the **common 10 ns clock**, avoiding a second frequency reward. Numerical quality is a hard SQNR â‰¥50 dB constraint with no precision bonus. Complete definitions are in [SCORING.md](../fft64_benchmark/SCORING.md).
 
-The evaluator's common physical flow performs area mapping followed by incremental hold repair, then reports mapped area and ideal-interconnect setup/hold timing. All calibration baselines and candidates use this same mapping and hold-repair flow.
+Default DC mapping performs area optimization followed by incremental hold repair. A custom implementation is instead imported without optimization or hold repair, so its actual cells are measured. Both paths use independent cell-area counting and the same ideal-interconnect setup/hold STA. All candidates must pass those final checks. Never source submitted recipes in the private evaluator. See [OPTIMIZATION.md](../OPTIMIZATION.md).
 
 ## 4. Caches, grading, and result evidence
 
-Candidate runs are keyed by RTL source, evaluation protocol/seed, backend/platform identity, profile and scoring policy. Mapping caches can be shared across profiles only when the mapped physical flow is identical; **normalization and completed score caches cannot**. Store hashes and the raw measurement directory along with every result.
+Candidate runs are keyed by RTL source, any exported mapped netlist and recipe manifest, evaluation protocol/seed, backend/platform identity, profile and scoring policy. Mapping caches can be shared across profiles only when the input implementation and measurement flow are identical; **normalization and completed score caches cannot**. Store hashes and the raw measurement directory along with every result.
 
 The private DSBench attachment uses the filename `area_reference.json` for the calibrated profile. It is a **profile-specific calibration object**, not simply a scalar area denominator. Create it only after verifying a commercial baseline calibration:
 

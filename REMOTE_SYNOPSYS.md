@@ -72,6 +72,18 @@ bash run_synopsys_debug.sh submission --profile architecture \
 
 输入身份不一致会拒绝恢复，并保留已有结果。
 
+## 自定义综合流程
+
+默认模板可以修改或整体替换。在宿主机初始化并编辑 `submission/flow/dc_opt.tcl`：
+
+```bash
+bash build_implementation.sh submission --init-flow
+bash synopsys.sh build submission --export --out runs/custom_build
+bash run_synopsys_debug.sh submission --profile area --out runs/custom_check
+```
+
+`build` 在容器中运行自己的优化 recipe，并导出 `submission/implementation/`。之后的评测直接导入该映射网表，使用统一库和 STA 条件测量，并验证 RTL 一致性。完整说明及 Yosys/ABC、可选 P&R 模板见 [OPTIMIZATION.md](OPTIMIZATION.md)。
+
 ## 直接调用工具进行调试
 
 ```bash

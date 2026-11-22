@@ -8,7 +8,7 @@ import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-TOOLS = ['common.py','cache.py','model.py','numeric_io.py','simulate.py','evaluate.py','scoring.py','local_asic.py','commercial.py','toolchain.py','frequency.py','throughput.py','local_frequency.py']
+TOOLS = ['common.py','cache.py','model.py','numeric_io.py','simulate.py','evaluate.py','scoring.py','local_asic.py','commercial.py','toolchain.py','frequency.py','throughput.py','local_frequency.py','implementation.py']
 
 def main():
     parser = argparse.ArgumentParser()
@@ -55,9 +55,9 @@ def main():
     with zipfile.ZipFile(attachment, 'w', zipfile.ZIP_DEFLATED) as archive:
         for name in TOOLS:
             archive.write(ROOT/'tools'/name, 'fft64_grader/tools/'+name)
-        for path in (ROOT/'flow').glob('*'):
+        for path in (ROOT/'flow').rglob('*'):
             if path.is_file():
-                archive.write(path, 'fft64_grader/flow/'+path.name)
+                archive.write(path, 'fft64_grader/flow/'+str(path.relative_to(ROOT/'flow')))
         archive.write(ROOT/'SPEC.json','fft64_grader/SPEC.json')
         for name in ['policy.json','PRE_REGISTERED.json']:
             archive.write(ROOT/'profiles'/name,'fft64_grader/profiles/'+name)

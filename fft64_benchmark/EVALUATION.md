@@ -8,7 +8,7 @@ The benchmark distinguishes **functional feasibility** from **hardware quality**
 |---|---|---|
 | Public numerical | ≥1,024 random nonzero frames plus directed cases | Minimum per-frame SQNR ≥50 dB; zero input gives zero output |
 | Mandatory service | ≥1,024 consecutive frames, II=384, plus reset and gap cases | No lost/extra frames; max first-output ≤300 and completion ≤364 cycles |
-| Hardware mapping/STA | Complete top RTL | Full standard-cell area; 10 ns setup/hold requirements |
+| Hardware mapping/STA | Complete top RTL, or exported structural implementation | Full standard-cell area; 10 ns setup/hold requirements |
 | Mapped comparison | Representative numeric and protocol subset | Same output/control cycles and values as candidate RTL |
 | II capacity | All integer intervals 64–384, ≥1,024 RTL frames each | Smallest observed passing II; selected II receives 128-frame mapped confirmation |
 | Frequency certification | Reconstraint on a fixed mapped netlist | Setup/hold-passing period certificate, ≤0.01 ns bracket |
@@ -30,12 +30,16 @@ Use `--backend commercial` or `--backend local` to select a backend explicitly. 
 
 The complete architecture-profile II sweep is expensive; a quick PASS should not be described as a full PPA PASS. Reusing previous results is valid only when the RTL source, inputs, random seeds, backend/tool versions, libraries, and flow settings match. Hidden data and the private calibration must remain outside the agent workspace.
 
+## Custom synthesis
+
+Agent-controlled recipes run in the public development environment and export `implementation/mapped.v` with a source/library manifest. The evaluator imports a submitted structural implementation without resynthesis, independently counts its standard cells, applies fixed STA constraints, and compares its behavior with the submitted RTL. It never executes submitted Tcl/YS/ABC scripts or adopts their PPA reports. The same process can measure a Yosys-produced ASAP7 netlist in Synopsys. Without an exported implementation or custom synthesis recipe, default mapping applies. Custom recipes without a complete export must be built before full evaluation; quick checks remain RTL-only. See [OPTIMIZATION.md](../OPTIMIZATION.md).
+
 ## Interpretation
 
 Measurements are **finite-sample** and ASIC QoR is **pre-layout**. The tests are not a formal worst-case error proof, formal sequential equivalence proof, post-route frequency measurement, or power measurement. Different backends require independently frozen accurate baseline references; do not mix their raw QoR or scores.
 
 ## Checkpoints and outcomes
 
-Caches bind the submitted RTL, exact input frames, seed, simulator/tool binaries, libraries, evaluator and flow scripts, and policy. Mapped qualification additionally binds its mapped source and initialization settings. Identity conflicts preserve the existing measurement and require a new output directory; incomplete or corrupt records cannot produce PASS.
+Caches bind the submitted RTL, any exported implementation and recipe manifest, exact input frames, seed, simulator/tool binaries, libraries, evaluator and flow scripts, and policy. Mapped qualification additionally binds its mapped source and initialization settings. Identity conflicts preserve the existing measurement and require a new output directory; incomplete or corrupt records cannot produce PASS.
 
 A demonstrated design failure is `DESIGN_INVALID`. Failed tools, timeouts or missing/malformed measurement data are `UNSCORED_INFRASTRUCTURE` and have `score_valid=false`. Quick and unfinished runs are `INCOMPLETE`. Check submission-document completeness separately from the hardware score.

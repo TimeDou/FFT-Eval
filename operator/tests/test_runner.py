@@ -146,6 +146,28 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(len(self.calls),1)
         self.assertEqual(len(list((self.root/'out/candidates/agent_A/runs').iterdir())),2)
 
+    def test_mapped_implementation_is_snapshotted_and_changes_the_run_identity(self):
+        from common import COMB,SEQ,sha
+        source,info=assemble(self.submission)
+        flow=self.submission/'flow';flow.mkdir();recipe=flow/'dc_opt.tcl'
+        recipe.write_text('error {must never execute inside private evaluation}')
+        artifact=self.submission/'implementation';artifact.mkdir()
+        mapped=artifact/'mapped.v';mapped.write_text('module fft64_top; endmodule\n')
+        manifest=dict(rtl_sha256=info['source_sha256'],mapped_sha256=sha(mapped),
+            libraries_sha256={p.name:sha(p)for p in [COMB,SEQ]},
+            producer=dict(custom_files_sha256={'dc_opt.tcl':sha(recipe)}))
+        save(artifact/'manifest.json',manifest)
+        self.assertEqual(self.execute(self.args()),0)
+        old=Path(read(self.root/'out/candidates/agent_A/latest.json')['directory'])
+        self.assertEqual(assemble(old/'submission')[1]['implementation']['mapped_sha256'],sha(mapped))
+        old_bytes=(old/'submission/implementation/mapped.v').read_bytes()
+        self.calls.clear();mapped.write_text(mapped.read_text()+'// another mapping\n')
+        manifest['mapped_sha256']=sha(mapped);save(artifact/'manifest.json',manifest)
+        self.assertEqual(self.execute(self.args()),0)
+        current=Path(read(self.root/'out/candidates/agent_A/latest.json')['directory'])
+        self.assertNotEqual(current,old);self.assertEqual(len(self.calls),1)
+        self.assertEqual((old/'submission/implementation/mapped.v').read_bytes(),old_bytes)
+
     def test_changed_flow_does_not_reuse_or_overwrite_failed_calibration(self):
         self.fail_calibration=True
         self.assertEqual(self.execute(self.args()),2)

@@ -32,6 +32,8 @@ Agent 可自主比较不同架构和精度方案，并根据实际测量调整�
 
 **允许：** R2SDF、R2²SDF、R4MDC、folded/iterative 等可行架构；各 stage 的数据与 twiddle 精度；明确的 truncation/rounding；guard bits、量化边界；不改变规定数值语义的存储 bank、常数旋转专用化、资源复用和合法流水设计。
 
+也允许自主选择综合优化命令、参数与 pass 顺序。运行 `bash build_implementation.sh submission --init-flow` 可获得可替换的 DC、Yosys/ABC 和可选 P&R 模板。自定义综合后需导出 `submission/implementation/`，评测会直接测量该网表并与 RTL 验证；统一的库、时序和数值条件保持不变。使用方法见 [OPTIMIZATION.md](../OPTIMIZATION.md)。当前 P&R 模板不参与评分。
+
 **禁止：** 门级 ALS、与量化无关的任意逻辑近似剪枝/替换、近似 compressor、仿真专用/查表作弊实现，以及更改外部 FFT 功能、数值格式、输出顺序和时钟协议。
 
 面积必须来自**完整 top module 的标准单元映射**；不存在免费 SRAM。
@@ -71,5 +73,6 @@ bash fft64_benchmark/run_preview.sh submission runs/full --no-build
 - `submission/DESIGN_PLAN.md`：重要设计假设与更新记录
 - `submission/measurements.csv`：主要候选的实际测量
 - `submission/design_config.json`（可选）：RTL 列表与帧间隔提示
+- `submission/flow/`、`submission/implementation/`（使用自定义综合时）：优化 recipe、完整映射网表和构建 manifest
 
 正式评分以评测器实测为准；提交后不得根据隐藏反馈重新切换候选设计。

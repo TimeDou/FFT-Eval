@@ -35,3 +35,7 @@ Keep **exact transformations** and **intentional numerical approximation** conce
 - Is an apparently faster circuit actually able to accept 1,024 consecutive frames at the claimed II?
 
 Prefer a short series of measured hypotheses to an unvalidated list of architecture names. This document contains no optimized RTL or winning precision schedule.
+
+## EDA optimization choices
+
+The default synthesis recipe is a starting point. Test Boolean rewriting, resource sharing, compile effort, hierarchy and mapping choices through the editable [optimization templates](../OPTIMIZATION.md). A change in logic count is a hypothesis; its benefit is established by complete mapped area, fixed-constraint STA and mapped-to-RTL checks. Record both the RTL and the recipe for each candidate. Placement/routing recipes require a matched physical kit and do not determine the current pre-layout score.

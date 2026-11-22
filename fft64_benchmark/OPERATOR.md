@@ -7,7 +7,7 @@
 1. Choose the **default `architecture` profile** (or deliberately run a separate `area` diagnostic).
 2. Select one backend (`commercial` when its tools and licenses are usable, otherwise `local`) and freeze its tool executables, cell library, constraints and score policy.
 3. Freeze the input protocol/seed and generated frame family. Public numerical ≥1,024 nonzero random frames; hidden ≥8,192, both with directed cases. The mandatory 384-cycle service and each tested integer II use ≥1,024 consecutive frames.
-4. Calibrate the accurate SDF and folded radix-2 baselines with **the same backend and current hold-repaired physical flow**. Store exact source/library/tool hashes and raw results.
+4. Calibrate the accurate SDF and folded radix-2 baselines with **the same measurement backend and provided default mapping recipe**. Store exact source/library/tool hashes and raw results. Candidate recipes may differ; direct artifact import retains their optimization while final measurement remains common.
 5. Only after successful calibration, evaluate agent submissions and publish scores.
 
 ## Evaluator use
@@ -20,6 +20,8 @@ bash run_evaluation.sh /absolute/path/to/submission \
 ```
 
 A complete `architecture` run tests all integer IIs 64–384 with long RTL streams and validates the selected minimum on a representative mapped subset. Verified II is **measured**, not taken from the agent's `frame_ii_cycles` hint. Highest-frequency credit comes from a passing setup/hold STA clock-scan endpoint; first-output latency uses the worst observed value at the common 10 ns clock. SQNR feasibility uses the **minimum** across applicable nonzero input frames. Optional faster-II failures do not negate the mandatory service contract.
+
+Custom synthesis scripts run only in the public development environment. The private evaluator accepts a source/library-bound structural implementation and independently counts cells, runs STA and validates mapped behavior. Do not execute submitted scripts or use their reports as measurement data. [OPTIMIZATION.md](../OPTIMIZATION.md) describes the interface. Freeze the evaluator and reference anchors before a ranked campaign; caches and calibrations must match their recorded source identities.
 
 ## DSBench attachment
 

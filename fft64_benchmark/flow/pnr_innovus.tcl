@@ -37,18 +37,9 @@ set init_mmmc_file [file join $WORK mmmc.tcl]
 set init_pwr_net $POWER_NET
 set init_gnd_net $GROUND_NET
 init_design
-floorPlan -site $CORE_SITE -r $CORE_ASPECT $CORE_UTIL $CORE_MARGIN_UM $CORE_MARGIN_UM $CORE_MARGIN_UM $CORE_MARGIN_UM
-globalNetConnect $POWER_NET -type pgpin -pin $POWER_NET -inst *
-globalNetConnect $GROUND_NET -type pgpin -pin $GROUND_NET -inst *
-# PDK-specific PDN is deliberately explicit, never fabricated from a different node.
-source $POWER_PLAN_TCL
-placeDesign
-optDesign -preCTS
-create_ccopt_clock_tree_spec -file [file join $WORK ccopt.spec]
-ccopt_design
-optDesign -postCTS
-routeDesign
-optDesign -postRoute
+set pnr_recipe [file join $TASK_ROOT flow templates pnr_opt.tcl]
+if {[info exists ::env(FFT_PNR_OPT_FILE)]} {set pnr_recipe $::env(FFT_PNR_OPT_FILE)}
+source $pnr_recipe
 timeDesign -postRoute -outDir [file join $WORK postroute_setup]
 timeDesign -postRoute -hold -outDir [file join $WORK postroute_hold]
 saveDesign [file join $WORK fft64_postroute.enc]

@@ -8,7 +8,7 @@ From the repository root, run:
 python3 -m unittest discover -s operator/tests -q
 ```
 
-The suite covers scoring, input-domain and protocol checks, cache identity and partial checkpoints, simulator drivers, tool entrypoints, and infrastructure outcomes. Tests use clearly identified synthetic traces or tool fixtures where licensed hardware measurement is unnecessary. They do not establish ASIC performance.
+The suite covers scoring, input-domain and protocol checks, cache identity and partial checkpoints, simulator drivers, tool entrypoints, and infrastructure outcomes. It also checks custom implementation manifests, independent import without running candidate recipes, source/netlist-specific caches, private source snapshots, and scalar STA alias compatibility. Tests use clearly identified synthetic traces or tool fixtures where licensed hardware measurement is unnecessary. They do not establish ASIC performance.
 
 ## Hardware evidence
 

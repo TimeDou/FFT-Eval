@@ -32,6 +32,8 @@ The numerical reference is a float64 FFT of the **same quantized input**, not th
 
 **Allowed:** R2SDF, R2²SDF, R4MDC, folded/iterative FFT, and other valid architectures; stage-dependent data/twiddle precision; explicit truncation or rounding (including round-to-nearest-even); guard bits and quantization boundaries; exact resource sharing, twiddle specialization, memory banking, and legal retiming/pipelining.
 
+You may also choose synthesis commands, tool parameters and pass ordering. From the repository root, `bash build_implementation.sh submission --init-flow` creates replaceable DC, Yosys/ABC and optional P&R templates. Export custom synthesis to `submission/implementation/`; evaluation directly measures that netlist and checks it against RTL, using the common library, timing and numerical contract. See [OPTIMIZATION.md](../OPTIMIZATION.md). P&R is currently outside the scored flow.
+
 **Not allowed:** approximate logic synthesis (ALS), arbitrary approximate gate pruning/replacement, approximate compressors unrelated to explicit quantization, simulation-only/lookup implementations, or modifications to the external FFT function, I/O ordering, numerical domain, or service contract.
 
 All area calculations include the **complete top-level mapped implementation**, including standard-cell memories, controls, registers, multiplexers, and output reordering. There is no free SRAM.
@@ -71,5 +73,6 @@ Numerical test sizes: ≥1,024 public nonzero random frames and ≥8,192 hidden 
 - `submission/DESIGN_PLAN.md`: updated hypotheses and design choices
 - `submission/measurements.csv`: reproducible candidate measurements
 - `submission/design_config.json` (optional): source files and scheduling hint
+- `submission/flow/` and `submission/implementation/` (for custom synthesis): optimization recipes, complete mapped netlist and build manifest
 
 The evaluator remeasures circuit quality; self-reported numbers do not determine the grade. No hidden feedback is provided for changing the final submission.

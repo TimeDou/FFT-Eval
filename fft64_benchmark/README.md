@@ -10,6 +10,7 @@
 - [ARCHITECTURE_GUIDE.md](ARCHITECTURE_GUIDE.md): design alternatives, not a solution
 - [AGENT_WORKFLOW.md](AGENT_WORKFLOW.md) / [DESIGN_PLAN_TEMPLATE.md](DESIGN_PLAN_TEMPLATE.md): evidence-based design loop
 - [SCORING.md](SCORING.md) / [EVALUATION.md](EVALUATION.md): feasibility, score, and verification stages
+- [Editable optimization recipes](../OPTIMIZATION.md): DC, Yosys/ABC and optional P&R templates
 
 ## SSH container deployment
 
@@ -31,7 +32,13 @@ The evaluation selects available commercial tools first (VCS/DC/PrimeTime). Othe
 
 Feasibility requires valid FFT behavior, per-frame SQNR ≥ 50 dB, protocol and reset correctness, 10 ns timing, and mapped-netlist consistency. The default `architecture` score combines area (60%), verified throughput (30%), and worst first-output latency (10%). A feasible design can receive zero score. Hidden calibration and input seeds are not part of this repository.
 
-Submit `rtl/`, `DESIGN_PLAN.md`, and `measurements.csv`; `design_config.json` is optional. Its `frame_ii_cycles` is a scheduling hint only, not the official throughput measurement.
+Submit `rtl/`, `DESIGN_PLAN.md`, and `measurements.csv`; `design_config.json` is optional. Its `frame_ii_cycles` is a scheduling hint only, not the official throughput measurement. You may also submit an implementation produced with your own synthesis recipe; see below.
+
+## Choose the optimization flow
+
+Run `bash build_implementation.sh submission --init-flow` from the repository root to copy editable DC, Yosys, ABC and P&R templates into `submission/flow/`. You may replace the optimization commands, pass order and tool settings. In the SSH deployment, build with `bash synopsys.sh build submission --out runs/build --export`, then use the usual public evaluator. For installed Yosys/ABC, use `bash build_implementation.sh submission --backend local --out runs/build --export`.
+
+The export contains a structural `implementation/mapped.v` and its source/library manifest. Evaluation imports that netlist directly, independently counts cells, checks fixed-constraint timing and compares behavior with RTL. It does not execute submitted recipes or reuse self-reported PPA. With no custom implementation, the provided default mapping applies. The P&R template requires a matched physical kit and is outside the scored pre-layout flow. Full commands and template details are in [OPTIMIZATION.md](../OPTIMIZATION.md).
 
 ## NumPy and EDA dependencies
 

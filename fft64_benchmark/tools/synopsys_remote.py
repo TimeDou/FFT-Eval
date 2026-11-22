@@ -220,7 +220,7 @@ def stage(layout, submission=None, options=None, out=None, resume=False):
 
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('mode', choices=['check','run','exec'])
+    parser.add_argument('mode', choices=['check','run','build','exec'])
     parser.add_argument('--port', type=int)
     parser.add_argument('--port-file')
     parser.add_argument('--shared-dir')
@@ -238,6 +238,10 @@ def main(argv=None):
     parser.add_argument('--seed', type=int, default=20261118)
     parser.add_argument('--scale', type=int, default=1)
     parser.add_argument('--formal', action='store_true')
+    parser.add_argument('--backend',choices=['commercial','local'],default='commercial')
+    parser.add_argument('--export',action='store_true',help='Copy a successful build into submission/implementation')
+    parser.add_argument('--abc-delay-ps',type=float,default=10000)
+    parser.add_argument('--tool-timeout',type=int,default=1800)
     parser.add_argument('--cwd', default='/mnt/mydata', help='Container working directory for exec')
     parser.add_argument('arguments', nargs='*')
     values=list(sys.argv[1:] if argv is None else argv)
@@ -246,7 +250,7 @@ def main(argv=None):
         args=parser.parse_args(values[:split]);args.arguments.extend(values[split+1:])
     else:
         args=parser.parse_intermixed_args(values)
-    if args.scale<1: parser.error('--scale must be positive')
+    if args.scale<1 or args.abc_delay_ps<=0 or args.tool_timeout<1: parser.error('Frame scale, delay and timeout must be positive')
     layout=None;output=None
     try:
         layout=Layout(port_file=args.port_file, shared=args.shared_dir, port=args.port, mount=args.mount, host=args.ssh_host)
@@ -256,7 +260,8 @@ def main(argv=None):
             script=environment_script(layout,args.remote_python,args.remote_profile,need_python=False)
             return connection.run(script+'cd '+shlex.quote(args.cwd)+'\nexec '+shlex.join(args.arguments)).returncode
         if args.mode=='check' and args.arguments:raise ValueError('check does not accept a submission')
-        if args.mode=='run' and len(args.arguments)!=1:raise ValueError('run requires one submission directory')
+        if args.mode in {'run','build'} and len(args.arguments)!=1:raise ValueError(args.mode+' requires one submission directory')
+        if args.mode=='run'and args.backend!='commercial':raise ValueError('Remote preview uses Synopsys; use run_preview.sh for local evaluation')
         handshake=connection.handshake()
         if args.prepare_python or args.python_archive:
             probe=connection.run(environment_script(layout,args.remote_python,args.remote_profile)+'true\n',capture=True)
@@ -271,18 +276,19 @@ def main(argv=None):
         cache=prepare_library_cache(layout)
         options=dict(mode=args.mode,inspect_only=args.inspect_only,quick=args.quick,
                      profile=args.profile,seed=args.seed,scale=args.scale,formal=args.formal,
-                     remote_python=args.remote_python,remote_profile=args.remote_profile)
-        job,output=stage(layout,args.arguments[0] if args.mode=='run' else None,options,args.out,args.resume)
+                     remote_python=args.remote_python,remote_profile=args.remote_profile,backend=args.backend,abc_delay_ps=args.abc_delay_ps,tool_timeout=args.tool_timeout)
+        job,output=stage(layout,args.arguments[0] if args.mode in {'run','build'} else None,options,args.out,args.resume)
         save(job/'connection.json',dict(**layout.metadata(),checks=handshake))
         remote_job=layout.remote(job)
         command=['"$FFT_PYTHON"',shlex.quote(remote_job+'/fft64_benchmark/tools/synopsys_environment.py'),args.mode,
                  '--out',shlex.quote(remote_job+'/output')]
         if args.mode=='check' and args.inspect_only:command+=['--inspect-only']
-        if args.mode=='run':
+        if args.mode in {'run','build'}:
             command+=['--submission',shlex.quote(remote_job+'/submission'),'--profile',args.profile,
                       '--seed',str(args.seed),'--scale',str(args.scale)]
             if args.quick:command+=['--quick']
             if args.formal:command+=['--formal']
+            if args.mode=='build':command+=['--backend',args.backend,'--abc-delay-ps',str(args.abc_delay_ps),'--tool-timeout',str(args.tool_timeout)]
         script=environment_script(layout,args.remote_python,args.remote_profile)
         script+='export FFT_TECH_DIR='+shlex.quote(layout.remote(cache))+'\n'
         script+='export FFT_TOOLS_PREFIX='+shlex.quote(layout.mount+'/.fft64/runtime')+'\n'
@@ -295,6 +301,13 @@ def main(argv=None):
         print('Host results: '+str(output),flush=True)
         print('Container job: '+remote_job,flush=True)
         result=connection.run(script,log=Path(output)/'ssh.log')
+        if result.returncode==0 and args.mode=='build'and args.export:
+            submission=Path(args.arguments[0]).resolve()
+            if file_hashes(submission)!=json.loads((job/'snapshot.json').read_text())['identity']['submission_files']:
+                raise ValueError('Submission changed during build; keep the result and export to a matching source snapshot')
+            from implementation import export_artifacts
+            destination=export_artifacts(Path(output)/'implementation',submission,Path(output)/'export_backup')
+            print('Exported implementation: '+str(destination),flush=True)
         if result.returncode:
             if not (Path(output)/'environment.json').exists():
                 save(Path(output)/'environment.json',dict(status='NOT_READY',ready=False,

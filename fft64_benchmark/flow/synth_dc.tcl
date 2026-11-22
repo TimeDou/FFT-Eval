@@ -7,25 +7,23 @@ set_host_options -max_cores 2
 set_app_var link_library [concat [list *] $DBLIST]
 define_design_lib WORK -path [file join $WORK dc_work]
 set_svf [file join $WORK design.svf]
-analyze -format sverilog [file join $WORK staged.sv]
-elaborate fft64_top
+set imported [expr {[info exists ::env(FFT_IMPORT_NETLIST)] && $::env(FFT_IMPORT_NETLIST) ne ""}]
+if {$imported} {
+    read_verilog $::env(FFT_IMPORT_NETLIST)
+} else {
+    analyze -format sverilog [file join $WORK staged.sv]
+    elaborate fft64_top
+}
 current_design fft64_top
 link
 uniquify
-ungroup -all -flatten
 source [file join $TASK_ROOT flow constraints.sdc]
-# The common physical flow repairs minimum-delay violations as well as setup.
-# Both scoring profiles and all accurate baselines use this same setting.
-set_fix_hold [get_clocks clk]
-set_max_area 0
-set_fix_multiple_port_nets -all -buffer_constants
-set_dont_touch_network [get_ports clk]
-# No gating/retiming setting supplied by the candidate. Extra RTL pipeline cuts
-# remain permitted and are verified against the latency/protocol contract.
-compile_ultra -area_high_effort_script
-# compile_ultra area mode does not repair all short input-to-register paths
-# on DC L-2016.03. Run the documented minimum-delay-only incremental pass.
-compile -incremental_mapping -only_hold_time
+if {$imported} {
+    # Canonical structural import only; never run the agent's recipe in grading.
+    ungroup -all -flatten
+} else {
+    source [file join $TASK_ROOT flow templates dc_opt.tcl]
+}
 change_names -rules verilog -hierarchy
 set leaf_count 0
 set ar 0.0
@@ -34,7 +32,10 @@ foreach_in_collection c [get_cells -hierarchical *] {
     if {[get_attribute $c is_hierarchical]} {continue}
     incr leaf_count
     set ref [get_attribute $c ref_name]
-    if {![regexp {ASAP7_75t_R$} $ref]} {error "Unmapped/GTECH/foreign cell: $ref"}
+    if {![regexp {ASAP7_75t_R$} $ref]} {
+        if {$imported} {error "TASK_DESIGN_INVALID: Imported netlist has unmapped/GTECH/foreign cell: $ref"}
+        error "Unmapped/GTECH/foreign cell: $ref"
+    }
     set libcell [get_lib_cells -quiet */$ref]
     if {[sizeof_collection $libcell] != 1} {error "Ambiguous/missing target cell: $ref"}
     set cell_area [get_attribute $libcell area]
@@ -62,7 +63,7 @@ write_sdc [file join $WORK dc_generated.sdc]
 set n $leaf_count
 set metrics_tmp [file join $WORK dc_metrics.json.tmp]
 set f [open $metrics_tmp w]
-puts $f [format {{"area_um2":%.9f,"register_area_um2":%.9f,"cells":%d,"area_method":"sum_mapped_leaf_library_cell_area","flow":"DesignCompiler compile_ultra area_high_effort; pre-layout"}} $ar $seq_area $n]
+puts $f [format {{"area_um2":%.9f,"register_area_um2":%.9f,"cells":%d,"area_method":"sum_mapped_leaf_library_cell_area","flow":"DesignCompiler measured mapped leaf cells; pre-layout"}} $ar $seq_area $n]
 close $f
 file rename -force $metrics_tmp [file join $WORK dc_metrics.json]
 set_svf -off

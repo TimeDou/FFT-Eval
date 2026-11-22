@@ -35,9 +35,13 @@ python3 -m unittest discover -s operator/tests -v
 - Mandatory service: ≥1,024 consecutive frames at II=384, including resets and irregular gaps.
 - Architecture throughput: 321 integer IIs (64–384), ≥1,024 RTL frames per interval; shortlisted best II receives representative 128-frame mapped confirmation.
 - Mapped verification: representative numerical/transaction subset under the supported initialization modes, not the entire hidden numerical set.
-- Clock and area: full synthesis plus setup/hold-constrained STA on a fixed mapped netlist. Physical data are **pre-layout**, with no post-route or power claims.
+- Clock and area: default synthesis or independent structural-netlist import, followed by setup/hold-constrained STA on a fixed mapped netlist. Physical data are **pre-layout**, with no post-route or power claims.
 
 A candidate is compared only with a **matching calibrated reference** from the same backend, libraries, frozen protocol, and scoring profile. The selected backend must not change within an evaluated campaign. If the required tool/license/calibration is unavailable, mark the run **UNSCORED_INFRASTRUCTURE** rather than ranking it as a valid zero-score design.
+
+## Agent-controlled optimization
+
+Agents may replace public DC and Yosys/ABC synthesis recipes and export a flattened ASAP7 implementation. The evaluator measures the exported netlist directly, without executing agent scripts or resynthesizing it. Library, STA, numerical, protocol and scoring settings remain common. Accurate references use the frozen default mapping recipe; candidate recipe selection is part of the design task. See [OPTIMIZATION.md](OPTIMIZATION.md) for build/export commands and optional unscored P&R templates.
 
 ## Measurement evidence
 

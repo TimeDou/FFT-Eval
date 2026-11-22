@@ -32,22 +32,22 @@ def checked_metrics(path,kind):
  return metrics
 
 def mapping_identity():
- files=['flow/synth_dc.tcl','flow/constraints.sdc','flow/timing_pt.tcl','flow/paths.tcl']
+ files=['flow/synth_dc.tcl','flow/constraints.sdc','flow/timing_pt.tcl','flow/paths.tcl','flow/templates/dc_opt.tcl']
  libraries=[COMB,SEQ,TECH/'db/comb_rvt_tt.db',TECH/'db/seq_rvt_tt.db']
  tools={name:find_tool(name)for name in ['dc_shell','pt_shell']}
  if not all(tools.values()):raise EnvironmentError('DC/PT mapping environment is unavailable')
  data=dict(files={f:sha(ROOT/f)for f in files},libraries={p.name:sha(p)for p in libraries},
-           tools={name:dict(path=p,sha256=sha(p))for name,p in tools.items()},clock_period_ns=10.0,hold_repair=True)
+           tools={name:dict(path=p,sha256=sha(p))for name,p in tools.items()},clock_period_ns=10.0,independent_import_measurement=True)
  return hashlib.sha256(json.dumps(data,sort_keys=True).encode()).hexdigest()
 
-def measure(source,outdir,formal=False):
+def measure(source,outdir,formal=False,implementation=None):
  destination=Path(outdir).resolve()
  physical=mapping_identity()
  cache=os.environ.get('FFT_PHYSICAL_CACHE_DIR')
- if not cache:return _measure(source,destination,formal,physical)
- key=hashlib.sha256(json.dumps(dict(source=hashlib.sha256(source.encode()).hexdigest(),physical=physical,formal=formal),sort_keys=True).encode()).hexdigest()[:24]
+ if not cache:return _measure(source,destination,formal,physical,implementation)
+ key=hashlib.sha256(json.dumps(dict(source=hashlib.sha256(source.encode()).hexdigest(),physical=physical,formal=formal,imported_sha256=sha(implementation)if implementation else None),sort_keys=True).encode()).hexdigest()[:24]
  canonical=Path(cache).resolve()/key
- result=_measure(source,canonical,formal,physical)
+ result=_measure(source,canonical,formal,physical,implementation)
  if destination!=canonical:
   destination.mkdir(parents=True,exist_ok=True)
   with lock(destination/'publish.lock'):
@@ -56,22 +56,27 @@ def measure(source,outdir,formal=False):
    save(destination/'physical_cache.json',dict(directory=str(canonical),key=key,physical_flow_id=physical))
  return result
 
-def _measure(source,outdir,formal,physical):
+def _measure(source,outdir,formal,physical,implementation=None):
  d=Path(outdir).resolve();d.mkdir(parents=True,exist_ok=True)
  check=preflight();save(d/'preflight.json',check)
  if not check['ready']:raise EnvironmentError('COMMERCIAL_ENVIRONMENT_NOT_READY: '+str(d/'preflight.json'))
  identity=physical
- sig=dict(source=__import__('hashlib').sha256(source.encode()).hexdigest(),comb=sha(COMB),seq=sha(SEQ),db=[sha(TECH/'db/comb_rvt_tt.db'),sha(TECH/'db/seq_rvt_tt.db')],flow='DC-PT-setup-hold',identity=identity,formal=formal)
+ sig=dict(source=__import__('hashlib').sha256(source.encode()).hexdigest(),comb=sha(COMB),seq=sha(SEQ),db=[sha(TECH/'db/comb_rvt_tt.db'),sha(TECH/'db/seq_rvt_tt.db')],flow='DC-PT-setup-hold',identity=identity,formal=formal,imported_sha256=sha(implementation)if implementation else None)
  with lock(d/'lock'):
   if(d/'signature.json').exists():
    if read(d/'signature.json')!=sig:raise CacheIdentityError('Changed tool/RTL/constraints require new build directory')
   else:save(d/'signature.json',sig)
   if(d/'metrics.json').exists():return read(d/'metrics.json')
   start=time.monotonic();(d/'staged.sv').write_text(source)
-  # Only trusted flow scripts are executed. The submission cannot supply Tcl.
-  old={k:os.environ.get(k)for k in ['FFT_WORK','FFT_TASK_ROOT','FFT_TECH_DIR']}
+  # Grading executes trusted import/measurement scripts; optimization recipes run separately.
+  old={k:os.environ.get(k)for k in ['FFT_WORK','FFT_TASK_ROOT','FFT_TECH_DIR','FFT_IMPORT_NETLIST']}
   os.environ.update(FFT_WORK=str(d),FFT_TASK_ROOT=str(ROOT),FFT_TECH_DIR=str(TECH))
   try:
+   if implementation:
+    from implementation import validate_structural
+    (d/'input_mapped.v').write_text(validate_structural(Path(implementation).read_text()))
+    os.environ['FFT_IMPORT_NETLIST']=str(d/'input_mapped.v')
+   else:os.environ.pop('FFT_IMPORT_NETLIST',None)
    run(['dc_shell','-f',ROOT/'flow/synth_dc.tcl'],d/'dc.log',1800,cwd=d)
    check_log(d/'dc.log')
    area=checked_metrics(d/'dc_metrics.json','DC')
@@ -91,7 +96,7 @@ def _measure(source,outdir,formal,physical):
    if re.search(r'(?im)^\s*Warning:.*(?:unconstrained|no[_ ]clock|no[_ ]input[_ ]delay|no[_ ]output[_ ]delay)',check_text):
     raise EnvironmentError('TIMING_CONSTRAINT_REVIEW_REQUIRED: inspect pt_check.rpt')
    out={**area,**timing,**dict(timing_pass=timing['worst_setup_slack_ns']>=0 and timing['worst_hold_slack_ns']>=0,
-        source_sha256=sig['source'],mapped_sha256=sha(d/'mapped.v'),mapping_wall_seconds=time.monotonic()-start,
+        source_sha256=sig['source'],mapped_sha256=sha(d/'mapped.v'),implementation_mode='agent_mapped'if implementation else'default_mapping',imported_sha256=sig['imported_sha256'],mapping_wall_seconds=time.monotonic()-start,
         library_hashes=sig['db'],physical_flow_id=identity)}
    if formal:
     if not shutil.which('fm_shell'):out['formal_status']='NOT_AVAILABLE'

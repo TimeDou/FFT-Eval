@@ -19,7 +19,7 @@ from toolchain import activate, probe, select_backend
 from scoring import score_result, profile_policy
 
 
-def assemble(submission):
+def assemble(submission,include_implementation=True):
     directory = Path(submission).resolve()
     try:
         config = read(directory/'design_config.json') if (directory/'design_config.json').exists() else {}
@@ -63,8 +63,15 @@ def assemble(submission):
     if type(hint)is not int or not 64<=hint<=384:
         warnings.append('Invalid frame_ii_cycles hint ignored; measured capacity determines scoring.')
         hint=384
-    return text, dict(top='fft64_top', files=files, frame_ii_cycles=hint,
-                      warnings=warnings,source_sha256=hashlib.sha256(text.encode()).hexdigest())
+    info=dict(top='fft64_top',files=files,frame_ii_cycles=hint,warnings=warnings,
+              source_sha256=hashlib.sha256(text.encode()).hexdigest())
+    if include_implementation:
+        from implementation import load,RECIPES
+        artifact=load(directory,info['source_sha256'])
+        if artifact:info['implementation']=artifact
+        elif any((directory/'flow'/name).is_file()for name in RECIPES[:-1]):
+            raise DesignInvalidError('Custom optimization recipes require an exported implementation; run the public build command first')
+    return text,info
 
 
 def submission_completeness(submission):
@@ -133,10 +140,10 @@ def _evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
     try:
         activate();backend,why=select_backend(probe(quick),backend,calibration)
         result.update(backend=backend,selection_reason=why)
-        source,info=assemble(submission)
+        source,info=assemble(submission,include_implementation=not quick)
         identity=dict(source_sha256=info['source_sha256'],frame_ii_hint=info['frame_ii_cycles'],
                       seed=seed,scale=scale,profile=profile,audience=audience,quick=quick,formal=formal,
-                      runtime=runtime_identity(backend))
+                      runtime=runtime_identity(backend),implementation={k:v for k,v in info.get('implementation',{}).items()if k!='path'})
         bind_directory(directory,identity,artifacts=['result.json','checkpoint.json','rtl_sim','asic','throughput'])
         result.update(source=info,evaluation_identity=identity,
                       submission_completeness=submission_completeness(submission))
@@ -184,10 +191,10 @@ def _evaluate(submission, outdir, backend='auto', seed=20261118, scale=1,
                 checkpoint('ASIC_MAPPING')
                 if backend=='commercial':
                     from commercial import measure
-                    ppa=measure(source,directory/'asic',formal)
+                    ppa=measure(source,directory/'asic',formal,implementation=info['implementation']['path'])if info.get('implementation')else measure(source,directory/'asic',formal)
                 else:
                     from local_asic import measure,try_equivalence
-                    ppa=measure(source,directory/'asic')
+                    ppa=measure(source,directory/'asic',implementation=info['implementation']['path'])if info.get('implementation')else measure(source,directory/'asic')
                     if formal:result['formal']=try_equivalence(source,directory/'asic')
                 result.update(ppa=ppa,flow_id=flow_identity(backend))
                 mapped=(directory/'asic/mapped.v').read_text();mapped_source=used_cell_models(mapped)+'\n'+mapped

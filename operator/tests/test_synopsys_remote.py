@@ -136,6 +136,7 @@ class RemoteTests(unittest.TestCase):
 
     def test_cli_accepts_options_before_submission_and_preserves_exec_arguments(self):
         for args in [['run','submission','--quick'],['run','--quick','submission'],
+                     ['build','submission','--export','--out','runs/build'],
                      ['exec','--','bash','-c','printf ok']]:
             with self.subTest(args=args),patch.object(remote,'Layout',side_effect=RuntimeError('parsed correctly')),contextlib.redirect_stderr(io.StringIO())as stream:
                 self.assertEqual(remote.main(args),2)

@@ -65,7 +65,7 @@ def smoke(directory):
 
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('mode',choices=['check','run'])
+    parser.add_argument('mode',choices=['check','run','build'])
     parser.add_argument('--out',required=True)
     parser.add_argument('--inspect-only',action='store_true')
     parser.add_argument('--submission')
@@ -74,13 +74,16 @@ def main(argv=None):
     parser.add_argument('--seed',type=int,default=20261118)
     parser.add_argument('--scale',type=int,default=1)
     parser.add_argument('--formal',action='store_true')
+    parser.add_argument('--backend',choices=['commercial','local'],default='commercial')
+    parser.add_argument('--abc-delay-ps',type=float,default=10000)
+    parser.add_argument('--tool-timeout',type=int,default=1800)
     args=parser.parse_args(argv)
     out=Path(args.out);out.mkdir(parents=True,exist_ok=True)
     started=time.monotonic()
     report=dict(status='CHECKING',ready=False,mode=args.mode,measurement_backend='commercial')
     save(out/'environment.json',report)
     try:
-        environment=prepare('commercial',check_only=args.inspect_only,
+        environment=prepare(args.backend if args.mode=='build'else'commercial',check_only=args.inspect_only,
                             quick=args.quick if args.mode=='run'else False,allow_build=False)
         report.update(environment)
         report.update(installed_ready=environment['ready'],ready=False)
@@ -89,6 +92,12 @@ def main(argv=None):
         save(out/'environment.json',report)
         if not environment['ready']:
             raise RuntimeError('Required container tools, Python packages or libraries are unavailable: '+', '.join(environment['missing']))
+        if args.mode=='build':
+            from build_implementation import build
+            built=build(args.submission,out,args.backend,args.abc_delay_ps,args.tool_timeout)
+            report.update(status='READY',ready=True,build_status='BUILT')
+            save(out/'environment.json',report)
+            print(json.dumps(built,indent=2),flush=True);return 0
         if args.mode=='check':
             if args.inspect_only:
                 report.update(status='INSTALLED',ready=True,license_and_execution_verified=False)

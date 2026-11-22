@@ -87,7 +87,7 @@ def platform_identity(environment):
     names=['vcs','dc_shell','pt_shell']if backend=='commercial'else['yosys','abc','sta','iverilog','vvp','verilator']
     tools={name:dict(path=environment['tools'][name],sha256=sha(environment['tools'][name]))for name in names}
     files={name:sha(BENCHMARK/'tools'/name)for name in
-           ['evaluate.py','model.py','simulate.py','common.py','cache.py','toolchain.py','commercial.py','scoring.py','throughput.py','frequency.py']}
+           ['evaluate.py','model.py','simulate.py','common.py','cache.py','toolchain.py','commercial.py','scoring.py','throughput.py','frequency.py','implementation.py']}
     baselines={name:assemble(ROOT/'operator/baselines'/name)[1]['source_sha256']for name in ['sdf','iterative']}
     return dict(backend=backend,flow_id=flow_identity(backend),tools=tools,
                 evaluator_files=files,baseline_source_sha256=baselines,
@@ -164,7 +164,7 @@ def worker(entry,outdir,settings,reference,identity,formal):
     source=None
     try:
         source,info=assemble(entry['submission'])
-        source_key=info['source_sha256']
+        source_key=digest(dict(rtl=info['source_sha256'],implementation={k:v for k,v in info.get('implementation',{}).items()if k!='path'}))
     except Exception as exc:
         source_key=digest(dict(submission=entry['submission'],error=str(exc)))
     profile=reference.get('profile','area')
@@ -180,6 +180,8 @@ def worker(entry,outdir,settings,reference,identity,formal):
         save(snapshot/'design_config.json',dict(top='fft64_top',rtl=['rtl/fft64_top.sv'],frame_ii_cycles=info['frame_ii_cycles']))
         for name in ['DESIGN_PLAN.md','measurements.csv']:
             if (Path(entry['submission'])/name).is_file():shutil.copy2(Path(entry['submission'])/name,snapshot/name)
+        for name in ['implementation','flow']:
+            if (Path(entry['submission'])/name).is_dir():shutil.copytree(Path(entry['submission'])/name,snapshot/name,dirs_exist_ok=True)
         save(run/'original_source.json',info)
         evaluated_source=snapshot
     result,reused=cached_evaluate(evaluated_source,run,settings,reference,formal,profile=profile)

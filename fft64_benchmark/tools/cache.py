@@ -31,14 +31,14 @@ def runtime_identity(backend):
         tools[name] = dict(path=path, sha256=sha(path) if path and Path(path).is_file() else None)
     drivers = ['cache.py','common.py','throughput.py','simulate.py','model.py','numeric_io.py',
                'toolchain.py','scoring.py','evaluate.py','commercial.py','local_asic.py',
-               'frequency.py','local_frequency.py']
+               'frequency.py','local_frequency.py','implementation.py']
     libraries = [COMB, SEQ, TECH/'cells_sim.v']
     if backend in {'vcs','commercial'}:
         libraries += [TECH/'db/comb_rvt_tt.db', TECH/'db/seq_rvt_tt.db']
     return dict(backend=backend, tools=tools, python_version=sys.version,
                 python_sha256=sha(sys.executable), numpy_version=np.__version__,
                 drivers={name:sha(ROOT/'tools'/name) for name in drivers},
-                flow_scripts={p.name:sha(p) for p in sorted((ROOT/'flow').iterdir()) if p.is_file()},
+                flow_scripts={str(p.relative_to(ROOT/'flow')):sha(p) for p in sorted((ROOT/'flow').rglob('*')) if p.is_file()},
                 policy_sha256=sha(ROOT/'profiles/policy.json'),
                 specification_sha256=sha(ROOT/'SPEC.json'),
                 libraries={p.name:sha(p) if p.is_file() else None for p in libraries},

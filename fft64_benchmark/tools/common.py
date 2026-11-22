@@ -120,10 +120,10 @@ def lock(path):
 
 def flow_identity(backend):
     """Identify the setup so an area denominator stays comparable."""
-    files = ['SPEC.json', 'tools/local_asic.py', 'tools/scoring.py','tools/local_frequency.py'] if backend == 'local' else [
+    files = ['SPEC.json', 'tools/local_asic.py', 'tools/scoring.py','tools/local_frequency.py','tools/implementation.py'] if backend == 'local' else [
         'SPEC.json', 'tools/commercial.py', 'flow/synth_dc.tcl',
         'flow/constraints.sdc', 'flow/timing_pt.tcl', 'flow/paths.tcl', 'tools/scoring.py',
-        'flow/fmax_pt.tcl', 'tools/frequency.py', 'tools/throughput.py']
+        'flow/fmax_pt.tcl', 'tools/frequency.py', 'tools/throughput.py','tools/implementation.py','flow/templates/dc_opt.tcl']
     files += ['profiles/policy.json']
     libraries = [COMB, SEQ]
     if backend == 'commercial':

@@ -59,7 +59,7 @@
     "clock_transition_ns": 0.02,
     "liberty_time_unit": "ps",
     "liberty_capacitance_unit": "fF",
-    "hold_check": "minimum-delay STA must pass; common incremental hold repair after compile_ultra"
+    "hold_check": "Minimum-delay STA must pass for every mapped implementation; default DC mapping includes incremental hold repair. Imported implementations are measured without repair or resynthesis."
   },
   "allowed_approximation": [
     "stage_or_instruction_precision_reduction",
@@ -74,7 +74,10 @@
     "resource_sharing",
     "memory_banking",
     "legal_retiming",
-    "pipeline_organization"
+    "pipeline_organization",
+    "synthesis_recipe_search",
+    "exact_boolean_rewriting",
+    "technology_mapping_optimization"
   ],
   "forbidden": [
     "gate_level_approximate_logic_synthesis",
@@ -144,5 +147,18 @@
     "mapped_at_best_ii_frames": 128,
     "ii_search": "all integers 64..384; optional shorter failures do not invalidate mandatory service",
     "fft_length": 64
+  },
+  "implementation": {
+    "optional_directory": "implementation/",
+    "files": [
+      "mapped.v",
+      "manifest.json"
+    ],
+    "recipes": "Optional editable flow/dc_opt.tcl, flow/yosys_opt.ys, flow/abc_opt.script; built in public development environment",
+    "artifact": "Flattened structural ASAP7 RVT/TT netlist tied to the submitted RTL and supplied library source hashes",
+    "grading": "Never execute agent Tcl/YS/ABC scripts in hidden grading; independently import/count/STA and compare mapped behavior to RTL",
+    "constraints": "Same final library, corner, clock/I/O assumptions, numerical/protocol tests and score policy for all candidates",
+    "default": "No custom recipe or artifact: use the provided default mapping recipe",
+    "pnr": "Editable template only; not scored until a matched physical kit and post-route evaluation are provided"
   }
 }

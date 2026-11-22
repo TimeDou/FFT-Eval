@@ -1,0 +1,26 @@
+{
+  "rtl_sha256": "1e027a0cc96bd4dd69abd5be3cca8dc5eb6f38c9d0c1e982174cb0f49426a24d",
+  "mapped_sha256": "c04d725b5980be672d56af7fa0ed5f1ac0d2a3fa205a86b7ce8daf8d5e34046c",
+  "libraries_sha256": {
+    "ASAP7_RVT_TT_nldm_NO_FAHA.lib": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "ASAP7_SEQ_RVT_TT_nldm_220123.lib": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3"
+  },
+  "producer": {
+    "backend": "commercial",
+    "tools": {
+      "dc_shell": {
+        "path": "/usr/synopsys/dc-L-2016.03-SP1/bin/dc_shell",
+        "sha256": "9f02911939ed5da9be588569bf74ae4a36b0ed5f48d67f4e9f36aa7110d7f5f5"
+      }
+    },
+    "recipe_sha256": {
+      "dc_opt.tcl": "a1f38ae16aabaf48b9addea6063579ee2d88404ec5336fdb9d73167ad97e7363"
+    },
+    "custom_files_sha256": {
+      "dc_opt.tcl": "a1f38ae16aabaf48b9addea6063579ee2d88404ec5336fdb9d73167ad97e7363"
+    },
+    "abc_delay_ps": 10000.0
+  },
+  "build_seconds": 88.50552541692741,
+  "evaluation": "Area/timing are measured independently; producer reports are not scores"
+}

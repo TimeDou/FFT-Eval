@@ -1,0 +1,63 @@
+{
+  "agent": "Codex-GPT-6.2-Sol-Max",
+  "source_file": "/mnt/DATA1/sj/.codex/sessions/2026/11/22/rollout-2026-11-22T18-45-31-01a202dc-732f-72b1-9dc8-784c938afa81.jsonl",
+  "source_sha256": "58e2d244de540f7aa81338d2601a9f7039f6e8518c2473cee561ff4b501c7ce1",
+  "source_bytes": 1984807,
+  "source_record_count": 479,
+  "export_event_count": 165,
+  "user_reported_duration": "37m15s",
+  "user_reported_duration_seconds": 2235,
+  "duration_source": "user_reported conversation wall time; independent verification runtime recorded separately",
+  "prompt_sha256": "1ade0b225822f6f61312a5e370e575d5b061bc044cd93a1a6a81cde99524966e",
+  "prompt_whitespace_escape_normalized_sha256": "3aa9c2c4928122e5967f73f43d803e14b47927fab26b23254f902204daf632fa",
+  "omissions": {
+    "internal_response_items": 1,
+    "internal_context_or_analysis_messages": 5,
+    "private_reasoning_events": 130
+  },
+  "session": {
+    "id": "01a202dc-732f-72b1-9dc8-784c938afa81",
+    "cwd": "/mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max",
+    "source": "vscode",
+    "originator": "codex_vscode",
+    "cli_version": "0.171.0-alpha.13",
+    "model_provider": "openai"
+  },
+  "models": [
+    {
+      "model": "gpt-6.2-sol",
+      "effort": "max"
+    }
+  ],
+  "task_start_utc": "2026-11-22T10:45:35.979Z",
+  "final_visible_answer_utc": "2026-11-22T11:23:02.237Z",
+  "logged_task_wall_seconds": 2246.258,
+  "logged_token_usage": {
+    "total_token_usage": {
+      "input_tokens": 9589787,
+      "cached_input_tokens": 9262720,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 82389,
+      "reasoning_output_tokens": 48019,
+      "total_tokens": 9672176
+    },
+    "last_token_usage": {
+      "input_tokens": 183197,
+      "cached_input_tokens": 182656,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 846,
+      "reasoning_output_tokens": 281,
+      "total_tokens": 184043
+    },
+    "last_usage_includes_reasoning": true,
+    "model_context_window": 475000
+  },
+  "engine_task_started_utc": "2026-11-22T10:45:35.109Z",
+  "engine_task_completed_utc": "2026-11-22T11:23:02.422Z",
+  "engine_task_duration_seconds": 2247.314,
+  "engine_duration_minus_user_reported_seconds": 12.31399999999985,
+  "redactions": {
+    "credential_like_tokens": 0
+  },
+  "export_sha256": "d7b11c3f536ecd6eddb09665385a2e739dd458770590282ea028b7f222c4a44e"
+}

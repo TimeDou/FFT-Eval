@@ -1,0 +1,253 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 5
+Design : fft64_top
+Version: L-2016.03-SP1
+Date   : Sun Nov 22 19:06:39 2026
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: PVT_0P7V_25C   Library: asap7sc7p5t_ALL_RVT_TT_nldm_211120
+Wire Load Model Mode: top
+
+  Startpoint: bf_2_out_re_reg_1_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: bf_4_delay_re_reg_0__16_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  bf_2_out_re_reg_1_/CLK (DFFHQNx1_ASAP7_75t_R)           0.00 #     0.00 r
+  bf_2_out_re_reg_1_/QN (DFFHQNx1_ASAP7_75t_R)           48.86      48.86 r
+  U9260/Y (INVxp33_ASAP7_75t_R)                          20.93      69.79 f
+  U10139/Y (NAND2xp33_ASAP7_75t_R)                       24.18      93.96 r
+  U8041/Y (OAI21xp33_ASAP7_75t_R)                        24.30     118.27 f
+  U8040/Y (AOI21xp33_ASAP7_75t_R)                        32.95     151.21 r
+  U17089/Y (OAI21xp5_ASAP7_75t_R)                        25.82     177.03 f
+  U8039/Y (AOI21xp33_ASAP7_75t_R)                        30.27     207.30 r
+  U17702/Y (OAI21xp33_ASAP7_75t_R)                       31.44     238.73 f
+  U6213/Y (AOI21xp5_ASAP7_75t_R)                         27.46     266.20 r
+  U6212/Y (OAI21xp5_ASAP7_75t_R)                         23.94     290.14 f
+  U6215/Y (AOI21xp5_ASAP7_75t_R)                         24.98     315.12 r
+  U6214/Y (OAI21xp5_ASAP7_75t_R)                         23.54     338.66 f
+  U8037/Y (AOI21xp5_ASAP7_75t_R)                         24.90     363.56 r
+  U8035/Y (OAI21xp5_ASAP7_75t_R)                         27.09     390.65 f
+  U18999/Y (AOI21x1_ASAP7_75t_R)                         22.30     412.95 r
+  U19208/Y (OAI21x1_ASAP7_75t_R)                         16.51     429.47 f
+  U19306/Y (AOI21x1_ASAP7_75t_R)                         17.48     446.95 r
+  U8575/Y (OAI21xp33_ASAP7_75t_R)                        20.48     467.43 f
+  U19617/Y (XNOR2xp5_ASAP7_75t_R)                        24.76     492.19 f
+  U19618/Y (OAI21xp33_ASAP7_75t_R)                       17.22     509.40 r
+  bf_4_delay_re_reg_0__16_/D (DFFHQNx1_ASAP7_75t_R)       0.00     509.40 r
+  data arrival time                                                509.40
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  bf_4_delay_re_reg_0__16_/CLK (DFFHQNx1_ASAP7_75t_R)     0.00    9900.00 r
+  library setup time                                    -10.58    9889.42
+  data required time                                              9889.42
+  --------------------------------------------------------------------------
+  data required time                                              9889.42
+  data arrival time                                               -509.40
+  --------------------------------------------------------------------------
+  slack (MET)                                                     9380.01
+
+
+  Startpoint: rotate_64_sine_pre_reg_8_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: rotate_64_common_high_reg_20_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  rotate_64_sine_pre_reg_8_/CLK (DFFHQNx1_ASAP7_75t_R)
+                                                          0.00 #     0.00 r
+  rotate_64_sine_pre_reg_8_/QN (DFFHQNx1_ASAP7_75t_R)    58.57      58.57 f
+  U7473/Y (XNOR2xp5_ASAP7_75t_R)                         97.12     155.69 r
+  U11608/Y (NAND2x2_ASAP7_75t_R)                         53.11     208.80 f
+  U6995/Y (OAI22xp33_ASAP7_75t_R)                        45.22     254.01 r
+  U11629/Y (AND2x2_ASAP7_75t_R)                          34.20     288.21 r
+  U7230/Y (XOR2xp5_ASAP7_75t_R)                          29.26     317.47 r
+  U10048/Y (XOR2xp5_ASAP7_75t_R)                         18.52     335.99 f
+  U5524/Y (NOR2xp33_ASAP7_75t_R)                         26.36     362.35 r
+  U5839/Y (NOR2xp33_ASAP7_75t_R)                         32.77     395.12 f
+  U18893/Y (NAND2xp5_ASAP7_75t_R)                        21.48     416.60 r
+  U18894/Y (NOR2xp33_ASAP7_75t_R)                        17.58     434.18 f
+  U8821/Y (AO21x1_ASAP7_75t_R)                           30.97     465.15 f
+  U8347/Y (AOI21xp33_ASAP7_75t_R)                        21.55     486.69 r
+  U9709/Y (XNOR2xp5_ASAP7_75t_R)                         22.68     509.37 r
+  rotate_64_common_high_reg_20_/D (DFFHQNx1_ASAP7_75t_R)
+                                                          0.00     509.37 r
+  data arrival time                                                509.37
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  rotate_64_common_high_reg_20_/CLK (DFFHQNx1_ASAP7_75t_R)
+                                                          0.00    9900.00 r
+  library setup time                                    -10.46    9889.54
+  data required time                                              9889.54
+  --------------------------------------------------------------------------
+  data required time                                              9889.54
+  data arrival time                                               -509.37
+  --------------------------------------------------------------------------
+  slack (MET)                                                     9380.17
+
+
+  Startpoint: rotate_64_sine_pre_reg_8_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: rotate_64_common_high_reg_18_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  rotate_64_sine_pre_reg_8_/CLK (DFFHQNx1_ASAP7_75t_R)
+                                                          0.00 #     0.00 r
+  rotate_64_sine_pre_reg_8_/QN (DFFHQNx1_ASAP7_75t_R)    58.57      58.57 f
+  U7473/Y (XNOR2xp5_ASAP7_75t_R)                         85.32     143.89 f
+  U11608/Y (NAND2x2_ASAP7_75t_R)                         64.34     208.23 r
+  U7008/Y (OAI22xp33_ASAP7_75t_R)                        39.91     248.13 f
+  U11650/Y (AND2x2_ASAP7_75t_R)                          35.14     283.28 f
+  U7247/Y (XOR2xp5_ASAP7_75t_R)                          22.98     306.26 f
+  U6062/Y (XOR2x2_ASAP7_75t_R)                           39.60     345.86 r
+  U5864/Y (NOR2xp67_ASAP7_75t_R)                         13.38     359.25 f
+  U11661/Y (NOR2xp33_ASAP7_75t_R)                        21.80     381.05 r
+  U6061/Y (NAND2xp5_ASAP7_75t_R)                         12.95     394.00 f
+  U5753/Y (OAI21xp5_ASAP7_75t_R)                         18.71     412.71 r
+  U5743/Y (INVx1_ASAP7_75t_R)                            21.36     434.07 f
+  U11733/Y (OAI21x1_ASAP7_75t_R)                         20.19     454.26 r
+  U11736/Y (AOI21x1_ASAP7_75t_R)                         14.53     468.79 f
+  U8350/Y (OAI21xp5_ASAP7_75t_R)                         19.39     488.19 r
+  U11738/Y (XNOR2xp5_ASAP7_75t_R)                        21.25     509.44 r
+  rotate_64_common_high_reg_18_/D (DFFHQNx1_ASAP7_75t_R)
+                                                          0.00     509.44 r
+  data arrival time                                                509.44
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  rotate_64_common_high_reg_18_/CLK (DFFHQNx1_ASAP7_75t_R)
+                                                          0.00    9900.00 r
+  library setup time                                    -10.36    9889.64
+  data required time                                              9889.64
+  --------------------------------------------------------------------------
+  data required time                                              9889.64
+  data arrival time                                               -509.44
+  --------------------------------------------------------------------------
+  slack (MET)                                                     9380.20
+
+
+  Startpoint: bf_32_delay_re_reg_15__0_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: bf_32_delay_im_reg_0__17_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  bf_32_delay_re_reg_15__0_/CLK (DFFHQNx1_ASAP7_75t_R)
+                                                          0.00 #     0.00 r
+  bf_32_delay_re_reg_15__0_/QN (DFFHQNx1_ASAP7_75t_R)    62.09      62.09 r
+  U19621/Y (INVxp67_ASAP7_75t_R)                         14.41      76.51 f
+  U19622/Y (NOR2xp67_ASAP7_75t_R)                        17.96      94.47 r
+  U7655/Y (OAI21xp5_ASAP7_75t_R)                         20.83     115.30 f
+  U19628/Y (AOI21xp5_ASAP7_75t_R)                        24.23     139.53 r
+  U19632/Y (OAI21xp5_ASAP7_75t_R)                        23.46     162.99 f
+  U19638/Y (AOI21xp5_ASAP7_75t_R)                        24.89     187.88 r
+  U19641/Y (OAI21xp5_ASAP7_75t_R)                        23.47     211.35 f
+  U19645/Y (AOI21xp5_ASAP7_75t_R)                        24.89     236.24 r
+  U19648/Y (OAI21xp5_ASAP7_75t_R)                        24.09     260.33 f
+  U19651/Y (AOI21xp5_ASAP7_75t_R)                        25.01     285.34 r
+  U19654/Y (OAI21xp5_ASAP7_75t_R)                        24.65     309.98 f
+  U10172/Y (AOI21xp5_ASAP7_75t_R)                        25.11     335.10 r
+  U19660/Y (OAI21xp5_ASAP7_75t_R)                        24.09     359.19 f
+  U19662/Y (AOI21xp5_ASAP7_75t_R)                        25.01     384.19 r
+  U19664/Y (OAI21xp5_ASAP7_75t_R)                        24.65     408.84 f
+  U19668/Y (AOI21xp5_ASAP7_75t_R)                        25.11     433.95 r
+  U19671/Y (OAI21xp5_ASAP7_75t_R)                        24.09     458.04 f
+  U19898/Y (AOI21xp5_ASAP7_75t_R)                        20.28     478.32 r
+  U19899/Y (XOR2xp5_ASAP7_75t_R)                         25.22     503.54 r
+  U6072/Y (AOI21xp5_ASAP7_75t_R)                         13.64     517.19 f
+  bf_32_delay_im_reg_0__17_/D (DFFHQNx1_ASAP7_75t_R)      0.00     517.19 f
+  data arrival time                                                517.19
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  bf_32_delay_im_reg_0__17_/CLK (DFFHQNx1_ASAP7_75t_R)
+                                                          0.00    9900.00 r
+  library setup time                                     -2.61    9897.39
+  data required time                                              9897.39
+  --------------------------------------------------------------------------
+  data required time                                              9897.39
+  data arrival time                                               -517.19
+  --------------------------------------------------------------------------
+  slack (MET)                                                     9380.21
+
+
+  Startpoint: rotate_64_re_pre_reg_14_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: rotate_64_re_low_reg_21_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  rotate_64_re_pre_reg_14_/CLK (DFFHQNx1_ASAP7_75t_R)     0.00 #     0.00 r
+  rotate_64_re_pre_reg_14_/QN (DFFHQNx1_ASAP7_75t_R)     61.04      61.04 f
+  U5983/Y (INVxp67_ASAP7_75t_R)                          31.64      92.68 r
+  U6928/Y (NOR2xp33_ASAP7_75t_R)                         35.86     128.54 f
+  U6929/Y (INVxp33_ASAP7_75t_R)                          36.24     164.78 r
+  U11345/Y (XOR2xp5_ASAP7_75t_R)                         35.87     200.65 r
+  U11360/Y (XOR2xp5_ASAP7_75t_R)                         34.91     235.56 r
+  U6032/Y (XNOR2xp5_ASAP7_75t_R)                         26.88     262.44 r
+  U11366/Y (AO22x1_ASAP7_75t_R)                          32.84     295.28 r
+  U5854/Y (XOR2xp5_ASAP7_75t_R)                          30.66     325.94 r
+  U5806/Y (XOR2xp5_ASAP7_75t_R)                          30.85     356.79 r
+  U5526/Y (NOR2xp33_ASAP7_75t_R)                         24.52     381.31 f
+  U5513/Y (NOR2xp33_ASAP7_75t_R)                         31.59     412.90 r
+  U11401/Y (INVxp67_ASAP7_75t_R)                         16.43     429.32 f
+  U11597/Y (NOR2xp33_ASAP7_75t_R)                        18.60     447.92 r
+  U8214/Y (NAND2xp33_ASAP7_75t_R)                        12.79     460.72 f
+  U8213/Y (OAI21xp33_ASAP7_75t_R)                        21.65     482.36 r
+  U11600/Y (XOR2xp5_ASAP7_75t_R)                         27.12     509.48 r
+  rotate_64_re_low_reg_21_/D (DFFHQNx1_ASAP7_75t_R)       0.00     509.48 r
+  data arrival time                                                509.48
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  rotate_64_re_low_reg_21_/CLK (DFFHQNx1_ASAP7_75t_R)     0.00    9900.00 r
+  library setup time                                    -10.18    9889.82
+  data required time                                              9889.82
+  --------------------------------------------------------------------------
+  data required time                                              9889.82
+  data arrival time                                               -509.48
+  --------------------------------------------------------------------------
+  slack (MET)                                                     9380.34
+
+
+1

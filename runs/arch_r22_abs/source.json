@@ -1,0 +1,35 @@
+{
+  "top": "fft64_top",
+  "files": {
+    "rtl/fft64_top.sv": "91f85cc55439757be32b38a2995abaaf78028d11ebc9d238ce7e4e6838962f56"
+  },
+  "frame_ii_cycles": 384,
+  "warnings": [],
+  "source_sha256": "91f85cc55439757be32b38a2995abaaf78028d11ebc9d238ce7e4e6838962f56",
+  "implementation": {
+    "path": "/mnt/mydata/.fft64/jobs/20261122T111036Z_f4ca6ac18f/submission/implementation/mapped.v",
+    "mapped_sha256": "ed09de7221c1bc7cc9a1f1658844bcf5a30e1f0bc6f3d5f6da835328a653ef53",
+    "manifest_sha256": "a16b337116749ebeb20472470f29b7528acec5b0d8bb761e965b62a68e26ee79",
+    "producer": {
+      "backend": "commercial",
+      "tools": {
+        "dc_shell": {
+          "path": "/usr/synopsys/dc-L-2016.03-SP1/bin/dc_shell",
+          "sha256": "9f02911939ed5da9be588569bf74ae4a36b0ed5f48d67f4e9f36aa7110d7f5f5"
+        }
+      },
+      "recipe_sha256": {
+        "dc_opt.tcl": "709d9ccc53368a0c0c86cf4240402062bd4cb005163229ab81e7db573832702b"
+      },
+      "custom_files_sha256": {
+        "dc_opt.tcl": "709d9ccc53368a0c0c86cf4240402062bd4cb005163229ab81e7db573832702b"
+      },
+      "abc_delay_ps": 10000.0
+    },
+    "libraries_sha256": {
+      "ASAP7_RVT_TT_nldm_NO_FAHA.lib": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+      "ASAP7_SEQ_RVT_TT_nldm_220123.lib": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3"
+    },
+    "rtl_sha256": "91f85cc55439757be32b38a2995abaaf78028d11ebc9d238ce7e4e6838962f56"
+  }
+}

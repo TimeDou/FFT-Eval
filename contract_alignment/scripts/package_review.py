@@ -41,6 +41,16 @@ def main():
     args = parser.parse_args()
     evidence = args.evidence.resolve()
     manifest = json.loads((evidence/'FILE_MANIFEST.json').read_text())
+    for name in ['fft64_grader.zip','test_by_code.py','area_reference.json','settings.json']:
+        assert 'native/grader/'+name in manifest['files'], 'Missing deployment artifact: '+name
+    private = BASE/'DSBench/FFT-Eval/fft64_benchmark'
+    assert (evidence/'native/grader/test_by_code.py').read_bytes() == (private/'grading/test_by_code.py').read_bytes()
+    with zipfile.ZipFile(evidence/'native/grader/fft64_grader.zip') as archive:
+        for name in archive.namelist():
+            rel = name.removeprefix('fft64_grader/')
+            if rel == 'settings.json':
+                continue
+            assert archive.read(name) == (private/rel).read_bytes(), 'Stale grader runtime source: '+rel
     directory = BASE/'DSBench/review_packages'/('FFT-contract-review-'+datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S'))
     directory.mkdir(parents=True,exist_ok=False)
     records = {}

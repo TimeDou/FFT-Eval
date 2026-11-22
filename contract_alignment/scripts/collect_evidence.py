@@ -116,6 +116,9 @@ def main():
         copy(root/name,target/'native'/name)
     for folder in ['measurements','custom_build','grader','logs']:
         compact(root/folder,target/'native'/folder)
+    # The DSBench entrypoint is outside the evaluator ZIP and must accompany it.
+    copy(root/'grader/test_by_code.py',target/'native/grader/test_by_code.py')
+    assert (target/'native/grader/test_by_code.py').read_bytes() == (root/'engine_private/fft64_benchmark/grading/test_by_code.py').read_bytes()
     shutil.copytree(root/'public_submission',target/'native/public_submission',dirs_exist_ok=True)
     for name in ['sdf','iterative']:
         shutil.copytree(root/'engine_private/operator/baselines'/name,

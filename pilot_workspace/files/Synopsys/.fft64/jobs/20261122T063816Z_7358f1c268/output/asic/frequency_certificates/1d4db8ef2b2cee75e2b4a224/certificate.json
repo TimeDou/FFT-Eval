@@ -1,0 +1,40 @@
+{
+  "status": "CERTIFIED",
+  "passing_period_ns": 2.468505859375,
+  "failing_period_ns": 2.458984375,
+  "passing_setup_slack_ns": 0.000764893,
+  "passing_hold_slack_ns": 0.045530891,
+  "hold_pass": true,
+  "capped_at_minimum_period": false,
+  "trials": 13,
+  "mapped_sha256": "916044a3d06ea4a3a26d4a872f95a587e0f912df19bbd82c9e801fdc54cf7518",
+  "script_sha256": "42d666491dbcb3ed48717595e3ae596b04dac470c590e67303e3438f15c1022a",
+  "pt_path": "/usr/synopsys/pt-M-2016.12-SP1/bin/pt_shell",
+  "pt_sha256": "4628e991bb7477042adc7b8af31cad457af59054ea4a757d4cd2dbcf9c138e2f",
+  "scan": {
+    "minimum_period_ns": 0.25,
+    "maximum_period_ns": 10.0,
+    "resolution_ns": 0.01,
+    "maximum_iterations": 24,
+    "method": "clock reconstraint and full STA update on the fixed mapped netlist; score uses passing endpoint",
+    "hold": "report min-path slack; certification requires no observed negative hold slack"
+  },
+  "policy_sha256": "5a631febe570d77dc6b197ac25840df641813933349bb5ee0cfbe0c5a6302e56",
+  "mapping_signature": {
+    "source": "5c68140a8b2d79bceb7220ce233adf11f7927a5d159d0659285c50aeb48252a0",
+    "comb": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "seq": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+    "db": [
+      "3d1150ebb5710daf06cdfd00475a74a07a8a2cc4e5bcef43ba1ae776689528b4",
+      "dbea4f685da2a35998bbe687df913ff3e6d0a728283525c19a59e7a07e5c692f"
+    ],
+    "flow": "DC-PT-setup-hold",
+    "identity": "3d3b49262ff49043d1aecb61f841ef56f855357a34af424106c9278db559e992",
+    "formal": false,
+    "imported_sha256": null
+  },
+  "trial_trace_sha256": "d2db15d6402ecde8ef74fc1ff45ba44ef452662f6903c8bd3d75844804089acd",
+  "certified_frequency_MHz": 405.1033527840965,
+  "measurement": "PrimeTime setup/hold passing endpoint on a fixed mapped netlist; pre-layout",
+  "certificate_directory": "/mnt/mydata/.fft64/jobs/20261122T063816Z_7358f1c268/output/asic/frequency_certificates/1d4db8ef2b2cee75e2b4a224"
+}

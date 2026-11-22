@@ -1,0 +1,32 @@
+mesg: ttyname failed: Inappropriate ioctl for device
+{
+  "status": "DESIGN_INVALID",
+  "backend": "commercial",
+  "profile": "area",
+  "functional_pass": true,
+  "worst_frame_sqnr_db": 71.66004408456564,
+  "first_output_cycles": [
+    259
+  ],
+  "completion_cycles": [
+    322
+  ],
+  "timing_pass": null,
+  "worst_slack_ns": null,
+  "full_mapped_area_um2": null,
+  "mapped_simulation_pass": null,
+  "area_ratio": null,
+  "grade": {
+    "resolved": false,
+    "feasible": false,
+    "score": 0.0,
+    "score_valid": true,
+    "evaluation_outcome": "DESIGN_INVALID",
+    "scoring_policy_id": "fft64_quant",
+    "profile": "area",
+    "policy_sha256": "5a631febe570d77dc6b197ac25840df641813933349bb5ee0cfbe0c5a6302e56",
+    "area_ratio": null,
+    "reason": "DESIGN_INVALID: A required numerical, protocol, timing or RTL/mapped check failed."
+  },
+  "failure": "/mnt/mydata/.fft64/physical_cache/12ce6fe809c52c3e576fdf7d/dc.log\nrivers are three-state. (ELAB-366)\nError:  /mnt/mydata/.fft64/physical_cache/12ce6fe809c52c3e576fdf7d/staged.sv:146: Net 'p1r_reg[5]' or a directly connected net is driven by more than one source, and not all drivers are three-state. (ELAB-366)\nError:  /mnt/mydata/.fft64/physical_cache/12ce6fe809c52c3e576fdf7d/staged.sv:146: Net 'p1r_reg[4]' or a directly connected net is driven by more than one source, and not all drivers are three-state. (ELAB-366)\nError:  /mnt/mydata/.fft64/physical_cache/12ce6fe809c52c3e576fdf7d/staged.sv:146: Net 'p1r_reg[3]' or a directly connected net is driven by more than one source, and not all drivers are three-state. (ELAB-366)\n*** Presto compilation terminated with 19 errors. ***\nError: Can't find design 'fft64_top'. (UID-109)\nError: Current design is not defined. (UID-4)\nError: Current design is not defined. (UID-4)\nError: Current design is not defined. (UID-4)\nError: Current design is not defined. (UID-4)\nError: Can't find port 'clk'. (UID-109)\nError: Value for list 'source_objects' must have 1 elements. (CMD-036)\nError: Current design is not defined. (UID-4)\nError: Can't find clock 'clk'. (UID-109)\nError: Value for list 'object_list' must have 1 elements. (CMD-036)\nError: Current design is not defined. (UID-4)\nError: Can't find clock 'clk'. (UID-109)\nError: Value for list 'clock_list' must have 1 elements. (CMD-036)\nError: Current design is not defined. (UID-4)\nError: Can't find port 'rst'. (UID-109)\nError: Current design is not defined. (UID-4)\nError: Can't find port 'in_valid'. (UID-109)\nError: Current design is not defined. (UID-4)\nError: Can't find port 'frame_start'. (UID-109)\nError: Current design is not defined. (UID-4)\nError: Can't find ports matching 'in_re*'. (UID-109)\nError: Current design is not defined. (UID-4)\nError: Can't find ports matching 'in_im*'. (UID-109)\nError: Current design is not defined. (UID-4)\nError: Can't find clock 'clk'. (UID-109)\nError: Value for list '-clock' must have 1 elements. (CMD-036)\nError: Value for list 'port_pin_list' must have 1 elements. (CMD-036)\nError: Current design is not defined. (UID-4)\nError: Can't find port 'rst'. (UID-109)\nError: Current design is not defined. (UID-4)\nError: Can't find port 'in_valid'. (UID-109)\nError: Current design is not defined. (UID-4)\nError: Can't find port 'frame_start'. (UID-109)\nError: Current design is not defined. (UID-4)\nError: Can't find ports matching 'in_re*'. (UID-109)\nError: Current design is not defined. (UID-4)\nError: Can't find ports matching 'in_im*'. (UID-109)\nError: Value for list 'port_list' must have 1 elements. (CMD-036)\nError: Current design is not defined. (UID-4)\nError: Current design is not defined. (UID-4)\nError: Can't find clock 'clk'. (UID-109)\nError: Value for list '-clock' must have 1 elements. (CMD-036)\nError: Value for list 'port_pin_list' must have 1 elements. (CMD-036)\nError: Current design is not defined. (UID-4)\nError: Value for list 'objects' must have 1 elements. (CMD-036)\nError: Current design is not defined. (UID-4)\nError: Can't find port 'rst'. (UID-109)\nError: Value for list '-from' must have 1 elements. (CMD-036)\nError: Current design is not defined. (UID-4)\nError: Current design is not defined. (UID-4)\nError: Can't find clock 'clk'. (UID-109)\nError: Value for list '<clock_list>' must have 1 elements. (CMD-036)\nError: Current design is not defined. (UID-4)\nError: Current design is not defined. (UID-4)\nError: Current design is not defined. (UID-4)\nError: Can't find port 'clk'. (UID-109)\nError: Value for list '<object_list>' must have 1 elements. (CMD-036)\nError: Current design is not defined. (UID-4)\nError: Current design is not defined. (UID-4)\nError: Current design is not defined. (UID-4)\nError: Current design is not defined. (UID-4)\nError: Can't find objects matching '*'. (UID-109)\nTASK_FATAL: No finite positive mapped cell area\n\nMemory usage for main task 181 Mbytes.\nMemory usage for this session 181 Mbytes.\nCPU usage for this session 1 seconds ( 0.00 hours ).\n\nThank you...\n"
+}

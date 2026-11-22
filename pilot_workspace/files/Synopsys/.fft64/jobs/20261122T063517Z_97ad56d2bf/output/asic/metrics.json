@@ -1,0 +1,24 @@
+{
+  "area_um2": 2662.24968,
+  "register_area_um2": 1030.2228,
+  "cells": 23071,
+  "area_method": "sum_mapped_leaf_library_cell_area",
+  "flow": "PrimeTime ideal-interconnect pre-layout; fixed-target setup/hold only; Fmax requires scan",
+  "worst_setup_slack_ns": 7.532259277,
+  "worst_hold_slack_ns": 0.045530891,
+  "fixed_clock_slack_period_estimate_ns": 2.467740723,
+  "clock_period_ns": 10.0,
+  "setup_uncertainty_ns": 0.1,
+  "timing_pass": true,
+  "source_sha256": "5c68140a8b2d79bceb7220ce233adf11f7927a5d159d0659285c50aeb48252a0",
+  "mapped_sha256": "916044a3d06ea4a3a26d4a872f95a587e0f912df19bbd82c9e801fdc54cf7518",
+  "implementation_mode": "default_mapping",
+  "imported_sha256": null,
+  "mapping_wall_seconds": 119.44921447802335,
+  "library_hashes": [
+    "3d1150ebb5710daf06cdfd00475a74a07a8a2cc4e5bcef43ba1ae776689528b4",
+    "dbea4f685da2a35998bbe687df913ff3e6d0a728283525c19a59e7a07e5c692f"
+  ],
+  "physical_flow_id": "3d3b49262ff49043d1aecb61f841ef56f855357a34af424106c9278db559e992",
+  "formal_status": "NOT_REQUESTED; mapped simulation still mandatory"
+}

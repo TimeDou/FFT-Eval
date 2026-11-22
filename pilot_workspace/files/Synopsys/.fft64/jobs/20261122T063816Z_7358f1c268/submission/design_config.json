@@ -1,0 +1,6 @@
+{
+  "top": "fft64_top",
+  "rtl": ["rtl/fft64_top.v", "rtl/cmul3.v", "rtl/twiddle_gen.v"],
+  "frame_ii_cycles": 320,
+  "notes": "frame_ii_cycles is only a scheduling hint; measured capacity governs scoring. Folded in-place radix-4 DIT, 64x44b 2R2W register file, 3 time-shared 3-multiplier complex multipliers, 22-bit Q15 data, 12-bit Q10 twiddles."
+}

@@ -5,6 +5,7 @@
 ## Goal and constraints
 
 - Task/profile, clock and numerical specification:
+- Public score weights, nonlinear normalization and numeric anchors:
 - Candidate architectures and hypotheses (at least two):
 - Selected RTL files and baseline measurement/backend:
 
@@ -25,6 +26,8 @@
 
 - Candidate ID, RTL source hash and backend:
 - Worst-frame SQNR, full mapped area, verified II, certified period, worst first/last output:
+- Valid public component scores, weighted contributions and combined architecture score:
+- Scoring scope and any measurements that remain incomplete:
 - Which competitor(s) were considered and why this design was selected:
 
 ## Next action or stopping criterion

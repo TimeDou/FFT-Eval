@@ -76,7 +76,7 @@ Public construction and final measurement have different roles:
 | Independent import | Evaluator reads the structural netlist with the supplied library | Legal-cell checks and a canonical representation of the same mapped circuit |
 | Hardware measurement | Evaluator counts cells and applies its own timing constraints | Complete mapped area and setup/hold results |
 | Behavioral verification | Evaluator compares RTL and mapped transactions on representative inputs | Output values, valid/start cycles, reset recovery and selected-II confirmation |
-| Scoring | Evaluator combines validated measurements with frozen calibration | Feasibility and, when calibrated, continuous hardware score |
+| Scoring | Evaluator combines validated measurements with public numeric scales | Public component/combined feedback; independent hidden acceptance |
 
 The editable files are flow/dc_opt.tcl, flow/yosys_opt.ys and flow/abc_opt.script. DC begins after elaboration, link and initial constraint loading; Yosys begins after reading the RTL and libraries. The wrapper completes structural export. A candidate may use a different synthesis target to guide optimization, but final library and STA constraints are chosen by the evaluator.
 
@@ -132,33 +132,33 @@ Current QoR is pre-layout mapped area and ideal-interconnect STA. Optional Innov
 
 ## 8. Feasibility, calibration and hardware-quality score
 
-Feasibility and optimization quality are separate. A demonstrated failure of a mandatory numerical, RTL, protocol, timing or mapped-netlist requirement is a design violation. A feasible design can receive a score of zero; there is no minimum area reduction or minimum quality score required for resolved=true.
+Feasibility and optimization quality are separate. A demonstrated failure of a mandatory numerical, RTL, protocol, timing or mapped-netlist requirement is a design violation. Feasibility has no minimum area reduction or quality-score threshold; a very low quality score does not invalidate a design that passes the mandatory requirements.
 
-For a feasible design, normalize measured area, throughput and first-output latency to [0,1]:
-
-$$
-S_A=\operatorname{clip}\!\left(\frac{A_{\mathrm{ref}}-A}{A_{\mathrm{ref}}-A_{\mathrm{goal}}},0,1\right),\qquad A_{\mathrm{goal}}=0.5A_{\mathrm{ref}}.
-$$
+Before an Agent starts, publish the complete normalization functions and numeric values in profiles/policy.json. The area ideal is 500 um2 and its half-credit anchor is 4000 um2. Mandatory throughput is 260416.66666666666 FFT/s; its ideal is 62500000 FFT/s, the II=64, 0.25 ns scan bound. The ideal/maximum first-output latencies are 63/300 cycles.
 
 $$
-S_T=\operatorname{clip}\!\left(\frac{T_{\mathrm{eff}}-T_{\mathrm{req}}}{T_{\mathrm{goal}}-T_{\mathrm{req}}},0,1\right),\qquad T_{\mathrm{req}}=\frac{10^9}{384\cdot 10}.
+S_A=\operatorname{clip}\left(\frac{3500}{A+3000},0,1\right).
 $$
 
 $$
-S_L=\operatorname{clip}\!\left(\frac{300-L}{300-L_{\mathrm{goal}}},0,1\right).
+S_T=\operatorname{clip}\left(\frac{\ln(T_{eff}/T_{min})}{\ln(240)},0,1\right).
 $$
 
-The general weighted hardware objective is:
+$$
+S_L=\operatorname{clip}\left(\frac{300-L}{237},0,1\right).
+$$
+
+The weighted hardware objective is:
 
 $$
 S=\alpha S_A+\beta S_T+\gamma S_L,\qquad \alpha+\beta+\gamma=1.
 $$
 
-The default architecture profile fixes alpha=0.60, beta=0.30 and gamma=0.10. The independent area diagnostic profile uses area alone. These profiles have distinct calibration and cannot be mixed in one ranking. The weights are not retuned after seeing evaluated Agent results.
+The architecture profile fixes alpha=0.60, beta=0.30 and gamma=0.10. The separate area diagnostic uses area alone. The rational area term remains informative above a reference circuit's area; logarithmic throughput rewards multiplicative gains up to the declared measurement ceiling. A score of one requires simultaneously meeting all ideal targets, rather than merely surpassing an ordinary baseline. The benchmark makes no claim that this ideal combination is realizable.
 
-Two accurate fixed-point designs, R2SDF and folded radix-2, are measured with the default mapping recipe before scoring. The area reference is their smaller validated area. The throughput goal is twice their higher verified throughput. The latency goal is the greater of half their shorter maximum first-output latency and 63 cycles. These component-wise anchors form an envelope; they need not be one physical circuit. Candidate synthesis recipes may differ, while the independent measurement method remains common.
+A complete public evaluation exposes measured PPA, component scores, weighted contributions and the combined score. It labels this feedback public_preview, with official_score=false. Agents should use that feedback to revise architecture, precision and synthesis choices. Quick checks do not provide a complete hardware score.
 
-Calibration binds the selected backend, libraries, tools, protocol, measurement scripts and policy. Changes require a matching calibration rather than silently applying an old denominator. Completed experiments retain their original source and policy identities. Report, policy and source hashes are consistency records; freezing those bytes is not a substitute for verifying their technical content.
+The accurate R2SDF and folded radix-2 implementations validate the toolchain and hidden protocol. Their measured performance does not secretly determine the score denominator. Private calibration binds tools, libraries, numerical runtime, protocol and policy to the public normalization parameters. Final hidden acceptance follows an independent path; hidden inputs, private validation metadata and reference RTL do not enter the Agent workspace. Freeze all functions, values, test conditions and budgets before starting an evaluated run.
 
 ## 9. Outcomes and reproducible evidence
 
@@ -166,7 +166,7 @@ The platform result has exactly resolved, score and reason. Detailed internal re
 
 | Outcome | Meaning | Ranking treatment |
 |---|---|---|
-| Feasible | All mandatory hardware checks completed and passed | Score is valid only with matching frozen calibration |
+| Feasible | All mandatory hardware checks completed and passed | Public preview gives valid feedback; official hidden grading also requires matching validation |
 | DESIGN_INVALID | Observed violation attributable to the design | Valid zero score |
 | UNSCORED_INFRASTRUCTURE | Missing tools/calibration, license fault, timeout, crash or incomplete measurement | Exclude and diagnose; not a measured zero-performance design |
 | INCOMPLETE | Quick-only or unfinished evaluation | No final score |

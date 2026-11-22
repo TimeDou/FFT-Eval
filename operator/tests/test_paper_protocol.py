@@ -21,9 +21,10 @@ class PaperProtocolTests(unittest.TestCase):
         a,_=evaluation_frames(1);b,_=evaluation_frames(2)
         self.assertFalse(np.array_equal(a[:1024],b[:1024]))
 
-    def test_registration_binds_the_report_source_builder_and_policy(self):
+    def test_registration_binds_the_specification_report_builder_and_policy(self):
         record=json.loads((ROOT/'fft64_benchmark/profiles/PRE_REGISTERED.json').read_text())
         for field,path in [('policy_sha256','fft64_benchmark/profiles/policy.json'),
+                           ('specification_sha256','fft64_benchmark/SPEC.json'),
                            ('source_document_sha256','docs/FFT64-Quant.pdf'),
                            ('report_source_sha256','docs/FFT64-Quant.md'),
                            ('report_builder_sha256','docs/build_report.py')]:

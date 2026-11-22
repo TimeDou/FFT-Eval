@@ -45,7 +45,9 @@ bash run_synopsys_debug.sh submission --profile area --out runs/area_a
 bash run_synopsys_debug.sh submission --profile architecture --out runs/arch_a
 ```
 
-这些命令将当前提交快照复制到共享挂载内的独立工作目录，并通过 SSH 在容器中执行公开评价。结果链接与日志可在宿主机查看。未加载匹配校准时，工具仍能提供测量反馈，但不会产生正式有效的分数。
+这些命令将当前提交快照复制到共享挂载内的独立工作目录，并通过 SSH 在容器中执行公开评价。结果链接与日志可在宿主机查看。
+
+完整公开 `architecture` 评测无需私有校准，即可按公开公式返回 `grade.components`、`grade.weighted_components` 和 `grade.score`。有效预览标记为 `score_valid=true`、`scoring_scope=public_preview`、`official_score=false`，可直接用于比较候选。`--quick` 或未完成的测量没有完整硬件分数。最终隐藏评分使用相同的公开归一化参数，另外要求匹配的平台/协议校准和独立隐藏测试；准确参考设计不改变评分标尺。
 
 只在确认输入快照、工具及选项未改变时恢复任务：
 
@@ -63,6 +65,7 @@ bash build_implementation.sh submission --init-flow
 # 修改 submission/flow/dc_opt.tcl
 bash synopsys.sh build submission --export --out runs/custom_build
 bash run_synopsys_debug.sh submission --profile area --out runs/custom_check
+bash run_synopsys_debug.sh submission --profile architecture --out runs/custom_architecture
 ```
 
 `build` 在**公开开发容器**执行 Agent 的优化 recipe，导出 `submission/implementation/mapped.v` 和 manifest；后续公开或隐藏评价只导入网表并独立计面积、STA、验证行为，**隐藏评分不会执行提交的优化脚本**。Yosys/ABC 与可选未评分 P&R 的用法见 [OPTIMIZATION.md](OPTIMIZATION.md)。

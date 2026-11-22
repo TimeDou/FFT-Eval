@@ -47,6 +47,6 @@ Agents can explore synthesis recipes and export a flattened ASAP7 netlist as `su
 
 ## Feasibility and scoring
 
-`resolved=true` means that every mandatory FFT, SQNR, reset, protocol, 384-cycle service, timing and representative RTL/mapped check passes. The default `architecture` score combines complete area (60%), measured sustainable throughput (30%) and maximum observed first-output latency (10%). A feasible design may receive zero score; SQNR above 50 dB gives no extra reward. The `area` profile is a separate diagnostic and needs its own calibration.
+`resolved=true` means that every mandatory FFT, SQNR, reset, protocol, 384-cycle service, timing and representative RTL/mapped check passes. The default `architecture` score combines complete area (60%), measured sustainable throughput (30%) and maximum observed first-output latency (10%). Feasibility has no minimum score threshold; SQNR above 50 dB gives no extra reward. All functions and numerical scales are public in SCORING.md and profiles/policy.json. Complete public evaluation returns component and combined preview scores directly. The area profile is a separate diagnostic.
 
 Submit `rtl/`, `DESIGN_PLAN.md` and `measurements.csv`, with an optional `design_config.json`. If using custom synthesis, also keep `flow/` and `implementation/`. The public repository contains neither hidden data nor private calibration. Backend identity, tool/library version and scoring profile must be frozen for comparable measurements.

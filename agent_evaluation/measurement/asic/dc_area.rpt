@@ -3,7 +3,7 @@
 Report : area
 Design : fft64_top
 Version: L-2016.03-SP1
-Date   : Sun Nov 22 14:57:39 2026
+Date   : Sun Nov 22 21:29:30 2026
 ****************************************
 
 Information: Updating design information... (UID-85)
@@ -14,33 +14,33 @@ Library(s) Used:
     asap7sc7p5t_SEQ_RVT_TT_nldm_220123 (File: /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db)
 
 Number of ports:                           86
-Number of nets:                          9785
-Number of cells:                         9749
-Number of combinational cells:           7574
-Number of sequential cells:              2175
+Number of nets:                         23876
+Number of cells:                        23840
+Number of combinational cells:          18516
+Number of sequential cells:              5324
 Number of macros/black boxes:               0
-Number of buf/inv:                        552
-Number of references:                      67
+Number of buf/inv:                       4759
+Number of references:                      91
 
-Combinational area:                641.286723
-Buf/Inv area:                       25.019280
-Noncombinational area:             634.244556
+Combinational area:               1470.334684
+Buf/Inv area:                      222.607442
+Noncombinational area:            1552.886581
 Macro/Black Box area:                0.000000
 Net Interconnect area:      undefined  (No wire load specified)
 
-Total cell area:                  1275.531279
+Total cell area:                  3023.221266
 Total area:                 undefined
 
 Hierarchical area distribution
 ------------------------------
 
                                   Global cell area          Local cell area
-                                  ------------------  --------------------------- 
-Hierarchical cell                 Absolute   Percent  Combi-    Noncombi-  Black-
-                                  Total      Total    national  national   boxes   Design
---------------------------------  ---------  -------  --------  ---------  ------  ---------
-fft64_top                         1275.5313    100.0  641.2867   634.2446  0.0000  fft64_top
---------------------------------  ---------  -------  --------  ---------  ------  ---------
-Total                                                 641.2867   634.2446  0.0000
+                                  ------------------  ---------------------------- 
+Hierarchical cell                 Absolute   Percent  Combi-     Noncombi-  Black-
+                                  Total      Total    national   national   boxes   Design
+--------------------------------  ---------  -------  ---------  ---------  ------  ---------
+fft64_top                         3023.2213    100.0  1470.3347  1552.8866  0.0000  fft64_top
+--------------------------------  ---------  -------  ---------  ---------  ------  ---------
+Total                                                 1470.3347  1552.8866  0.0000
 
 1

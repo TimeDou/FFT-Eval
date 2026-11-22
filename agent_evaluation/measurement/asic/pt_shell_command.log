@@ -1,6 +1,6 @@
 #@ # 
 #@ # Running pt_shell Version M-2016.12-SP1 for linux64 -- Jan 12, 2017
-#@ # Date:   Sun Nov 22 14:58:00 2026
+#@ # Date:   Sun Nov 22 21:29:51 2026
 #@ # Run by: root@lizhen
 #@ 
 
@@ -872,11 +872,11 @@ source /usr/synopsys/pt-M-2016.12-SP1/admin/setup/.synopsys_pt.setup
 #@ }
 #@ # -- End source /usr/synopsys/pt-M-2016.12-SP1/auxx/tcllib/lib/itcl4.0.2/itcl.tcl
 
-source -echo -verbose /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/timing_pt.tcl
-#@ # -- Starting source /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/timing_pt.tcl
+source -echo -verbose /mnt/mydata/agent_reviews/final_score_aware_20261122_132636/engine_private/fft64_benchmark/flow/timing_pt.tcl
+#@ # -- Starting source /mnt/mydata/agent_reviews/final_score_aware_20261122_132636/engine_private/fft64_benchmark/flow/timing_pt.tcl
 
 #@ source [file join [file dirname [info script]] paths.tcl]
-#@ # -- Starting source /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/paths.tcl
+#@ # -- Starting source /mnt/mydata/agent_reviews/final_score_aware_20261122_132636/engine_private/fft64_benchmark/flow/paths.tcl
 
 #@ # Shared, fixed by the task author; candidates cannot supply timing commands.
 #@ set TASK_ROOT [file normalize [file join [file dirname [info script]] ..]]
@@ -888,14 +888,14 @@ source -echo -verbose /mnt/mydata/agent_reviews/review_20261122_065445/engine/ff
 #@ file mkdir $WORK
 #@ set DBLIST [list [file join $TECH_DIR db comb_rvt_tt.db] [file join $TECH_DIR db seq_rvt_tt.db]]
 #@ foreach db $DBLIST {if {![file exists $db]} {error "Missing compiled ASAP7 DB: $db; run prepare_libraries first"}}
-#@ # -- End source /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/paths.tcl
+#@ # -- End source /mnt/mydata/agent_reviews/final_score_aware_20261122_132636/engine_private/fft64_benchmark/flow/paths.tcl
 
 #@ set_app_var search_path [concat [get_app_var search_path] [list $WORK [file join $TECH_DIR db]]]
 #@ set_app_var link_path [concat [list *] $DBLIST]
 #@ read_verilog [file join $WORK mapped.v]
 #@ link_design fft64_top
 #@ source [file join $TASK_ROOT flow constraints.sdc]
-#@ # -- Starting source /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/constraints.sdc
+#@ # -- Starting source /mnt/mydata/agent_reviews/final_score_aware_20261122_132636/engine_private/fft64_benchmark/flow/constraints.sdc
 
 #@ # ASAP7 library native time unit is 1ps, capacitance is 1fF.
 #@ create_clock -name clk -period 10000 [get_ports clk]
@@ -908,7 +908,7 @@ source -echo -verbose /mnt/mydata/agent_reviews/review_20261122_065445/engine/ff
 #@ # Reset must work in simulation. Performance rating excludes reset switching;
 #@ # reset is released at least two full cycles before the first input packet.
 #@ set_false_path -from [get_ports rst]
-#@ # -- End source /mnt/mydata/agent_reviews/review_20261122_065445/engine/fft64_benchmark/flow/constraints.sdc
+#@ # -- End source /mnt/mydata/agent_reviews/final_score_aware_20261122_132636/engine_private/fft64_benchmark/flow/constraints.sdc
 
 #@ update_timing
 #@ redirect [file join $WORK pt_units.rpt] {report_units}

@@ -1,38 +1,39 @@
-# Codex-GPT-6.1-Sol-Max: verified FFT64 submission
+# Codex-GPT-6.1-Sol-Max: 本轮最终 FFT64 提交
 
-The original final submission is in [submission/](submission/). Independent private evaluation passed numerical, protocol, mandatory continuous service, timing and representative RTL/mapped checks. This is a measured result of one Agent run, not a model-wide capability claim.
+原样提交位于 [submission/](submission/)。本轮独立隐藏评测通过；对应电路和综合 recipe 未由核验者修改。以下是一次运行的实测设计结果，不是模型总体能力结论。
 
-| Measurement | Result |
+| 指标 | 本轮实测 |
 |---|---:|
-| Resolved / score valid | true / true |
-| Frozen architecture score | 0.917385665 |
-| Complete mapped cell area | 1275.53130 μm² |
-| Sequential cell area | 634.24458 μm² |
-| Certified passing clock period | 1.506835937500 ns |
-| Certified frequency | 663.642255 MHz |
-| Minimum verified frame II | 258 cycles |
-| Effective throughput at certified clock | 2572256.804 FFT/s |
-| Maximum first-output / completion latency | 194 / 257 cycles |
-| First-output latency at certified clock | 292.326172 ns |
-| Minimum hidden per-frame SQNR | 54.809096 dB |
+| 基本规格 / 有效正式评分 | PASS / true |
+| 综合硬件分数 | **0.672667356** |
+| 完整 mapped area | 3023.221320 μm² |
+| 顺序 / 组合单元面积 | 1551.982680 / 1471.238640 μm² |
+| 认证周期 / 频率 | 0.630859375000 ns / 1585.139319 MHz |
+| 最小连续帧验证 II | 64 cycles/frame |
+| 认证时钟的持续能力 | 24767801.857585 FFT/s |
+| 最大首输出 / 整帧完成 | 123 / 186 cycles |
+| 最低隐藏逐帧 SQNR | 52.757033079 dB |
+| 面积 / 吞吐 / 延迟分项 | 0.581084409 / 0.831110556 / 0.746835443 |
+| 用户提供对话用时 | 37m33s (2253 s) |
 
-Technology: ASAP7 RVT/TT. Measurement: native VCS/DC/PrimeTime, pre-layout cell area and ideal-interconnect STA. All designs have 64 points and external input/output parallelism 1. The mandatory clock is 10 ns; scoring throughput uses an independent fixed-netlist clock scan. Latency scoring uses the common 10 ns clock, rather than rewarding frequency twice.
+FFT64，外部 P=1，ASAP7 RVT/TT，VCS/DC/PrimeTime，布局前完整 cell area 与 ideal-interconnect STA。强制时钟 10 ns、逐非零帧 SQNR≥50 dB；更高 SQNR 不奖励分数。额外的频率扫描始终使用同一网表。首输出延迟分项使用共同 10 ns 时钟。
 
-Private numerical coverage is 8,192 independent random nonzero frames plus 192 directed cases. Each of the 321 integer intervals 64–384 was exercised with 1,024 consecutive RTL frames. The selected interval passed a representative mapped subset with gap and reset probes from three gate initial states. These are finite observed checks, not a formal worst-case error or full sequential-equivalence guarantee.
+隐藏数值测试为 8192 个独立随机非零帧及 192 个定向帧。321 个整数 II（64–384）各验证 1024 连续 RTL 帧，并对所选最小 II 做代表性 mapped 检查；包含复位、间隙及 0/1/20261121 三种门级初始状态。结果不构成 formal worst-case error guarantee，也没有 post-route 或可靠功耗结论。
 
-The private evaluator imported any supplied mapped netlist and independently measured it. It did not execute Agent optimization scripts. The source, mapped artifact and manifest content are checked, without claiming cryptographically trusted build attestation.
+- [完整原生 measurement/result.json](agent_evaluation/measurement/result.json) 与 [grade.json](agent_evaluation/grade.json)。
+- [全部 II 观测](agent_evaluation/measurement/throughput/long_intervals/probe_results.json)。
+- [真实隐藏输入/输出与 replay 说明](agent_evaluation/numeric_evidence/observation.json)。
+- [完整可见聊天 JSON](conversation/conversation.json)、[计时及日志来源](conversation/metadata.json)、[初始提示](conversation/initial_prompt.txt)。
+- [Agent 原始设计说明](submission/DESIGN_PLAN.md)、[公开探索记录](runs/)、[对应受测快照与探索源码](public_evidence/)。
+- [本轮身份与时长](run_metadata.json)、[文件哈希](CURRENT_RUN_MANIFEST.json)。
+- [先前 pilot 原样存档](archive/pilot_before_score_aware_restart/)，旧分数不与本轮混用。
 
-- Final grade: [agent_evaluation/grade.json](agent_evaluation/grade.json).
-- Original final measurement: [measurement/result.json](agent_evaluation/measurement/result.json).
-- Original public evidence, kept separate: [public_evidence/](agent_evaluation/public_evidence/).
-- Actual hidden numerical observations: [numeric_evidence/](agent_evaluation/numeric_evidence/).
-- Full interval results: [probe_results.json](agent_evaluation/measurement/throughput/long_intervals/probe_results.json).
-- Frozen calibration and provenance: [calibration.json](agent_evaluation/calibration.json), [provenance.json](agent_evaluation/provenance.json).
+对话导出包括可见消息及工具调用/结果，省略内部推理和系统上下文。用户提供的用时与日志的消息区间、平台任务计时分别保留；6.2 的平台任务计时为 2247.314 s，与用户给出的 2235 s 相差 12.314 s。硬件评分不含对话或 EDA 用时。
 
-To verify the archive and replay its numerical outputs and score without EDA tools, run from the repository root with NumPy installed:
+在仓库根目录安装 NumPy 后可执行以下证据复核；该命令重新生成输入并重算已保存输出的质量和评分，不重新运行商业 EDA：
 
 ```bash
-python3 agent_evaluation/verify_archive.py agent_evaluation
+python3 agent_evaluation/verify_evidence.py
 ```
 
-The verifier does not rerun VCS/DC/PrimeTime. Score replay permits an absolute 1e-14 tolerance for last-bit floating-point runtime differences; the original native score is authoritative. See the companion `validation/three-agent-comparison` branch for the comparison, normalization limitations and design-reasoning review. Other prior result branches are retained unchanged.
+跨设计比较见私有仓库分支 `validation/final-agent-comparison` 的 `validation/final_agent_comparison/RESULTS.md`。后续模型结果、总体模型结论和最终排名仍留空。

@@ -1,0 +1,46 @@
+ 
+****************************************
+Report : area
+Design : fft64_top
+Version: L-2016.03-SP1
+Date   : Sun Nov 22 18:55:24 2026
+****************************************
+
+Information: Updating design information... (UID-85)
+Warning: Design 'fft64_top' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+Library(s) Used:
+
+    asap7sc7p5t_ALL_RVT_TT_nldm_211120 (File: /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db)
+    asap7sc7p5t_SEQ_RVT_TT_nldm_220123 (File: /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db)
+
+Number of ports:                           86
+Number of nets:                         18547
+Number of cells:                        18511
+Number of combinational cells:          15758
+Number of sequential cells:              2753
+Number of macros/black boxes:               0
+Number of buf/inv:                        981
+Number of references:                      52
+
+Combinational area:               1306.207626
+Buf/Inv area:                       44.323201
+Noncombinational area:             802.774770
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (No wire load specified)
+
+Total cell area:                  2108.982395
+Total area:                 undefined
+
+Hierarchical area distribution
+------------------------------
+
+                                  Global cell area          Local cell area
+                                  ------------------  ---------------------------- 
+Hierarchical cell                 Absolute   Percent  Combi-     Noncombi-  Black-
+                                  Total      Total    national   national   boxes   Design
+--------------------------------  ---------  -------  ---------  ---------  ------  ---------
+fft64_top                         2108.9824    100.0  1306.2076   802.7748  0.0000  fft64_top
+--------------------------------  ---------  -------  ---------  ---------  ------  ---------
+Total                                                 1306.2076   802.7748  0.0000
+
+1

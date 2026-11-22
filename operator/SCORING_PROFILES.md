@@ -6,7 +6,7 @@ The default `architecture` profile uses mapped area (60%), verified effective th
 
 ## Calibration
 
-Before evaluating Agents, measure accurate R2SDF and folded radix-2 baselines using the same backend, default mapping recipe, library, constraints, protocol and policy. The reference area is the smaller baseline mapped area. The throughput reference is mandatory II=384 service at 10 ns; its goal is twice the higher verified throughput of the accurate baselines. The latency reference is the 300-cycle first-output deadline; its goal is the larger of half the shorter accurate-baseline latency and 63 cycles. These independent anchors do **not** necessarily correspond to one circuit.
+Before evaluating Agents, measure accurate R2SDF and folded radix-2 baselines using the same backend, default mapping recipe, library, constraints, protocol and policy. These measurements validate the platform and protocol; they do not change the public score scales. Area uses 500 um2 ideal and 4000 um2 half-credit anchors; throughput uses 260416.66666666666 to 62500000 FFT/s on a logarithmic scale; latency uses the 300-to-63-cycle interval. The componentwise ideal combination is demanding and need not represent one realizable circuit. Public previews use these exact scales without private calibration; official hidden grading binds the same scales to private validation metadata.
 
 For each candidate,
 

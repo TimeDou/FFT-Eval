@@ -42,6 +42,34 @@ def profile_policy(profile):
     return POLICY['profiles'][profile]
 
 
+def public_parameters():
+    """All arithmetic score parameters are public and independent of inputs."""
+    values=dict(POLICY['public_normalization'])
+    for name,value in values.items():positive(value,name)
+    if not values['area_half_credit_um2']>values['area_ideal_um2']:
+        raise ValueError('Area half-credit anchor must exceed the ideal area')
+    if not values['throughput_ideal_ffts_per_second']>values['throughput_min_ffts_per_second']:
+        raise ValueError('Ideal throughput must exceed mandatory throughput')
+    if not values['first_output_max_cycles']>values['first_output_ideal_cycles']:
+        raise ValueError('Latency ceiling must exceed ideal latency')
+    return values
+
+
+def component_scores(measured,profile):
+    """Smooth area feedback and logarithmic throughput over the measured range."""
+    p=public_parameters();area=positive(measured['area_um2'],'area')
+    ideal=p['area_ideal_um2'];half=p['area_half_credit_um2']
+    area_score=1.0 if area<=ideal else (half-ideal)/(area+half-2*ideal)
+    values=dict(area=area_score,throughput=0.0,latency=0.0)
+    if profile=='architecture':
+        t=positive(measured['effective_throughput_ffts_per_second'],'effective throughput')
+        values['throughput']=normalized(math.log(t),math.log(p['throughput_min_ffts_per_second']),
+                                       math.log(p['throughput_ideal_ffts_per_second']),False)
+        values['latency']=normalized(measured['first_output_cycles'],p['first_output_max_cycles'],
+                                     p['first_output_ideal_cycles'],True)
+    return values
+
+
 def hardware_feasible(result):
     passed=bool(result.get('status')=='COMPLETE'
                 and result.get('quality',{}).get('feasible',False)
@@ -112,29 +140,24 @@ def make_calibration(results,profile='area',**metadata):
     if contexts[0] is not None:metadata['measurement_context']=contexts[0]
     measured={name:performance(r,profile)for name,r in results.items()}
     best_area=min(measured,key=lambda n:measured[n]['area_um2'])
-    area_best=measured[best_area]['area_um2']
+    area_best=measured[best_area]['area_um2'];p=public_parameters()
     first_result=next(iter(results.values()))
-    references=dict(area_um2=area_best);targets=dict(area_um2=area_best*policy['targets']['area_ratio_to_best_accurate'])
-    sources=dict(area_reference=best_area,area_target=best_area)
+    references=dict(area_um2=p['area_half_credit_um2']);targets=dict(area_um2=p['area_ideal_um2'])
+    sources=dict(area_reference='public_half_credit_anchor',area_target='public_ideal_anchor')
     if profile=='architecture':
-        worst_area=max(measured,key=lambda n:measured[n]['area_um2'])
-        slowest=min(measured,key=lambda n:measured[n]['effective_throughput_ffts_per_second'])
-        fastest=max(measured,key=lambda n:measured[n]['effective_throughput_ffts_per_second'])
-        longest=max(measured,key=lambda n:measured[n]['first_output_latency_ns'])
-        shortest=min(measured,key=lambda n:measured[n]['first_output_latency_ns'])
-        references=dict(area_um2=area_best,
-                        throughput_ffts_per_second=1e9/(384*POLICY['shared_spec']['clock_period_ns']),
-                        first_output_latency_ns=300*POLICY['shared_spec']['clock_period_ns'])
-        targets.update(throughput_ffts_per_second=measured[fastest]['effective_throughput_ffts_per_second']*policy['targets']['throughput_ratio_to_best_accurate'],
-                       first_output_latency_ns=max(measured[shortest]['first_output_latency_ns']*policy['targets']['latency_ratio_to_best_accurate'],
-                           policy['targets']['latency_physical_floor_cycles']*POLICY['shared_spec']['clock_period_ns']))
-        sources.update(area_reference=best_area,throughput_reference='mandatory_384_cycle_service',throughput_target=fastest,
-                       latency_reference='mandatory_300_cycle_deadline',latency_target=shortest)
+        clock=POLICY['shared_spec']['clock_period_ns']
+        references.update(throughput_ffts_per_second=p['throughput_min_ffts_per_second'],
+                          first_output_latency_ns=p['first_output_max_cycles']*clock)
+        targets.update(throughput_ffts_per_second=p['throughput_ideal_ffts_per_second'],
+                       first_output_latency_ns=p['first_output_ideal_cycles']*clock)
+        sources.update(throughput_reference='public_mandatory_service',throughput_target='public_scan_ceiling',
+                       latency_reference='public_mandatory_deadline',latency_target='public_serial_input_bound')
     return dict(metadata,backend=first_result['backend'],flow_id=first_result['flow_id'],profile=profile,
                 scoring_policy_id=SCORING_ID,policy_sha256=POLICY_SHA256,weights=policy['weights'],
                 references=references,targets=targets,anchor_sources=sources,baseline_performance=measured,
-                reference_area_um2=references['area_um2'],reference_design=best_area if profile=='area'else'paper_contract_and_accurate_calibration',
-                normalization='frozen targets relative to accurate baselines only; no candidate adaptation')
+                reference_area_um2=references['area_um2'],reference_design='public_physical_anchors',
+                accurate_reference_area_um2=area_best,normalization_parameters=p,
+                normalization='public fixed rational-area, logarithmic-throughput and linear-latency functions; accurate measurements validate the platform')
 
 
 def normalized(value,reference,target,lower_is_better):
@@ -151,29 +174,33 @@ def score_result(result,calibration=None):
     outcome=evaluation_outcome(result)
     grade=dict(resolved=feasible,feasible=feasible,score=0.0,
                score_valid=outcome=='DESIGN_INVALID',evaluation_outcome=outcome,
-               scoring_policy_id=SCORING_ID,profile=profile,policy_sha256=POLICY_SHA256,area_ratio=None)
+               scoring_policy_id=SCORING_ID,profile=profile,policy_sha256=POLICY_SHA256,area_ratio=None,
+               scoring_scope='public_preview'if result.get('audience')=='public'else'hidden_evaluation',
+               official_score=bool(outcome=='DESIGN_INVALID'and result.get('audience')=='hidden'))
     if outcome=='UNSCORED_INFRASTRUCTURE':return dict(grade,reason='UNSCORED_INFRASTRUCTURE: '+result.get('failure','Measurement could not be completed.'))
     if result.get('status')=='QUICK_CHECK_PASSED':return dict(grade,reason='INCOMPLETE: Public numerical and sustained protocol checks passed; ASIC/capacity scoring was not requested.')
     if outcome=='INCOMPLETE':return dict(grade,reason='INCOMPLETE: Evaluation evidence is not complete; no final score.')
     if not feasible:return dict(grade,reason='DESIGN_INVALID: A required numerical, protocol, timing or RTL/mapped check failed.')
     try:measured=performance(result,profile)
     except ValueError as exc:return dict(grade,reason=str(exc))
-    if not calibration:return dict(grade,performance=measured,reason='UNSCORED_INFRASTRUCTURE: Hardware checks passed; matching frozen profile calibration is required.')
-    expected=dict(backend=result.get('backend'),flow_id=result.get('flow_id'),profile=profile,
-                  scoring_policy_id=SCORING_ID,policy_sha256=POLICY_SHA256)
-    if any(calibration.get(k)!=v for k,v in expected.items()):
-        return dict(grade,reason='UNSCORED_INFRASTRUCTURE: Calibration belongs to another profile, policy, backend or flow; recalibrate.')
-    if calibration.get('measurement_context')!=result.get('measurement_context'):
-        return dict(grade,reason='UNSCORED_INFRASTRUCTURE: Calibration protocol, numerical runtime or tool identity does not match.')
     policy=profile_policy(profile)
-    if calibration.get('weights')!=policy['weights']:
-        return dict(grade,reason='UNSCORED_INFRASTRUCTURE: Calibration weights do not match the frozen policy.')
-    refs=calibration['references'];targets=calibration['targets']
-    components=dict(area=normalized(measured['area_um2'],refs['area_um2'],targets['area_um2'],True),throughput=0.,latency=0.)
-    if profile=='architecture':
-        components.update(throughput=normalized(measured['effective_throughput_ffts_per_second'],refs['throughput_ffts_per_second'],targets['throughput_ffts_per_second'],False),
-                          latency=normalized(measured['first_output_latency_ns'],refs['first_output_latency_ns'],targets['first_output_latency_ns'],True))
+    preview=result.get('audience')=='public'
+    if not calibration and not preview:
+        return dict(grade,performance=measured,reason='UNSCORED_INFRASTRUCTURE: Hidden grading requires matching platform/protocol validation calibration; public previews use the published score parameters directly.')
+    if calibration:
+        expected=dict(backend=result.get('backend'),flow_id=result.get('flow_id'),profile=profile,
+                      scoring_policy_id=SCORING_ID,policy_sha256=POLICY_SHA256)
+        if any(calibration.get(k)!=v for k,v in expected.items()):
+            return dict(grade,reason='UNSCORED_INFRASTRUCTURE: Calibration belongs to another profile, policy, backend or flow; recalibrate.')
+        if calibration.get('measurement_context')!=result.get('measurement_context'):
+            return dict(grade,reason='UNSCORED_INFRASTRUCTURE: Calibration protocol, numerical runtime or tool identity does not match.')
+        if calibration.get('weights')!=policy['weights'] or calibration.get('normalization_parameters')!=public_parameters():
+            return dict(grade,reason='UNSCORED_INFRASTRUCTURE: Calibration does not match the published weights and numeric normalization.')
+    components=component_scores(measured,profile)
     score=sum(policy['weights'][k]*v for k,v in components.items())
-    return dict(grade,score=float(score),score_valid=True,area_ratio=measured['area_um2']/refs['area_um2'],
-                components=components,weights=policy['weights'],performance=measured,
-                reason='All required profile specifications passed; continuous hardware score has no pass threshold.')
+    return dict(grade,score=float(score),score_valid=True,area_ratio=measured['area_um2']/public_parameters()['area_half_credit_um2'],
+                components=components,weighted_components={k:policy['weights'][k]*v for k,v in components.items()},
+                weights=policy['weights'],performance=measured,normalization_parameters=public_parameters(),
+                scoring_scope='public_preview'if preview else'hidden_evaluation',official_score=not preview,
+                reason=('PUBLIC_PREVIEW: All public hardware checks passed; component scores use the published fixed numeric targets. Final acceptance requires independent hidden evaluation.'if preview else
+                        'All required profile specifications passed; continuous hardware score has no pass threshold.'))

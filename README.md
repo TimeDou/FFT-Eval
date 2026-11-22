@@ -6,7 +6,7 @@
 
 FFT64-Quant requires a correct, unscaled, natural-order 64-point fixed-point complex FFT. Mandatory checks cover per-frame SQNR ≥50 dB, input/output and reset behavior, sustained II=384 service, output latency, 10 ns setup/hold timing and representative RTL/mapped agreement. `resolved` indicates feasibility independently of hardware-quality score. The default `architecture` profile combines area (60%), verified effective throughput (30%) and worst observed first-output latency (10%). The optional `area` profile is a separate diagnostic.
 
-Two accurate fixed-point implementations—R2SDF and folded radix-2—serve as **calibration anchors**, not agent-visible solutions. The float64 FFT of the same quantized input is the distinct numerical oracle. Candidate synthesis recipes may differ from the baseline default recipe, but final evaluation uses the same technology library, timing constraints and independent measurement procedure.
+Two accurate fixed-point implementations—R2SDF and folded radix-2—serve as **platform-validation controls**, not agent-visible solutions. All score functions and numeric anchors are public; complete public previews provide component and combined scores without private calibration. The float64 FFT of the same quantized input is the distinct numerical oracle. Candidate synthesis recipes may differ from the baseline default recipe, but final evaluation uses the same technology library, timing constraints and independent measurement procedure.
 
 ## Operator commands
 

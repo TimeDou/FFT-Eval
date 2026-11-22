@@ -4,11 +4,11 @@ The evaluation rewards the final verified FFT implementation, not the length of 
 
 ## Recommended process
 
-1. **Read the contract.** Inspect `TASK_EN.md` or `TASK_ZH.md`, `SPEC.json` and `INTERFACE.md`. Separate mandatory II=384 service from optional higher throughput.
+1. **Read the contract.** Inspect `TASK_EN.md` or `TASK_ZH.md`, `SPEC.json` and `INTERFACE.md`. Read SCORING.md and every numeric target in profiles/policy.json before choosing an architecture. Optimize 0.60 S_A + 0.30 S_T + 0.10 S_L; separate mandatory II=384 service from optional higher throughput.
 2. **Form competing hypotheses.** Consider at least two FFT architectures with different area, storage, scheduling and throughput characteristics. The [architecture guide](ARCHITECTURE_GUIDE.md) provides options without prescribing a solution.
 3. **Create a working baseline.** Implement synthesizable RTL and pass public functional, protocol and SQNR tests before optimizing area or II.
 4. **Change one meaningful design choice.** Explore a hardware structure, explicit fixed-point quantization rule, or [EDA synthesis recipe](../OPTIMIZATION.md). State the expected effect and the measurement that could disprove it.
-5. **Measure and compare.** Start with quick checks; synthesize and evaluate promising candidates with the same backend and reference policy. Preserve negative experiments when they inform a decision.
+5. **Measure and compare.** Start with quick checks; synthesize and evaluate promising candidates with the same backend and reference policy. Use grade.components, grade.weighted_components and grade.score from complete architecture previews to compare trade-offs. Preserve negative experiments when they inform a decision.
 6. **Revise the plan.** Update `DESIGN_PLAN.md` after material changes and append measured configurations to `measurements.csv`. Distinguish estimates from EDA measurements and partial tests from full scores.
 7. **Freeze the best verified candidate.** Keep RTL, source and recipe hashes, and—when using custom synthesis—the exported structural netlist and manifest. Rebuild after changing RTL or recipe. Do not use private feedback to revise a submitted candidate.
 

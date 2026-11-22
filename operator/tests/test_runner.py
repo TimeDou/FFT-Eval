@@ -88,10 +88,11 @@ class RunnerTests(unittest.TestCase):
     def test_calibration_and_score_use_only_target_measurements(self):
         self.assertEqual(self.execute(self.args()),0)
         reference=read(self.root/'out/calibration.json')
-        self.assertEqual(reference['reference_area_um2'],900.)
+        self.assertEqual(reference['reference_area_um2'],4000.)
+        self.assertEqual(reference['accurate_reference_area_um2'],900.)
         row=read(self.root/'out/summary.json')['submissions'][0]
         self.assertEqual(row['area_um2'],500.)
-        self.assertAlmostEqual(row['score'],(900-500)/(900-450))
+        self.assertAlmostEqual(row['score'],1.)
         self.assertTrue(row['resolved']);self.assertEqual(row['first_output_ns'],2560.)
         self.assertEqual(len(self.calls),3)
         self.assertTrue(all(call['backend']=='commercial'for call in self.calls))
@@ -112,7 +113,7 @@ class RunnerTests(unittest.TestCase):
         self.assertFalse(read(self.root/'out/candidates/agent_A/latest.json')['reused'])
 
     def test_low_score_does_not_fail_a_feasible_design(self):
-        self.candidate_area=10000.
+        self.candidate_area=1000000.
         self.assertEqual(self.execute(self.args()),0)
         row=read(self.root/'out/summary.json')['submissions'][0]
         self.assertTrue(row['resolved']);self.assertLess(row['score'],.1)

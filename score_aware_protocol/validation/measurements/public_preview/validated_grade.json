@@ -1,0 +1,51 @@
+{
+  "resolved": true,
+  "feasible": true,
+  "score": 0.6747783714982017,
+  "score_valid": true,
+  "evaluation_outcome": "FEASIBLE",
+  "scoring_policy_id": "fft64_quant",
+  "profile": "architecture",
+  "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+  "area_ratio": 0.60398743500025,
+  "scoring_scope": "public_preview",
+  "official_score": false,
+  "components": {
+    "area": 0.6462393796142121,
+    "throughput": 0.7134632104631906,
+    "latency": 0.729957805907173
+  },
+  "weighted_components": {
+    "area": 0.3877436277685272,
+    "throughput": 0.21403896313895718,
+    "latency": 0.0729957805907173
+  },
+  "weights": {
+    "area": 0.6,
+    "throughput": 0.3,
+    "latency": 0.1
+  },
+  "performance": {
+    "area_um2": 2415.949740001,
+    "first_output_cycles": 127,
+    "first_output_latency_ns": 1270.0,
+    "target_clock_period_ns": 10.0,
+    "base_frame_II_cycles": 384,
+    "measured_frequency_in_score": false,
+    "certified_period_ns": 1.2021484375,
+    "certified_setup_fmax_MHz": 831.8440292445166,
+    "verified_frame_II_cycles": 64,
+    "effective_throughput_ffts_per_second": 12997562.956945572,
+    "effective_throughput_samples_per_second": 831844029.2445166,
+    "first_output_latency_at_certified_clock_ns": 152.6728515625
+  },
+  "normalization_parameters": {
+    "area_ideal_um2": 500.0,
+    "area_half_credit_um2": 4000.0,
+    "throughput_min_ffts_per_second": 260416.66666666666,
+    "throughput_ideal_ffts_per_second": 62500000.0,
+    "first_output_ideal_cycles": 63.0,
+    "first_output_max_cycles": 300.0
+  },
+  "reason": "PUBLIC_PREVIEW: All public hardware checks passed; component scores use the published fixed numeric targets. Final acceptance requires independent hidden evaluation."
+}

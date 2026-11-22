@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/usr/synopsys/vcs-L-2016.06/bin/vcs",
+    "-sverilog",
+    "-full64",
+    "+vcs+initreg+random",
+    "-timescale=1ns/1ps",
+    "-top",
+    "tb",
+    "/mnt/mydata/score_aware_validation/run_20261122_080707/measurements/public_preview/mapped_sim/source.sv",
+    "/mnt/mydata/score_aware_validation/run_20261122_080707/measurements/public_preview/mapped_sim/tb.sv",
+    "-o",
+    "/mnt/mydata/score_aware_validation/run_20261122_080707/measurements/public_preview/mapped_sim/simv"
+  ],
+  "seconds": 42.68446713290177,
+  "returncode": 0
+}

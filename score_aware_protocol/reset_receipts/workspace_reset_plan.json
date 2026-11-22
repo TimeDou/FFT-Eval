@@ -1,0 +1,35 @@
+{
+  "public_commit": "11757acc369f00cbbdaedb4fd022b0bc99f98c7b",
+  "targets": [
+    {
+      "agent": "Claude-DS-Flash",
+      "container": "fft-claude-ds-flash-734192",
+      "ssh_port": 2201,
+      "image_id": "sha256:a210dc4eeb58c966de9751692739335e370b49414c9d1d37aee5b673e92a7e35",
+      "archive_commit": "3a954aeef12ba970d7255b8b6e7dca768a08c432",
+      "root": "/mnt/DATA1/sj/FFT/Claude-DS-Flash",
+      "container_exists": true,
+      "reset": "Replace public clone, clear all shared experiment files, recreate only this container; reinstall verified public dependencies"
+    },
+    {
+      "agent": "Codex-GPT-6.1-Sol-Max",
+      "container": "fft-codex-gpt-6-1-sol-max-5954c1",
+      "ssh_port": 2204,
+      "image_id": "sha256:a210dc4eeb58c966de9751692739335e370b49414c9d1d37aee5b673e92a7e35",
+      "archive_commit": "6c7abf049e827a8f67feb285a39e33d1d0b544dd",
+      "root": "/mnt/DATA1/sj/FFT/Codex-GPT-6.1-Sol-Max",
+      "container_exists": true,
+      "reset": "Replace public clone, clear all shared experiment files, recreate only this container; reinstall verified public dependencies"
+    },
+    {
+      "agent": "Codex-GPT-6.2-Sol-Max",
+      "container": "fft-codex-gpt-6-2-sol-max-52b8ab",
+      "ssh_port": 2205,
+      "image_id": "sha256:a210dc4eeb58c966de9751692739335e370b49414c9d1d37aee5b673e92a7e35",
+      "archive_commit": "3e5a16d8a3ba310ffffba68a1bc91ac07ea31326",
+      "root": "/mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max",
+      "container_exists": true,
+      "reset": "Replace public clone, clear all shared experiment files, recreate only this container; reinstall verified public dependencies"
+    }
+  ]
+}

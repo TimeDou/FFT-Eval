@@ -1,0 +1,40 @@
+{
+  "status": "CERTIFIED",
+  "passing_period_ns": 1.2021484375,
+  "failing_period_ns": 1.192626953125,
+  "passing_setup_slack_ns": 0.002486328,
+  "passing_hold_slack_ns": 0.019879419,
+  "hold_pass": true,
+  "capped_at_minimum_period": false,
+  "trials": 13,
+  "mapped_sha256": "8cbe22f77f7979bcf7caeecc1c9f1ad5da82057285332a58525acf41179a84a8",
+  "script_sha256": "42d666491dbcb3ed48717595e3ae596b04dac470c590e67303e3438f15c1022a",
+  "pt_path": "/usr/synopsys/pt-M-2016.12-SP1/bin/pt_shell",
+  "pt_sha256": "4628e991bb7477042adc7b8af31cad457af59054ea4a757d4cd2dbcf9c138e2f",
+  "scan": {
+    "minimum_period_ns": 0.25,
+    "maximum_period_ns": 10.0,
+    "resolution_ns": 0.01,
+    "maximum_iterations": 24,
+    "method": "clock reconstraint and full STA update on the fixed mapped netlist; score uses passing endpoint",
+    "hold": "report min-path slack; certification requires no observed negative hold slack"
+  },
+  "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+  "mapping_signature": {
+    "source": "9ce44cf33c18e21101b1ae307b9b665043b6b8f31decf3c5c5e4438cc6c68787",
+    "comb": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "seq": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+    "db": [
+      "c8171398cd7a4beac6878b04adc7267eedaf9ebdc0f2652eef99b56022ad9d1a",
+      "30cea877d1fc051bdaf7c4ef27f8d5d5ced7178d4af8e674f5629edbcae6295d"
+    ],
+    "flow": "DC-PT-setup-hold",
+    "identity": "c3ed26f5cf9c42979cbe565e50c02b4f5dbf1498b58eae2a1853ebdbe84b4f3b",
+    "formal": false,
+    "imported_sha256": "4fb1fa6fbf20f6d817be4f99adc96ade001166e0dd59f6cc83da40f0ef3ecc04"
+  },
+  "trial_trace_sha256": "a5cd17ba689fc478c9467254a0637fcabe0dcd010b6a104e3cdb8a91b3985dd8",
+  "certified_frequency_MHz": 831.8440292445166,
+  "measurement": "PrimeTime setup/hold passing endpoint on a fixed mapped netlist; pre-layout",
+  "certificate_directory": "/mnt/mydata/score_aware_validation/run_20261122_080707/measurements/public_preview/asic/frequency_certificates/4ada59469ae5498b3f35ed29"
+}

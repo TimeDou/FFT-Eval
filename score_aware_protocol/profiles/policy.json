@@ -1,0 +1,105 @@
+{
+  "default": "architecture",
+  "shared_spec": {
+    "sqnr_min_db": 50.0,
+    "clock_period_ns": 10.0,
+    "base_frame_ii_cycles": 384,
+    "first_output_deadline_cycles": 300,
+    "completion_deadline_cycles": 364,
+    "input_parallelism": 1,
+    "output_parallelism": 1,
+    "samples_per_frame": 64
+  },
+  "profiles": {
+    "area": {
+      "weights": {
+        "area": 1.0,
+        "throughput": 0.0,
+        "latency": 0.0
+      },
+      "reference": {
+        "area": "public half-credit area anchor: 4000 um2"
+      },
+      "targets": {
+        "area_um2": 500.0
+      },
+      "frequency_in_score": false,
+      "ii_in_score": false
+    },
+    "architecture": {
+      "weights": {
+        "area": 0.6,
+        "throughput": 0.3,
+        "latency": 0.1
+      },
+      "reference": {
+        "area": "public half-credit area anchor: 4000 um2",
+        "throughput": "mandatory service: 1e9/(384*10) FFT/s",
+        "latency": "mandatory first-output ceiling: 300 cycles"
+      },
+      "targets": {
+        "area_um2": 500.0,
+        "throughput_ffts_per_second": 62500000.0,
+        "first_output_cycles": 63.0
+      },
+      "normalization": "Public fixed numerical anchors; accurate baseline measurements validate the environment and do not alter score scales",
+      "throughput": "STA-certified frequency / minimum verified frame II; FFTs/s",
+      "latency": "worst first-input to first-output cycles multiplied by common target period 10ns; no additional frequency reward",
+      "claimed_ii": {
+        "minimum": 64,
+        "maximum": 384,
+        "default": 384,
+        "configuration_field": "frame_ii_cycles"
+      },
+      "ii_calibration": {
+        "pilot_all_integer_intervals": [
+          64,
+          384
+        ],
+        "pilot_frames_per_interval": 1024,
+        "continuous_final_full_dataset": true,
+        "mixed_gap_tail_frames": 16,
+        "chunk_intervals": 8,
+        "all_tested_intervals_long": true
+      },
+      "fmax_scan": {
+        "minimum_period_ns": 0.25,
+        "maximum_period_ns": 10.0,
+        "resolution_ns": 0.01,
+        "maximum_iterations": 24,
+        "method": "clock reconstraint and full STA update on the fixed mapped netlist; score uses passing endpoint",
+        "hold": "report min-path slack; certification requires no observed negative hold slack"
+      }
+    }
+  },
+  "normalized_terms": {
+    "area": "clip((A_half-A_ideal)/(A+A_half-2*A_ideal),0,1)",
+    "throughput": "clip(log(T/T_min)/log(T_ideal/T_min),0,1)",
+    "latency": "clip((L_max-L)/(L_max-L_ideal),0,1); L measured in cycles at the common clock"
+  },
+  "feasibility": "mandatory numerical, continuous 384-cycle service, reset, latency, setup/hold and representative RTL/mapped consistency; optional shorter-II failures recorded separately",
+  "score": "feasible * weighted sum of normalized terms; feasible is independent of score",
+  "sqnr_reward": false,
+  "freeze_policy": "Public weights, functions and numeric anchors are fixed before an evaluated run; candidate results never change them during that run",
+  "evaluation": {
+    "public_random_nonzero_frames": 1024,
+    "hidden_random_nonzero_frames": 8192,
+    "additional_directed_cases": true,
+    "sustained_consecutive_frames": 1024,
+    "frames_per_ii": 1024,
+    "mapped_random_frames": 64,
+    "mapped_includes_directed": true,
+    "mapped_at_best_ii_frames": 128,
+    "ii_search": "all integers 64..384; optional shorter failures do not invalidate mandatory service",
+    "fft_length": 64
+  },
+  "public_normalization": {
+    "area_ideal_um2": 500.0,
+    "area_half_credit_um2": 4000.0,
+    "throughput_min_ffts_per_second": 260416.66666666666,
+    "throughput_ideal_ffts_per_second": 62500000.0,
+    "first_output_ideal_cycles": 63.0,
+    "first_output_max_cycles": 300.0
+  },
+  "feedback": "Complete public evaluation returns measured components and combined preview score without private calibration. Hidden grading additionally requires matching private validation calibration."
+}

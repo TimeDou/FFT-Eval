@@ -1,0 +1,160 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 5
+Design : fft64_top
+Version: L-2016.03-SP1
+Date   : Sun Nov 22 16:31:34 2026
+****************************************
+
+Operating Conditions: PVT_0P7V_25C   Library: asap7sc7p5t_ALL_RVT_TT_nldm_211120
+Wire Load Model Mode: top
+
+  Startpoint: out_im_reg_15_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: out_im[20] (output port clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  out_im_reg_15_/CLK (DFFHQNx1_ASAP7_75t_R)               0.00       0.00 r
+  out_im_reg_15_/QN (DFFHQNx1_ASAP7_75t_R)               54.44      54.44 f
+  U38/Y (INVxp33_ASAP7_75t_R)                            37.82      92.27 r
+  U55/Y (INVxp33_ASAP7_75t_R)                            30.34     122.60 f
+  out_im[20] (out)                                        0.00     122.60 f
+  data arrival time                                                122.60
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  output external delay                                   0.00    9900.00
+  data required time                                              9900.00
+  --------------------------------------------------------------------------
+  data required time                                              9900.00
+  data arrival time                                               -122.60
+  --------------------------------------------------------------------------
+  slack (MET)                                                     9777.40
+
+
+  Startpoint: out_im_reg_15_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: out_im[19] (output port clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  out_im_reg_15_/CLK (DFFHQNx1_ASAP7_75t_R)               0.00       0.00 r
+  out_im_reg_15_/QN (DFFHQNx1_ASAP7_75t_R)               54.44      54.44 f
+  U38/Y (INVxp33_ASAP7_75t_R)                            37.82      92.27 r
+  U54/Y (INVxp33_ASAP7_75t_R)                            30.34     122.60 f
+  out_im[19] (out)                                        0.00     122.60 f
+  data arrival time                                                122.60
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  output external delay                                   0.00    9900.00
+  data required time                                              9900.00
+  --------------------------------------------------------------------------
+  data required time                                              9900.00
+  data arrival time                                               -122.60
+  --------------------------------------------------------------------------
+  slack (MET)                                                     9777.40
+
+
+  Startpoint: out_im_reg_15_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: out_im[18] (output port clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  out_im_reg_15_/CLK (DFFHQNx1_ASAP7_75t_R)               0.00       0.00 r
+  out_im_reg_15_/QN (DFFHQNx1_ASAP7_75t_R)               54.44      54.44 f
+  U38/Y (INVxp33_ASAP7_75t_R)                            37.82      92.27 r
+  U53/Y (INVxp33_ASAP7_75t_R)                            30.34     122.60 f
+  out_im[18] (out)                                        0.00     122.60 f
+  data arrival time                                                122.60
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  output external delay                                   0.00    9900.00
+  data required time                                              9900.00
+  --------------------------------------------------------------------------
+  data required time                                              9900.00
+  data arrival time                                               -122.60
+  --------------------------------------------------------------------------
+  slack (MET)                                                     9777.40
+
+
+  Startpoint: out_im_reg_15_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: out_im[17] (output port clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  out_im_reg_15_/CLK (DFFHQNx1_ASAP7_75t_R)               0.00       0.00 r
+  out_im_reg_15_/QN (DFFHQNx1_ASAP7_75t_R)               54.44      54.44 f
+  U38/Y (INVxp33_ASAP7_75t_R)                            37.82      92.27 r
+  U52/Y (INVxp33_ASAP7_75t_R)                            30.34     122.60 f
+  out_im[17] (out)                                        0.00     122.60 f
+  data arrival time                                                122.60
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  output external delay                                   0.00    9900.00
+  data required time                                              9900.00
+  --------------------------------------------------------------------------
+  data required time                                              9900.00
+  data arrival time                                               -122.60
+  --------------------------------------------------------------------------
+  slack (MET)                                                     9777.40
+
+
+  Startpoint: out_im_reg_15_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: out_im[15] (output port clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  out_im_reg_15_/CLK (DFFHQNx1_ASAP7_75t_R)               0.00       0.00 r
+  out_im_reg_15_/QN (DFFHQNx1_ASAP7_75t_R)               54.44      54.44 f
+  U38/Y (INVxp33_ASAP7_75t_R)                            37.82      92.27 r
+  U41/Y (INVxp33_ASAP7_75t_R)                            30.34     122.60 f
+  out_im[15] (out)                                        0.00     122.60 f
+  data arrival time                                                122.60
+
+  clock clk (rise edge)                               10000.00   10000.00
+  clock network delay (ideal)                             0.00   10000.00
+  clock uncertainty                                    -100.00    9900.00
+  output external delay                                   0.00    9900.00
+  data required time                                              9900.00
+  --------------------------------------------------------------------------
+  data required time                                              9900.00
+  data arrival time                                               -122.60
+  --------------------------------------------------------------------------
+  slack (MET)                                                     9777.40
+
+
+1

@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "workspaces": [
+    {
+      "agent": "Claude-DS-Flash",
+      "public_commit": "11757acc369f00cbbdaedb4fd022b0bc99f98c7b",
+      "port": "2201",
+      "git_clean": true,
+      "local_commit_count": 1,
+      "old_candidates_absent": true,
+      "environment_ready": true,
+      "scope": "fresh workspace and recreated container"
+    },
+    {
+      "agent": "Codex-GPT-6.1-Sol-Max",
+      "public_commit": "11757acc369f00cbbdaedb4fd022b0bc99f98c7b",
+      "port": "2204",
+      "git_clean": true,
+      "local_commit_count": 1,
+      "old_candidates_absent": true,
+      "environment_ready": true,
+      "scope": "fresh workspace and recreated container"
+    },
+    {
+      "agent": "Codex-GPT-6.2-Sol-Max",
+      "public_commit": "11757acc369f00cbbdaedb4fd022b0bc99f98c7b",
+      "port": "2205",
+      "git_clean": true,
+      "local_commit_count": 1,
+      "old_candidates_absent": true,
+      "environment_ready": true,
+      "scope": "fresh workspace and recreated container"
+    },
+    {
+      "agent": "Claude-Fable-5.2",
+      "public_commit": "11757acc369f00cbbdaedb4fd022b0bc99f98c7b",
+      "port": "2206",
+      "git_clean": true,
+      "local_commit_count": 4,
+      "old_candidates_absent": true,
+      "environment_ready": true,
+      "scope": "unused workspace synchronized; environment checked"
+    }
+  ]
+}

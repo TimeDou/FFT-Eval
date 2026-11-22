@@ -1,0 +1,36 @@
+{
+  "resolved": true,
+  "feasible": true,
+  "score": 0.9173856650101562,
+  "score_valid": true,
+  "evaluation_outcome": "FEASIBLE",
+  "scoring_policy_id": "fft64_quant",
+  "profile": "architecture",
+  "policy_sha256": "5a631febe570d77dc6b197ac25840df641813933349bb5ee0cfbe0c5a6302e56",
+  "area_ratio": 0.5233420671667685,
+  "components": {
+    "area": 0.9533158656664632,
+    "throughput": 1.0,
+    "latency": 0.4539614561027837
+  },
+  "weights": {
+    "area": 0.6,
+    "throughput": 0.3,
+    "latency": 0.1
+  },
+  "performance": {
+    "area_um2": 1275.5313,
+    "first_output_cycles": 194,
+    "first_output_latency_ns": 1940.0,
+    "target_clock_period_ns": 10.0,
+    "base_frame_II_cycles": 384,
+    "measured_frequency_in_score": false,
+    "certified_period_ns": 1.5068359375,
+    "certified_setup_fmax_MHz": 663.6422553467272,
+    "verified_frame_II_cycles": 258,
+    "effective_throughput_ffts_per_second": 2572256.8036694853,
+    "effective_throughput_samples_per_second": 164624435.43484706,
+    "first_output_latency_at_certified_clock_ns": 292.326171875
+  },
+  "reason": "All required profile specifications passed; continuous hardware score has no pass threshold."
+}

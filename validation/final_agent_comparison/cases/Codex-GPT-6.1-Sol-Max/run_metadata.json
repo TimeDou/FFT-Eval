@@ -1,0 +1,161 @@
+{
+  "id": "Codex-GPT-6.1-Sol-Max",
+  "original_workspace": "/home/sj/FFT/Codex-GPT-6.1-Sol-Max/FFT-Bench",
+  "public_run": "arch_C005",
+  "public_result_path": "/mnt/DATA1/sj/FFT/Codex-GPT-6.1-Sol-Max/Synopsys/.fft64/jobs/20261122T110728Z_f888b1ef55/output/result.json",
+  "public_commit": "4a31a2a5fd4edefeae70d35a91b5b914c50e029d",
+  "source_sha256": "7d4a8287c6e9d7e2ad2b8a6318b47c290c7814ae81a4ff276cf2ef4cfd5e01d3",
+  "exported_mapped_sha256": "877fb54295983dc817e2af185260df2d81a26cbb2094ab1758b55a3d9aa4a7af",
+  "user_reported_dialogue_duration": "37m33s",
+  "user_reported_dialogue_seconds": 2253,
+  "duration_source": "user_reported; separate from EDA or independent validation runtime",
+  "files": {
+    "artifact_audit.json": {
+      "sha256": "1f1890864df20712b29591a7cec8ffa77ee65c3d92b42d69d5496b432546298c",
+      "bytes": 680
+    },
+    "frozen_selection.json": {
+      "sha256": "71a5f5183d34c351efa66b0fed3d65cf387a423c2610ffda3c88eb7fa7b3ea0a",
+      "bytes": 393
+    },
+    "DESIGN_PLAN.md": {
+      "sha256": "7e091ab6fe0fa1af14088effcfa254df2af12f70ebf1462bba37e98f98431d36",
+      "bytes": 10993
+    },
+    "design_config.json": {
+      "sha256": "bd6e685a965b57f92bdaf65ef348ec32b8f15803312542995b3c6f2f824b1a60",
+      "bytes": 50
+    },
+    "public_verification.json": {
+      "sha256": "b3542ea6f89c2d64032dd1f4197d1fecaad6532e8a38b375767ba7fe8e182bab",
+      "bytes": 76487
+    },
+    "measurements.csv": {
+      "sha256": "3a9b909bac58b77c416b036ccc3d6b0526eb2636217678bae043e6a0be576697",
+      "bytes": 11951
+    },
+    "flow/dc_opt.tcl": {
+      "sha256": "73d061c4b926a593266e0de6016bf70ebdd124a6a1a516ad8d5a626276a245f4",
+      "bytes": 373
+    },
+    "rtl/fft64_top.sv": {
+      "sha256": "7d4a8287c6e9d7e2ad2b8a6318b47c290c7814ae81a4ff276cf2ef4cfd5e01d3",
+      "bytes": 7896
+    },
+    "implementation/manifest.json": {
+      "sha256": "60459248f8290a33fc79259a641adcca97e80375cfeb6f778b3453bb6e8ccc61",
+      "bytes": 1061
+    },
+    "implementation/mapped.v": {
+      "sha256": "877fb54295983dc817e2af185260df2d81a26cbb2094ab1758b55a3d9aa4a7af",
+      "bytes": 2281584
+    },
+    "implementation/recipes/dc_opt.tcl": {
+      "sha256": "73d061c4b926a593266e0de6016bf70ebdd124a6a1a516ad8d5a626276a245f4",
+      "bytes": 373
+    }
+  },
+  "agent": "Codex-GPT-6.1-Sol-Max",
+  "evaluator_commit": "5d54b562c59f45aef0bfacf2fe2a140a6ad21040",
+  "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+  "dialogue_metadata": {
+    "agent": "Codex-GPT-6.1-Sol-Max",
+    "source_file": "/mnt/DATA1/sj/.codex/sessions/2026/11/22/rollout-2026-11-22T18-45-17-01a202dc-3c29-75e3-b52b-bbef0354e225.jsonl",
+    "source_sha256": "d35cd871edab382694f2a9bcd6b24aa3eef855b34fae18f692ac816d32a0bd06",
+    "source_bytes": 2092977,
+    "source_record_count": 516,
+    "export_event_count": 183,
+    "user_reported_duration": "37m33s",
+    "user_reported_duration_seconds": 2253,
+    "duration_source": "user_reported conversation wall time; independent verification runtime recorded separately",
+    "prompt_sha256": "1ade0b225822f6f61312a5e370e575d5b061bc044cd93a1a6a81cde99524966e",
+    "prompt_whitespace_escape_normalized_sha256": "3aa9c2c4928122e5967f73f43d803e14b47927fab26b23254f902204daf632fa",
+    "omissions": {
+      "internal_response_items": 2,
+      "internal_context_or_analysis_messages": 5,
+      "private_reasoning_events": 133
+    },
+    "session": {
+      "id": "01a202dc-3c29-75e3-b52b-bbef0354e225",
+      "cwd": "/mnt/DATA1/sj/FFT/Codex-GPT-6.1-Sol-Max",
+      "source": "vscode",
+      "originator": "codex_vscode",
+      "cli_version": "0.171.0-alpha.13",
+      "model_provider": "openai"
+    },
+    "models": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "max"
+      }
+    ],
+    "task_start_utc": "2026-11-22T10:45:23.714Z",
+    "final_visible_answer_utc": "2026-11-22T11:22:53.979Z",
+    "logged_task_wall_seconds": 2250.265,
+    "logged_token_usage": {
+      "total_token_usage": {
+        "input_tokens": 11449084,
+        "cached_input_tokens": 11304064,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 85025,
+        "reasoning_output_tokens": 48016,
+        "total_tokens": 11534109
+      },
+      "last_token_usage": {
+        "input_tokens": 228878,
+        "cached_input_tokens": 228480,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 905,
+        "reasoning_output_tokens": 516,
+        "total_tokens": 229783
+      },
+      "last_usage_includes_reasoning": true,
+      "model_context_window": 475000
+    },
+    "engine_task_started_utc": "2026-11-22T10:45:21.041Z",
+    "engine_task_completed_utc": "2026-11-22T11:22:54.142Z",
+    "engine_task_duration_seconds": 2253.103,
+    "engine_duration_minus_user_reported_seconds": 0.10300000000006548,
+    "redactions": {
+      "credential_like_tokens": 0
+    },
+    "export_sha256": "dd465b669e973357f9dbef8aef8866e43ea047141308bc4dc56ba4885478f115"
+  },
+  "measured_metrics": {
+    "agent": "Codex-GPT-6.1-Sol-Max",
+    "status": "VERIFIED",
+    "area_um2": 3023.221320002,
+    "sequential_cell_area_um2": 1551.98268,
+    "combinational_cell_area_um2": 1471.238640002,
+    "cells": 23840,
+    "certified_period_ns": 0.630859375,
+    "certified_fmax_MHz": 1585.139318885449,
+    "verified_frame_ii": 64,
+    "throughput_ffts_per_second": 24767801.85758514,
+    "throughput_at_10ns_ffts_per_second": 1562500.0,
+    "throughput_per_area": 8192.52024114753,
+    "first_output_cycles": 123,
+    "completion_cycles": 186,
+    "first_output_ns_at_10ns": 1230,
+    "first_output_ns_at_certified_period": 77.595703125,
+    "minimum_hidden_sqnr_db": 52.75703307865817,
+    "sqnr_margin_db": 2.757033078658168,
+    "area_component": 0.5810844088323884,
+    "throughput_component": 0.8311105562235049,
+    "latency_component": 0.7468354430379747,
+    "score": 0.672667356470282,
+    "score_valid": true,
+    "user_reported_dialogue": "37m33s",
+    "user_reported_dialogue_seconds": 2253,
+    "logged_message_interval_seconds": 2250.265,
+    "engine_task_seconds": 2253.103,
+    "private_validation_seconds": 1532.3059009339195,
+    "source_sha256": "7d4a8287c6e9d7e2ad2b8a6318b47c290c7814ae81a4ff276cf2ef4cfd5e01d3",
+    "exported_mapped_sha256": "877fb54295983dc817e2af185260df2d81a26cbb2094ab1758b55a3d9aa4a7af",
+    "result_directory": "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/agent_reviews/final_score_aware_20261122_132636/evaluation/candidates/Codex-GPT-6.1-Sol-Max/runs/b07d99423eb5a6a2ecd01b7f"
+  },
+  "original_campaign": "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/agent_reviews/final_score_aware_20261122_132636",
+  "verification_scope": "Actual independent hidden numerical, exhaustive long-II, mapped subset and fixed-netlist STA; empirical pre-layout only",
+  "general_model_capability_conclusions": null,
+  "final_model_ranking": null
+}

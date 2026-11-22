@@ -1,0 +1,33 @@
+{
+  "status": "QUALITY_FAILED",
+  "backend": "commercial",
+  "profile": "architecture",
+  "functional_pass": false,
+  "worst_frame_sqnr_db": -3.0117855342500444,
+  "first_output_cycles": [
+    134
+  ],
+  "completion_cycles": [
+    197
+  ],
+  "timing_pass": null,
+  "worst_slack_ns": null,
+  "full_mapped_area_um2": null,
+  "mapped_simulation_pass": null,
+  "area_ratio": null,
+  "grade": {
+    "resolved": false,
+    "feasible": false,
+    "score": 0.0,
+    "score_valid": true,
+    "evaluation_outcome": "DESIGN_INVALID",
+    "scoring_policy_id": "fft64_quant",
+    "profile": "architecture",
+    "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+    "area_ratio": null,
+    "scoring_scope": "public_preview",
+    "official_score": false,
+    "reason": "DESIGN_INVALID: A required numerical, protocol, timing or RTL/mapped check failed."
+  },
+  "failure": null
+}

@@ -1,0 +1,77 @@
+{
+  "id": "Claude-DS-Flash",
+  "original_workspace": "/home/sj/FFT/Claude-DS-Flash/FFT-Bench",
+  "public_run": "arch_c2",
+  "public_result_path": "/mnt/DATA1/sj/FFT/Claude-DS-Flash/Synopsys/.fft64/jobs/20261122T122354Z_8adfbbb657/output/result.json",
+  "public_commit": "4a31a2a5fd4edefeae70d35a91b5b914c50e029d",
+  "source_sha256": "3d8303285ee66c6f358db8d2623e604ada7141c74fe119e8cd4c1ff1deba3081",
+  "exported_mapped_sha256": "2935ed40cdeeb735f3016e4abb361f697cfd08b8752b1394db53fb45c659e76e",
+  "user_reported_dialogue_duration": "1h55m16s",
+  "user_reported_dialogue_seconds": 6916,
+  "duration_source": "user_reported; separate from EDA or independent validation runtime",
+  "files": {
+    "DESIGN_PLAN.md": {
+      "sha256": "5109d999f669d3e0243bb79724c6f486ccc22105d4bc41a1e785c7b5347141c4",
+      "bytes": 6209
+    },
+    "design_config.json": {
+      "sha256": "f3828dcb0744fa2e2f403df301b11e97beb30db8efe6c29a746821291459984b",
+      "bytes": 149
+    },
+    "measurements.csv": {
+      "sha256": "1487fd6a4e1a98b32b54e3e04568c1d6ca84f439139c1b34f115132869db1da5",
+      "bytes": 2859
+    },
+    "flow/pnr_opt.tcl": {
+      "sha256": "c87e99fe26a3cd556e6d3a5552ea493d681cad46f7f2563f70fef409e3ec830c",
+      "bytes": 987
+    },
+    "flow/yosys_opt.ys": {
+      "sha256": "932aa7edfac65f8f1ccbee908b6c282c8420043fe8711c693bfb17b03e4e6de9",
+      "bytes": 400
+    },
+    "flow/abc_opt.script": {
+      "sha256": "aa6ab4f913de069ca489ab89723e7a980a018c445c4f93e3a86a5cdfb12e1bc2",
+      "bytes": 612
+    },
+    "flow/dc_opt.tcl": {
+      "sha256": "a8d1d6aa757bc44ff40ac487b5bf9e7b31ff78dc69ab813c86f0dcb4f4160e1a",
+      "bytes": 781
+    },
+    "rtl/fft64_top.sv": {
+      "sha256": "3d8303285ee66c6f358db8d2623e604ada7141c74fe119e8cd4c1ff1deba3081",
+      "bytes": 27054
+    },
+    "implementation/manifest.json": {
+      "sha256": "a0bd3e179eb54ba25dfae40b298b3a9e78993b3ad3d846a6c4eebd34e6a8ec9c",
+      "bytes": 1332
+    },
+    "implementation/mapped.v": {
+      "sha256": "2935ed40cdeeb735f3016e4abb361f697cfd08b8752b1394db53fb45c659e76e",
+      "bytes": 2705486
+    },
+    "implementation/recipes/pnr_opt.tcl": {
+      "sha256": "c87e99fe26a3cd556e6d3a5552ea493d681cad46f7f2563f70fef409e3ec830c",
+      "bytes": 987
+    },
+    "implementation/recipes/yosys_opt.ys": {
+      "sha256": "932aa7edfac65f8f1ccbee908b6c282c8420043fe8711c693bfb17b03e4e6de9",
+      "bytes": 400
+    },
+    "implementation/recipes/abc_opt.script": {
+      "sha256": "aa6ab4f913de069ca489ab89723e7a980a018c445c4f93e3a86a5cdfb12e1bc2",
+      "bytes": 612
+    },
+    "implementation/recipes/dc_opt.tcl": {
+      "sha256": "a8d1d6aa757bc44ff40ac487b5bf9e7b31ff78dc69ab813c86f0dcb4f4160e1a",
+      "bytes": 781
+    }
+  },
+  "private_run_path": "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/agent_reviews/final_score_aware_20261122_132636/evaluation/candidates/Claude-DS-Flash/runs/af6efd8631f78b32f705b6db",
+  "evaluator_commit": "5d54b562c59f45aef0bfacf2fe2a140a6ad21040",
+  "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+  "normalized_mapped_sha256": "3dd65382865c3514aabd951f172613e4a390c30b4e8934ed660dac6500d37317",
+  "exported_and_normalized_hashes_are_distinct": true,
+  "omitted_artifacts": "Reconstructible compiler objects, duplicate staged source, binary build databases, and per-cycle text traces. Original traces remain at the recorded campaign path. Actual hidden input/output arrays are retained as compressed NPZ.",
+  "source_was_not_modified": true
+}

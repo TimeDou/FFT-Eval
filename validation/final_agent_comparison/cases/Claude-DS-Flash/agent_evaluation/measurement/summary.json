@@ -1,0 +1,70 @@
+{
+  "status": "COMPLETE",
+  "backend": "commercial",
+  "profile": "architecture",
+  "functional_pass": true,
+  "worst_frame_sqnr_db": 66.14882446913487,
+  "first_output_cycles": [
+    134
+  ],
+  "completion_cycles": [
+    197
+  ],
+  "timing_pass": true,
+  "worst_slack_ns": 9.24009375,
+  "full_mapped_area_um2": 3695.723820003,
+  "mapped_simulation_pass": true,
+  "area_ratio": 0.9239309550007501,
+  "grade": {
+    "resolved": true,
+    "feasible": true,
+    "score": 0.5841478022259529,
+    "score_valid": true,
+    "evaluation_outcome": "FEASIBLE",
+    "scoring_policy_id": "fft64_quant",
+    "profile": "architecture",
+    "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+    "area_ratio": 0.9239309550007501,
+    "scoring_scope": "hidden_evaluation",
+    "official_score": true,
+    "components": {
+      "area": 0.5227216794014111,
+      "throughput": 0.6682420016409306,
+      "latency": 0.70042194092827
+    },
+    "weighted_components": {
+      "area": 0.3136330076408467,
+      "throughput": 0.2004726004922792,
+      "latency": 0.07004219409282701
+    },
+    "weights": {
+      "area": 0.6,
+      "throughput": 0.3,
+      "latency": 0.1
+    },
+    "performance": {
+      "area_um2": 3695.723820003,
+      "first_output_cycles": 134,
+      "first_output_latency_ns": 1340.0,
+      "target_clock_period_ns": 10.0,
+      "base_frame_II_cycles": 384,
+      "measured_frequency_in_score": false,
+      "certified_period_ns": 0.76416015625,
+      "certified_setup_fmax_MHz": 1308.626198083067,
+      "verified_frame_II_cycles": 129,
+      "effective_throughput_ffts_per_second": 10144389.132426877,
+      "effective_throughput_samples_per_second": 649240904.4753201,
+      "first_output_latency_at_certified_clock_ns": 102.3974609375
+    },
+    "normalization_parameters": {
+      "area_ideal_um2": 500.0,
+      "area_half_credit_um2": 4000.0,
+      "throughput_min_ffts_per_second": 260416.66666666666,
+      "throughput_ideal_ffts_per_second": 62500000.0,
+      "first_output_ideal_cycles": 63.0,
+      "first_output_max_cycles": 300.0
+    },
+    "reason": "All required profile specifications passed; continuous hardware score has no pass threshold."
+  },
+  "failure": null
+}

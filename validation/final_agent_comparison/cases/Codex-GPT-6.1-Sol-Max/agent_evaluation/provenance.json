@@ -1,0 +1,65 @@
+{
+  "id": "Codex-GPT-6.1-Sol-Max",
+  "original_workspace": "/home/sj/FFT/Codex-GPT-6.1-Sol-Max/FFT-Bench",
+  "public_run": "arch_C005",
+  "public_result_path": "/mnt/DATA1/sj/FFT/Codex-GPT-6.1-Sol-Max/Synopsys/.fft64/jobs/20261122T110728Z_f888b1ef55/output/result.json",
+  "public_commit": "4a31a2a5fd4edefeae70d35a91b5b914c50e029d",
+  "source_sha256": "7d4a8287c6e9d7e2ad2b8a6318b47c290c7814ae81a4ff276cf2ef4cfd5e01d3",
+  "exported_mapped_sha256": "877fb54295983dc817e2af185260df2d81a26cbb2094ab1758b55a3d9aa4a7af",
+  "user_reported_dialogue_duration": "37m33s",
+  "user_reported_dialogue_seconds": 2253,
+  "duration_source": "user_reported; separate from EDA or independent validation runtime",
+  "files": {
+    "artifact_audit.json": {
+      "sha256": "1f1890864df20712b29591a7cec8ffa77ee65c3d92b42d69d5496b432546298c",
+      "bytes": 680
+    },
+    "frozen_selection.json": {
+      "sha256": "71a5f5183d34c351efa66b0fed3d65cf387a423c2610ffda3c88eb7fa7b3ea0a",
+      "bytes": 393
+    },
+    "DESIGN_PLAN.md": {
+      "sha256": "7e091ab6fe0fa1af14088effcfa254df2af12f70ebf1462bba37e98f98431d36",
+      "bytes": 10993
+    },
+    "design_config.json": {
+      "sha256": "bd6e685a965b57f92bdaf65ef348ec32b8f15803312542995b3c6f2f824b1a60",
+      "bytes": 50
+    },
+    "public_verification.json": {
+      "sha256": "b3542ea6f89c2d64032dd1f4197d1fecaad6532e8a38b375767ba7fe8e182bab",
+      "bytes": 76487
+    },
+    "measurements.csv": {
+      "sha256": "3a9b909bac58b77c416b036ccc3d6b0526eb2636217678bae043e6a0be576697",
+      "bytes": 11951
+    },
+    "flow/dc_opt.tcl": {
+      "sha256": "73d061c4b926a593266e0de6016bf70ebdd124a6a1a516ad8d5a626276a245f4",
+      "bytes": 373
+    },
+    "rtl/fft64_top.sv": {
+      "sha256": "7d4a8287c6e9d7e2ad2b8a6318b47c290c7814ae81a4ff276cf2ef4cfd5e01d3",
+      "bytes": 7896
+    },
+    "implementation/manifest.json": {
+      "sha256": "60459248f8290a33fc79259a641adcca97e80375cfeb6f778b3453bb6e8ccc61",
+      "bytes": 1061
+    },
+    "implementation/mapped.v": {
+      "sha256": "877fb54295983dc817e2af185260df2d81a26cbb2094ab1758b55a3d9aa4a7af",
+      "bytes": 2281584
+    },
+    "implementation/recipes/dc_opt.tcl": {
+      "sha256": "73d061c4b926a593266e0de6016bf70ebdd124a6a1a516ad8d5a626276a245f4",
+      "bytes": 373
+    }
+  },
+  "private_run_path": "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/agent_reviews/final_score_aware_20261122_132636/evaluation/candidates/Codex-GPT-6.1-Sol-Max/runs/b07d99423eb5a6a2ecd01b7f",
+  "evaluator_commit": "5d54b562c59f45aef0bfacf2fe2a140a6ad21040",
+  "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+  "normalized_mapped_sha256": "40d09812434c617959a496197380a9499cd71b7539c68c7f5c6973a64e483018",
+  "exported_and_normalized_hashes_are_distinct": true,
+  "omitted_artifacts": "Reconstructible compiler objects, duplicate staged source, binary build databases, and per-cycle text traces. Original traces remain at the recorded campaign path. Actual hidden input/output arrays are retained as compressed NPZ.",
+  "source_was_not_modified": true
+}

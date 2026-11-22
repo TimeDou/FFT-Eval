@@ -1,0 +1,145 @@
+{
+  "id": "Codex-GPT-6.2-Sol-Max",
+  "original_workspace": "/home/sj/FFT/Codex-GPT-6.2-Sol-Max/FFT-Bench",
+  "public_run": "arch_r22_short_reorder",
+  "public_result_path": "/mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max/Synopsys/.fft64/jobs/20261122T111534Z_6013aefb9a/output/result.json",
+  "public_commit": "4a31a2a5fd4edefeae70d35a91b5b914c50e029d",
+  "source_sha256": "e37c2b64293f0639da3a7619881b6a13bdb9939882094cfff1c54c892a145e85",
+  "exported_mapped_sha256": "88802bc164cdb96f76ea691390af14dceec9bcd37b99e3069912b922381439ef",
+  "user_reported_dialogue_duration": "37m15s",
+  "user_reported_dialogue_seconds": 2235,
+  "duration_source": "user_reported; separate from EDA or independent validation runtime",
+  "files": {
+    "DESIGN_PLAN.md": {
+      "sha256": "cbf5c677aeb8748ee9cbd603e5ab83c309b657400ca07aa11af0ae7eff4b4dbd",
+      "bytes": 7107
+    },
+    "measurements.csv": {
+      "sha256": "0e7c89aaf89959d089911b791d48d45726f6f5be20f939ca785272ea2dbc8f23",
+      "bytes": 11643
+    },
+    "flow/dc_opt.tcl": {
+      "sha256": "24c38dd940cc6e6d7af915e3a0a9d8ce4c2403d63e15a1745289676ff4a6b5d9",
+      "bytes": 648
+    },
+    "rtl/fft64_top.sv": {
+      "sha256": "e37c2b64293f0639da3a7619881b6a13bdb9939882094cfff1c54c892a145e85",
+      "bytes": 13991
+    },
+    "implementation/manifest.json": {
+      "sha256": "67986d7a4c0552768f09c861449173682c71aa84b255ab80b51a39e7576c4d77",
+      "bytes": 1060
+    },
+    "implementation/mapped.v": {
+      "sha256": "88802bc164cdb96f76ea691390af14dceec9bcd37b99e3069912b922381439ef",
+      "bytes": 1748740
+    },
+    "implementation/recipes/dc_opt.tcl": {
+      "sha256": "24c38dd940cc6e6d7af915e3a0a9d8ce4c2403d63e15a1745289676ff4a6b5d9",
+      "bytes": 648
+    }
+  },
+  "agent": "Codex-GPT-6.2-Sol-Max",
+  "evaluator_commit": "5d54b562c59f45aef0bfacf2fe2a140a6ad21040",
+  "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+  "dialogue_metadata": {
+    "agent": "Codex-GPT-6.2-Sol-Max",
+    "source_file": "/mnt/DATA1/sj/.codex/sessions/2026/11/22/rollout-2026-11-22T18-45-31-01a202dc-732f-72b1-9dc8-784c938afa81.jsonl",
+    "source_sha256": "58e2d244de540f7aa81338d2601a9f7039f6e8518c2473cee561ff4b501c7ce1",
+    "source_bytes": 1984807,
+    "source_record_count": 479,
+    "export_event_count": 165,
+    "user_reported_duration": "37m15s",
+    "user_reported_duration_seconds": 2235,
+    "duration_source": "user_reported conversation wall time; independent verification runtime recorded separately",
+    "prompt_sha256": "1ade0b225822f6f61312a5e370e575d5b061bc044cd93a1a6a81cde99524966e",
+    "prompt_whitespace_escape_normalized_sha256": "3aa9c2c4928122e5967f73f43d803e14b47927fab26b23254f902204daf632fa",
+    "omissions": {
+      "internal_response_items": 1,
+      "internal_context_or_analysis_messages": 5,
+      "private_reasoning_events": 130
+    },
+    "session": {
+      "id": "01a202dc-732f-72b1-9dc8-784c938afa81",
+      "cwd": "/mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max",
+      "source": "vscode",
+      "originator": "codex_vscode",
+      "cli_version": "0.171.0-alpha.13",
+      "model_provider": "openai"
+    },
+    "models": [
+      {
+        "model": "gpt-6.2-sol",
+        "effort": "max"
+      }
+    ],
+    "task_start_utc": "2026-11-22T10:45:35.979Z",
+    "final_visible_answer_utc": "2026-11-22T11:23:02.237Z",
+    "logged_task_wall_seconds": 2246.258,
+    "logged_token_usage": {
+      "total_token_usage": {
+        "input_tokens": 9589787,
+        "cached_input_tokens": 9262720,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 82389,
+        "reasoning_output_tokens": 48019,
+        "total_tokens": 9672176
+      },
+      "last_token_usage": {
+        "input_tokens": 183197,
+        "cached_input_tokens": 182656,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 846,
+        "reasoning_output_tokens": 281,
+        "total_tokens": 184043
+      },
+      "last_usage_includes_reasoning": true,
+      "model_context_window": 475000
+    },
+    "engine_task_started_utc": "2026-11-22T10:45:35.109Z",
+    "engine_task_completed_utc": "2026-11-22T11:23:02.422Z",
+    "engine_task_duration_seconds": 2247.314,
+    "engine_duration_minus_user_reported_seconds": 12.31399999999985,
+    "redactions": {
+      "credential_like_tokens": 0
+    },
+    "export_sha256": "d7b11c3f536ecd6eddb09665385a2e739dd458770590282ea028b7f222c4a44e"
+  },
+  "measured_metrics": {
+    "agent": "Codex-GPT-6.2-Sol-Max",
+    "status": "VERIFIED",
+    "area_um2": 2327.201280001,
+    "sequential_cell_area_um2": 1370.31588,
+    "combinational_cell_area_um2": 956.8854000010001,
+    "cells": 17817,
+    "certified_period_ns": 0.640380859375,
+    "certified_fmax_MHz": 1561.5707205489898,
+    "verified_frame_ii": 64,
+    "throughput_ffts_per_second": 24399542.508577965,
+    "throughput_at_10ns_ffts_per_second": 1562500.0,
+    "throughput_per_area": 10484.50029580917,
+    "first_output_cycles": 126,
+    "completion_cycles": 189,
+    "first_output_ns_at_10ns": 1260,
+    "first_output_ns_at_certified_period": 80.68798828125,
+    "minimum_hidden_sqnr_db": 59.41694651341965,
+    "sqnr_margin_db": 9.416946513419653,
+    "area_component": 0.6570053985268871,
+    "throughput_component": 0.8283772772803181,
+    "latency_component": 0.7341772151898734,
+    "score": 0.716134143819215,
+    "score_valid": true,
+    "user_reported_dialogue": "37m15s",
+    "user_reported_dialogue_seconds": 2235,
+    "logged_message_interval_seconds": 2246.258,
+    "engine_task_seconds": 2247.314,
+    "private_validation_seconds": 1518.2234123840462,
+    "source_sha256": "e37c2b64293f0639da3a7619881b6a13bdb9939882094cfff1c54c892a145e85",
+    "exported_mapped_sha256": "88802bc164cdb96f76ea691390af14dceec9bcd37b99e3069912b922381439ef",
+    "result_directory": "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/agent_reviews/final_score_aware_20261122_132636/evaluation/candidates/Codex-GPT-6.2-Sol-Max/runs/1ce519356ab1bb2ddaaedf06"
+  },
+  "original_campaign": "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/agent_reviews/final_score_aware_20261122_132636",
+  "verification_scope": "Actual independent hidden numerical, exhaustive long-II, mapped subset and fixed-netlist STA; empirical pre-layout only",
+  "general_model_capability_conclusions": null,
+  "final_model_ranking": null
+}

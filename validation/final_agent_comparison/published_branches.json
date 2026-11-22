@@ -1,0 +1,38 @@
+[
+  {
+    "agent": "Claude-DS-Flash",
+    "branch": "agents/Claude-DS-Flash",
+    "commit": "1015bb6dceb4756dd933a99bbaa98ce9179ce98e",
+    "previous_result_commit": "3a954aeef12ba970d7255b8b6e7dca768a08c432",
+    "archive_replay": {
+      "status": "PASS",
+      "files": 2017,
+      "score": 0.5841478022259529,
+      "scope": "Archive hashes, regenerated hidden inputs, actual output numerical replay, recorded source/implementation, transcript identity and score arithmetic; no new EDA execution"
+    }
+  },
+  {
+    "agent": "Codex-GPT-6.1-Sol-Max",
+    "branch": "agents/Codex-GPT-6.1-Sol-Max",
+    "commit": "d3323d1eb7694fc42ea526ce36502b5eba1de404",
+    "previous_result_commit": "6c7abf049e827a8f67feb285a39e33d1d0b544dd",
+    "archive_replay": {
+      "status": "PASS",
+      "files": 5910,
+      "score": 0.672667356470282,
+      "scope": "Archive hashes, regenerated hidden inputs, actual output numerical replay, recorded source/implementation, transcript identity and score arithmetic; no new EDA execution"
+    }
+  },
+  {
+    "agent": "Codex-GPT-6.2-Sol-Max",
+    "branch": "agents/Codex-GPT-6.2-Sol-Max",
+    "commit": "dac65031978618c305683c1412e93a50acb52dd7",
+    "previous_result_commit": "3e5a16d8a3ba310ffffba68a1bc91ac07ea31326",
+    "archive_replay": {
+      "status": "PASS",
+      "files": 5403,
+      "score": 0.716134143819215,
+      "scope": "Archive hashes, regenerated hidden inputs, actual output numerical replay, recorded source/implementation, transcript identity and score arithmetic; no new EDA execution"
+    }
+  }
+]

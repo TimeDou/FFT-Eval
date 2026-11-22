@@ -1,0 +1,65 @@
+mesg: ttyname failed: Inappropriate ioctl for device
+{
+  "status": "COMPLETE",
+  "backend": "commercial",
+  "profile": "area",
+  "functional_pass": true,
+  "worst_frame_sqnr_db": 56.771445047967006,
+  "first_output_cycles": [
+    128
+  ],
+  "completion_cycles": [
+    191
+  ],
+  "timing_pass": true,
+  "worst_slack_ns": 7.463682129,
+  "full_mapped_area_um2": 2295.212760001,
+  "mapped_simulation_pass": true,
+  "area_ratio": 0.5738031900002499,
+  "grade": {
+    "resolved": true,
+    "feasible": true,
+    "score": 0.6609743854748037,
+    "score_valid": true,
+    "evaluation_outcome": "FEASIBLE",
+    "scoring_policy_id": "fft64_quant",
+    "profile": "area",
+    "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+    "area_ratio": 0.5738031900002499,
+    "scoring_scope": "public_preview",
+    "official_score": false,
+    "components": {
+      "area": 0.6609743854748037,
+      "throughput": 0.0,
+      "latency": 0.0
+    },
+    "weighted_components": {
+      "area": 0.6609743854748037,
+      "throughput": 0.0,
+      "latency": 0.0
+    },
+    "weights": {
+      "area": 1.0,
+      "throughput": 0.0,
+      "latency": 0.0
+    },
+    "performance": {
+      "area_um2": 2295.212760001,
+      "first_output_cycles": 128,
+      "first_output_latency_ns": 1280.0,
+      "target_clock_period_ns": 10.0,
+      "base_frame_II_cycles": 384,
+      "measured_frequency_in_score": false
+    },
+    "normalization_parameters": {
+      "area_ideal_um2": 500.0,
+      "area_half_credit_um2": 4000.0,
+      "throughput_min_ffts_per_second": 260416.66666666666,
+      "throughput_ideal_ffts_per_second": 62500000.0,
+      "first_output_ideal_cycles": 63.0,
+      "first_output_max_cycles": 300.0
+    },
+    "reason": "PUBLIC_PREVIEW: All public hardware checks passed; component scores use the published fixed numeric targets. Final acceptance requires independent hidden evaluation."
+  },
+  "failure": null
+}

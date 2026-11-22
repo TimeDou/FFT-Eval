@@ -1,0 +1,142 @@
+
+                                 PrimeTime (R)
+
+               Version M-2016.12-SP1 for linux64 - Jan 12, 2017 
+
+                    Copyright (c) 1988 - 2017 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+            or distribution of this software is strictly prohibited.
+
+Warning: Cannot use command line editor for terminal type 'dumb'. (CLE-100)
+# Re-constrain the SAME mapped netlist at every trial. No re-synthesis and no
+# conversion of a single fixed-clock slack into a maximum-frequency claim.
+if {[catch {
+source [file join [file dirname [info script]] paths.tcl]
+set_app_var search_path [concat [get_app_var search_path] [list $WORK [file join $TECH_DIR db]]]
+set_app_var link_path [concat [list *] $DBLIST]
+read_verilog [file join $WORK mapped.v]
+link_design fft64_top
+set fmax_dir [file join $WORK fmax_scan]
+file mkdir $fmax_dir
+set trace [open [file join $fmax_dir trials.csv] w]
+puts $trace "trial,period_ns,setup_slack_ns,hold_slack_ns,pass,actual_clock_period_ns"
+set trial_count 0
+proc fft_frequency_trial {period_ps} {
+    global trace trial_count
+    incr trial_count
+    create_clock -name clk -period $period_ps [get_ports clk]
+    set_clock_uncertainty -setup 100 [get_clocks clk]
+    set_clock_transition 20 [get_clocks clk]
+    set_input_delay 0 -clock clk [get_ports {rst in_valid frame_start in_re* in_im*}]
+    set_input_transition 20 [get_ports {rst in_valid frame_start in_re* in_im*}]
+    set_output_delay 0 -clock clk [all_outputs]
+    set_load 1 [all_outputs]
+    set_false_path -from [get_ports rst]
+    update_timing
+    if {[sizeof_collection [get_clocks *]] != 1} {error "Frequency scan requires exactly one clock"}
+    set actual [get_attribute [get_clocks clk] period]
+    if {abs($actual-$period_ps) > 0.001} {error "Clock period was not updated"}
+    set setup_paths [get_timing_paths -delay_type max -max_paths 1]
+    set hold_paths [get_timing_paths -delay_type min -max_paths 1]
+    if {[sizeof_collection $setup_paths] != 1 || [sizeof_collection $hold_paths] != 1} {error "Missing constrained setup/hold path"}
+    set setup [get_attribute $setup_paths slack]
+    set hold [get_attribute $hold_paths slack]
+    set pass [expr {$setup >= 0.0 && $hold >= 0.0}]
+    puts $trace [format "%d,%.12f,%.12f,%.12f,%d,%.12f" $trial_count [expr {$period_ps/1000.0}] [expr {$setup/1000.0}] [expr {$hold/1000.0}] $pass [expr {$actual/1000.0}]]
+    flush $trace
+    return [list $pass $setup $hold]
+}
+foreach key {FFT_FMAX_MIN_PS FFT_FMAX_MAX_PS FFT_FMAX_TOL_PS FFT_FMAX_ITERATIONS} {
+    if {![info exists ::env($key)] || ![string is double -strict $::env($key)] || $::env($key) <= 0} {error "Missing/invalid trusted scan parameter: $key"}
+}
+set minimum $::env(FFT_FMAX_MIN_PS)
+set maximum $::env(FFT_FMAX_MAX_PS)
+set tolerance $::env(FFT_FMAX_TOL_PS)
+if {$minimum >= $maximum} {error "Invalid frequency scan interval"}
+set high $maximum
+if {![lindex [fft_frequency_trial $high] 0]} {error "The required target clock does not pass both setup and hold"}
+set low $minimum
+set low_result [fft_frequency_trial $low]
+set capped [lindex $low_result 0]
+if {$capped} {
+    set high $low
+} else {
+    for {set iteration 0} {$high-$low > $tolerance && $iteration < $::env(FFT_FMAX_ITERATIONS)} {incr iteration} {
+        set middle [expr {($high+$low)/2.0}]
+        set result [fft_frequency_trial $middle]
+        if {[lindex $result 2] < 0.0} {error "Hold violation during frequency scan"}
+        if {[lindex $result 0]} {set high $middle} else {set low $middle}
+    }
+    if {$high-$low > $tolerance} {error "Frequency scan did not converge to its frozen resolution"}
+}
+set final [fft_frequency_trial $high]
+if {![lindex $final 0]} {error "Final passing point could not be reproduced"}
+redirect [file join $fmax_dir setup_at_passing.rpt] {report_timing -delay_type max -max_paths 5 -significant_digits 9}
+redirect [file join $fmax_dir hold_at_passing.rpt] {report_timing -delay_type min -max_paths 5 -significant_digits 9}
+redirect [file join $fmax_dir check_at_passing.rpt] {check_timing -verbose}
+set f [open [file join $fmax_dir endpoint.json] w]
+if {$capped} {set failing_json "null"} else {set failing_json [format "%.12f" [expr {$low/1000.0}]]}
+puts $f [format {{"status":"CERTIFIED","passing_period_ns":%.12f,"failing_period_ns":%s,"passing_setup_slack_ns":%.12f,"passing_hold_slack_ns":%.12f,"hold_pass":true,"capped_at_minimum_period":%s,"trials":%d}} [expr {$high/1000.0}] $failing_json [expr {[lindex $final 1]/1000.0}] [expr {[lindex $final 2]/1000.0}] [expr {$capped ? "true" : "false"}] $trial_count]
+close $f
+close $trace
+} task_error]} {
+    puts stderr "TASK_FATAL: $task_error"
+    exit 1
+}
+Loading verilog file '/mnt/mydata/.fft64/jobs/20261122T105430Z_7cafc14b1a/output/asic/frequency_certificates/3e3af84d0287ab0f516f9e46/mapped.v'
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db'
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db'
+Linking design fft64_top...
+Information: 111 (66.47%) library cells are unused in library asap7sc7p5t_ALL_RVT_TT_nldm_211120..... (LNK-045)
+Information: 32 (96.97%) library cells are unused in library asap7sc7p5t_SEQ_RVT_TT_nldm_220123..... (LNK-045)
+Information: total 143 library cells are unused (LNK-046)
+Design 'fft64_top' was successfully linked.
+Information: There are 25027 leaf cells, ports, hiers and 24976 nets in the design (LNK-047)
+Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)
+Information: Abandoning fast timing updates. (PTE-018)
+Information: Abandoning fast timing updates. (PTE-018)
+Information: Abandoning fast timing updates. (PTE-018)
+Information: Abandoning fast timing updates. (PTE-018)
+Information: Abandoning fast timing updates. (PTE-018)
+Information: Abandoning fast timing updates. (PTE-018)
+Information: Abandoning fast timing updates. (PTE-018)
+Information: Abandoning fast timing updates. (PTE-018)
+Information: Abandoning fast timing updates. (PTE-018)
+Information: Abandoning fast timing updates. (PTE-018)
+Information: Abandoning fast timing updates. (PTE-018)
+Information: Abandoning fast timing updates. (PTE-018)
+exit 0
+Information: Defining new variable 'task_error'. (CMD-041)
+Information: Defining new variable 'trace'. (CMD-041)
+Information: Defining new variable 'low_result'. (CMD-041)
+Information: Defining new variable 'f'. (CMD-041)
+Information: Defining new variable 'result'. (CMD-041)
+Information: Defining new variable 'maximum'. (CMD-041)
+Information: Defining new variable 'high'. (CMD-041)
+Information: Defining new variable 'middle'. (CMD-041)
+Information: Defining new variable 'tolerance'. (CMD-041)
+Information: Defining new variable 'key'. (CMD-041)
+Information: Defining new variable 'TASK_ROOT'. (CMD-041)
+Information: Defining new variable 'TECH_DIR'. (CMD-041)
+Information: Defining new variable 'minimum'. (CMD-041)
+Information: Defining new variable 'low'. (CMD-041)
+Information: Defining new variable 'DBLIST'. (CMD-041)
+Information: Defining new variable 'fmax_dir'. (CMD-041)
+Information: Defining new variable 'capped'. (CMD-041)
+Information: Defining new variable 'iteration'. (CMD-041)
+Information: Defining new variable 'failing_json'. (CMD-041)
+Information: Defining new variable 'final'. (CMD-041)
+Information: Defining new variable 'trial_count'. (CMD-041)
+Information: Defining new variable 'db'. (CMD-041)
+Information: Defining new variable 'WORK'. (CMD-041)
+
+Timing updates: 13 (0 implicit, 13 explicit) (0 incremental, 13 full, 0 logical)
+Noise updates: 0 (0 implicit, 0 explicit) (0 incremental, 0 full)
+Maximum memory usage for this session: 611.00 MB
+CPU usage for this session: 26 seconds 
+Elapsed time for this session: 9 seconds
+Diagnostics summary: 2 warnings, 39 informationals
+
+Thank you for using pt_shell!

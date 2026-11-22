@@ -1,0 +1,33 @@
+{
+  "status": "QUICK_CHECK_PASSED",
+  "backend": "commercial",
+  "profile": "architecture",
+  "functional_pass": true,
+  "worst_frame_sqnr_db": 59.444164520613214,
+  "first_output_cycles": [
+    128
+  ],
+  "completion_cycles": [
+    191
+  ],
+  "timing_pass": null,
+  "worst_slack_ns": null,
+  "full_mapped_area_um2": null,
+  "mapped_simulation_pass": null,
+  "area_ratio": null,
+  "grade": {
+    "resolved": false,
+    "feasible": false,
+    "score": 0.0,
+    "score_valid": false,
+    "evaluation_outcome": "INCOMPLETE",
+    "scoring_policy_id": "fft64_quant",
+    "profile": "architecture",
+    "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+    "area_ratio": null,
+    "scoring_scope": "public_preview",
+    "official_score": false,
+    "reason": "INCOMPLETE: Public numerical and sustained protocol checks passed; ASIC/capacity scoring was not requested."
+  },
+  "failure": null
+}

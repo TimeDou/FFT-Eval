@@ -1,0 +1,40 @@
+{
+  "status": "CERTIFIED",
+  "passing_period_ns": 0.640380859375,
+  "failing_period_ns": 0.630859375,
+  "passing_setup_slack_ns": 0.000393127,
+  "passing_hold_slack_ns": 0.000239166,
+  "hold_pass": true,
+  "capped_at_minimum_period": false,
+  "trials": 13,
+  "mapped_sha256": "1acc40512beee7cc40896379498b7156791df6e3bd0a6647ffdd6e03c0e8c60f",
+  "script_sha256": "42d666491dbcb3ed48717595e3ae596b04dac470c590e67303e3438f15c1022a",
+  "pt_path": "/usr/synopsys/pt-M-2016.12-SP1/bin/pt_shell",
+  "pt_sha256": "4628e991bb7477042adc7b8af31cad457af59054ea4a757d4cd2dbcf9c138e2f",
+  "scan": {
+    "minimum_period_ns": 0.25,
+    "maximum_period_ns": 10.0,
+    "resolution_ns": 0.01,
+    "maximum_iterations": 24,
+    "method": "clock reconstraint and full STA update on the fixed mapped netlist; score uses passing endpoint",
+    "hold": "report min-path slack; certification requires no observed negative hold slack"
+  },
+  "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+  "mapping_signature": {
+    "source": "cf532162313a0fa84df151ce2c761835dace5a147c47ae25766f23a6dccb7422",
+    "comb": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "seq": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+    "db": [
+      "c8171398cd7a4beac6878b04adc7267eedaf9ebdc0f2652eef99b56022ad9d1a",
+      "30cea877d1fc051bdaf7c4ef27f8d5d5ced7178d4af8e674f5629edbcae6295d"
+    ],
+    "flow": "DC-PT-setup-hold",
+    "identity": "c3ed26f5cf9c42979cbe565e50c02b4f5dbf1498b58eae2a1853ebdbe84b4f3b",
+    "formal": false,
+    "imported_sha256": "96c68810c9acb571951fa2db48ab946503cb57144e70308848449a70d47eaff5"
+  },
+  "trial_trace_sha256": "433b822aad190f4b7cfa5fa864bb387baff0b1fef79f7454b2242becfed9dc05",
+  "certified_frequency_MHz": 1561.5707205489898,
+  "measurement": "PrimeTime setup/hold passing endpoint on a fixed mapped netlist; pre-layout",
+  "certificate_directory": "/mnt/mydata/.fft64/jobs/20261122T110831Z_e359806897/output/asic/frequency_certificates/2847e00c54427f33320dab75"
+}

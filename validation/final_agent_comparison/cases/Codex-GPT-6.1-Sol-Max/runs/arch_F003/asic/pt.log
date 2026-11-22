@@ -1,0 +1,74 @@
+
+                                 PrimeTime (R)
+
+               Version M-2016.12-SP1 for linux64 - Jan 12, 2017 
+
+                    Copyright (c) 1988 - 2017 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+            or distribution of this software is strictly prohibited.
+
+Warning: Cannot use command line editor for terminal type 'dumb'. (CLE-100)
+source [file join [file dirname [info script]] paths.tcl]
+set_app_var search_path [concat [get_app_var search_path] [list $WORK [file join $TECH_DIR db]]]
+/mnt/mydata/.fft64/physical_cache/b015f07e4c5e7beb2d3eb2a7 /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db
+set_app_var link_path [concat [list *] $DBLIST]
+* /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db
+read_verilog [file join $WORK mapped.v]
+1
+link_design fft64_top
+Loading verilog file '/mnt/mydata/.fft64/physical_cache/b015f07e4c5e7beb2d3eb2a7/mapped.v'
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db'
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db'
+Linking design fft64_top...
+Information: 114 (68.26%) library cells are unused in library asap7sc7p5t_ALL_RVT_TT_nldm_211120..... (LNK-045)
+Information: 32 (96.97%) library cells are unused in library asap7sc7p5t_SEQ_RVT_TT_nldm_220123..... (LNK-045)
+Information: total 146 library cells are unused (LNK-046)
+Design 'fft64_top' was successfully linked.
+Information: There are 19682 leaf cells, ports, hiers and 19631 nets in the design (LNK-047)
+1
+source [file join $TASK_ROOT flow constraints.sdc]
+1
+1
+update_timing
+Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)
+1
+redirect [file join $WORK pt_units.rpt] {report_units}
+redirect [file join $WORK pt_check.rpt] {check_timing -verbose}
+redirect [file join $WORK pt_timing.rpt] {report_timing -delay_type max -max_paths 10 -significant_digits 6}
+redirect [file join $WORK pt_hold.rpt] {report_timing -delay_type min -max_paths 10 -significant_digits 6}
+set paths [get_timing_paths -delay_type max -max_paths 1]
+_sel33
+if {[sizeof_collection $paths] != 1} {error "No fully constrained setup path"}
+set slack [get_attribute $paths slack]
+6322.096680
+set hold_paths [get_timing_paths -delay_type min -max_paths 1]
+_sel34
+if {[sizeof_collection $hold_paths] != 1} {error "No fully constrained hold path"}
+set hold_slack [get_attribute $hold_paths slack]
+18.701458
+set f [open [file join $WORK pt_metrics.json] w]
+file22
+puts $f [format {{"worst_setup_slack_ns":%.9f,"worst_hold_slack_ns":%.9f,"fixed_clock_slack_period_estimate_ns":%.9f,"clock_period_ns":10.0,"setup_uncertainty_ns":0.1,"flow":"PrimeTime ideal-interconnect pre-layout; fixed-target setup/hold only; Fmax requires scan"}} [expr {$slack/1000.0}] [expr {$hold_slack/1000.0}] [expr {(10000.0-$slack)/1000.0}]]
+close $f
+exit
+Information: Defining new variable 'hold_paths'. (CMD-041)
+Information: Defining new variable 'f'. (CMD-041)
+Information: Defining new variable 'slack'. (CMD-041)
+Information: Defining new variable 'TASK_ROOT'. (CMD-041)
+Information: Defining new variable 'TECH_DIR'. (CMD-041)
+Information: Defining new variable 'hold_slack'. (CMD-041)
+Information: Defining new variable 'DBLIST'. (CMD-041)
+Information: Defining new variable 'paths'. (CMD-041)
+Information: Defining new variable 'db'. (CMD-041)
+Information: Defining new variable 'WORK'. (CMD-041)
+
+Timing updates: 1 (0 implicit, 1 explicit) (0 incremental, 1 full, 0 logical)
+Noise updates: 0 (0 implicit, 0 explicit) (0 incremental, 0 full)
+Maximum memory usage for this session: 597.22 MB
+CPU usage for this session: 2 seconds 
+Elapsed time for this session: 1 seconds
+Diagnostics summary: 2 warnings, 14 informationals
+
+Thank you for using pt_shell!

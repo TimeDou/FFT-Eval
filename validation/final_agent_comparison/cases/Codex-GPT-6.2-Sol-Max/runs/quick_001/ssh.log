@@ -1,0 +1,30 @@
+mesg: ttyname failed: Inappropriate ioctl for device
+{
+  "status": "DESIGN_INVALID",
+  "backend": "commercial",
+  "profile": "architecture",
+  "functional_pass": false,
+  "worst_frame_sqnr_db": null,
+  "first_output_cycles": null,
+  "completion_cycles": null,
+  "timing_pass": null,
+  "worst_slack_ns": null,
+  "full_mapped_area_um2": null,
+  "mapped_simulation_pass": null,
+  "area_ratio": null,
+  "grade": {
+    "resolved": false,
+    "feasible": false,
+    "score": 0.0,
+    "score_valid": true,
+    "evaluation_outcome": "DESIGN_INVALID",
+    "scoring_policy_id": "fft64_quant",
+    "profile": "architecture",
+    "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+    "area_ratio": null,
+    "scoring_scope": "public_preview",
+    "official_score": false,
+    "reason": "DESIGN_INVALID: A required numerical, protocol, timing or RTL/mapped check failed."
+  },
+  "failure": "/mnt/mydata/.fft64/jobs/20261122T104913Z_f4e3c9518b/output/rtl_sim/compile.log\n\nWarning-[LINX_KRNL] Unsupported Linux kernel\n  Linux kernel '6.8.0-138-generic' is not supported.\n  Supported versions are 2.4* or 2.6*.\n\n                         Chronologic VCS (TM)\n         Version L-2016.06_Full64 -- Sun Nov 22 18:49:15 2026\n               Copyright (c) 1991-2016 by Synopsys Inc.\n                         ALL RIGHTS RESERVED\n\nThis program is proprietary and confidential information of Synopsys Inc.\nand may be used and disclosed only as authorized in a license agreement\ncontrolling such use and disclosure.\n\nParsing design file '/mnt/mydata/.fft64/jobs/20261122T104913Z_f4e3c9518b/output/rtl_sim/source.sv'\n\nError-[SE] Syntax error\n  Following verilog source has syntax error :\n  \"/mnt/mydata/.fft64/jobs/20261122T104913Z_f4e3c9518b/output/rtl_sim/source.sv\",\n  233: token is 'bins'\n      reg [2*W-1:0] bins [0:63];\n                        ^\n  System verilog  keyword 'bins' is not expected to be used in this context.\n\n1 error\nCPU time: .084 seconds to compile\n"
+}

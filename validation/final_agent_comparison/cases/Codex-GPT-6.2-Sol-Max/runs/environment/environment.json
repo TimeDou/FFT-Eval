@@ -1,0 +1,66 @@
+{
+  "status": "READY",
+  "ready": true,
+  "mode": "check",
+  "measurement_backend": "commercial",
+  "requested_backend": "commercial",
+  "selected_backend": "commercial",
+  "selection_reason": "Explicit backend selection.",
+  "missing": [],
+  "tools": {
+    "vcs": "/usr/synopsys/vcs-L-2016.06/bin/vcs",
+    "dc_shell": "/usr/synopsys/dc-L-2016.03-SP1/bin/dc_shell",
+    "pt_shell": "/usr/synopsys/pt-M-2016.12-SP1/bin/pt_shell",
+    "lc_shell": "/usr/synopsys/lc-M-2016.12/bin/lc_shell",
+    "yosys": null,
+    "abc": null,
+    "sta": null,
+    "iverilog": null,
+    "vvp": null,
+    "verilator": null
+  },
+  "python": "/mnt/mydata/.fft64/runtime/python/bin/python3",
+  "actions": [
+    "Installed the missing NumPy dependency."
+  ],
+  "failures": [],
+  "notices": [],
+  "check_only": false,
+  "quick": false,
+  "tools_prefix": "/mnt/mydata/.fft64/runtime",
+  "installed_ready": true,
+  "tools_sha256": {
+    "vcs": "862dbb6504c06be76841c3ee5f2ac896e31a6b85d9763a43d1b788e1e77eda04",
+    "dc_shell": "9f02911939ed5da9be588569bf74ae4a36b0ed5f48d67f4e9f36aa7110d7f5f5",
+    "pt_shell": "4628e991bb7477042adc7b8af31cad457af59054ea4a757d4cd2dbcf9c138e2f",
+    "lc_shell": "3dbdad0eedaaeb07acd635f498a4a2d1971fd54e7067a50e806baf08ecee882f"
+  },
+  "libraries_sha256": {
+    "/mnt/mydata/.fft64/tech/99619e6e51b75f151556/ASAP7_RVT_TT_nldm_NO_FAHA.lib": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+    "/mnt/mydata/.fft64/tech/99619e6e51b75f151556/ASAP7_SEQ_RVT_TT_nldm_220123.lib": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3",
+    "/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db": "c8171398cd7a4beac6878b04adc7267eedaf9ebdc0f2652eef99b56022ad9d1a",
+    "/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db": "30cea877d1fc051bdaf7c4ef27f8d5d5ced7178d4af8e674f5629edbcae6295d"
+  },
+  "smoke": {
+    "status": "PASS",
+    "directory": "/mnt/mydata/.fft64/jobs/20261122T082641Z_139c6733e5/output/smoke/1795336007223015292",
+    "rtl_compile_and_simulation": "PASS",
+    "dc_mapping": "PASS",
+    "primetime_setup_hold": "PASS",
+    "mapped_simulation": "PASS",
+    "gate_initial_state_modes": [
+      0,
+      1,
+      20261121
+    ],
+    "area_um2": 14.66748,
+    "worst_setup_slack_ns": 9.777395508,
+    "worst_hold_slack_ns": 0.001770363,
+    "clock_target_ns": 10.0,
+    "mapped_sha256": "b203162eed83508495f4282db5d7c189df8ae5fc948ccda07c4b8687678e8a87",
+    "source_sha256": "b56290946f9a79fbd0873251005a980a06643af54f26b5b793070fee29703190",
+    "scope": "small registered transfer circuit; tool/library check, not an FFT result or score"
+  },
+  "license_and_execution_verified": true,
+  "seconds": 64.89922885084525
+}

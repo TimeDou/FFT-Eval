@@ -1,0 +1,49 @@
+{
+  "id": "Codex-GPT-6.2-Sol-Max",
+  "original_workspace": "/home/sj/FFT/Codex-GPT-6.2-Sol-Max/FFT-Bench",
+  "public_run": "arch_r22_short_reorder",
+  "public_result_path": "/mnt/DATA1/sj/FFT/Codex-GPT-6.2-Sol-Max/Synopsys/.fft64/jobs/20261122T111534Z_6013aefb9a/output/result.json",
+  "public_commit": "4a31a2a5fd4edefeae70d35a91b5b914c50e029d",
+  "source_sha256": "e37c2b64293f0639da3a7619881b6a13bdb9939882094cfff1c54c892a145e85",
+  "exported_mapped_sha256": "88802bc164cdb96f76ea691390af14dceec9bcd37b99e3069912b922381439ef",
+  "user_reported_dialogue_duration": "37m15s",
+  "user_reported_dialogue_seconds": 2235,
+  "duration_source": "user_reported; separate from EDA or independent validation runtime",
+  "files": {
+    "DESIGN_PLAN.md": {
+      "sha256": "cbf5c677aeb8748ee9cbd603e5ab83c309b657400ca07aa11af0ae7eff4b4dbd",
+      "bytes": 7107
+    },
+    "measurements.csv": {
+      "sha256": "0e7c89aaf89959d089911b791d48d45726f6f5be20f939ca785272ea2dbc8f23",
+      "bytes": 11643
+    },
+    "flow/dc_opt.tcl": {
+      "sha256": "24c38dd940cc6e6d7af915e3a0a9d8ce4c2403d63e15a1745289676ff4a6b5d9",
+      "bytes": 648
+    },
+    "rtl/fft64_top.sv": {
+      "sha256": "e37c2b64293f0639da3a7619881b6a13bdb9939882094cfff1c54c892a145e85",
+      "bytes": 13991
+    },
+    "implementation/manifest.json": {
+      "sha256": "67986d7a4c0552768f09c861449173682c71aa84b255ab80b51a39e7576c4d77",
+      "bytes": 1060
+    },
+    "implementation/mapped.v": {
+      "sha256": "88802bc164cdb96f76ea691390af14dceec9bcd37b99e3069912b922381439ef",
+      "bytes": 1748740
+    },
+    "implementation/recipes/dc_opt.tcl": {
+      "sha256": "24c38dd940cc6e6d7af915e3a0a9d8ce4c2403d63e15a1745289676ff4a6b5d9",
+      "bytes": 648
+    }
+  },
+  "private_run_path": "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/agent_reviews/final_score_aware_20261122_132636/evaluation/candidates/Codex-GPT-6.2-Sol-Max/runs/1ce519356ab1bb2ddaaedf06",
+  "evaluator_commit": "5d54b562c59f45aef0bfacf2fe2a140a6ad21040",
+  "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+  "normalized_mapped_sha256": "0f4baf5720f542278f6c53701fd18114606b3f8204c6329139184f1294d31ad6",
+  "exported_and_normalized_hashes_are_distinct": true,
+  "omitted_artifacts": "Reconstructible compiler objects, duplicate staged source, binary build databases, and per-cycle text traces. Original traces remain at the recorded campaign path. Actual hidden input/output arrays are retained as compressed NPZ.",
+  "source_was_not_modified": true
+}

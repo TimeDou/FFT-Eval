@@ -1,0 +1,38 @@
+{
+  "top": "fft64_top",
+  "files": {
+    "rtl/fft64_top.sv": "3d8303285ee66c6f358db8d2623e604ada7141c74fe119e8cd4c1ff1deba3081"
+  },
+  "frame_ii_cycles": 129,
+  "warnings": [],
+  "source_sha256": "3d8303285ee66c6f358db8d2623e604ada7141c74fe119e8cd4c1ff1deba3081",
+  "implementation": {
+    "path": "/mnt/mydata/agent_reviews/final_score_aware_20261122_132636/evaluation/candidates/Claude-DS-Flash/runs/af6efd8631f78b32f705b6db/submission/implementation/mapped.v",
+    "mapped_sha256": "2935ed40cdeeb735f3016e4abb361f697cfd08b8752b1394db53fb45c659e76e",
+    "manifest_sha256": "a0bd3e179eb54ba25dfae40b298b3a9e78993b3ad3d846a6c4eebd34e6a8ec9c",
+    "producer": {
+      "backend": "commercial",
+      "tools": {
+        "dc_shell": {
+          "path": "/usr/synopsys/dc-L-2016.03-SP1/bin/dc_shell",
+          "sha256": "9f02911939ed5da9be588569bf74ae4a36b0ed5f48d67f4e9f36aa7110d7f5f5"
+        }
+      },
+      "recipe_sha256": {
+        "dc_opt.tcl": "a8d1d6aa757bc44ff40ac487b5bf9e7b31ff78dc69ab813c86f0dcb4f4160e1a"
+      },
+      "custom_files_sha256": {
+        "abc_opt.script": "aa6ab4f913de069ca489ab89723e7a980a018c445c4f93e3a86a5cdfb12e1bc2",
+        "dc_opt.tcl": "a8d1d6aa757bc44ff40ac487b5bf9e7b31ff78dc69ab813c86f0dcb4f4160e1a",
+        "pnr_opt.tcl": "c87e99fe26a3cd556e6d3a5552ea493d681cad46f7f2563f70fef409e3ec830c",
+        "yosys_opt.ys": "932aa7edfac65f8f1ccbee908b6c282c8420043fe8711c693bfb17b03e4e6de9"
+      },
+      "abc_delay_ps": 10000.0
+    },
+    "libraries_sha256": {
+      "ASAP7_RVT_TT_nldm_NO_FAHA.lib": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+      "ASAP7_SEQ_RVT_TT_nldm_220123.lib": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3"
+    },
+    "rtl_sha256": "3d8303285ee66c6f358db8d2623e604ada7141c74fe119e8cd4c1ff1deba3081"
+  }
+}

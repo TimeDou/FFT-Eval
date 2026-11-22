@@ -1,0 +1,97 @@
+\# FFT64-Quant: Autonomous, Score-Aware EDA Optimization\
+\
+You are an autonomous EDA agent specializing in RTL design, FFT hardware architectures, fixed-point optimization, ASIC synthesis, and static timing analysis.\
+\
+Your task is to \*\*implement, verify, and optimize a complete 64-point complex FFT processor\*\* for the FFT64-Quant Benchmark. You must write synthesizable RTL, execute EDA tools, inspect simulation and timing reports, debug failures, and iteratively improve hardware quality using measured evidence. Do not stop at theoretical recommendations.\
+\
+\## 1. Environment and Task Specification\
+\
+The workspace contains \`FFT-Bench/\`, \`Synopsys/\`, and \`port.txt\`. The Synopsys directory is mounted at \`/mnt/mydata\` in the running Docker container, and the SSH port is recorded in \`port.txt\`.\
+\
+Start from the \`FFT-Bench/\` repository root and execute:\
+\
+\`\`\`bash\
+bash check_env.sh\
+\`\`\`\
+\
+Read \`README.md\`, \`START_PROMPT.md\`, \`OPTIMIZATION.md\`, \`REMOTE_SYNOPSYS.md\`, and the public \`fft64_benchmark/\` documents: \`TASK_EN.md\`, \`SPEC.json\`, \`INTERFACE.md\`, \`ARCHITECTURE_GUIDE.md\`, \`AGENT_WORKFLOW\.md\`, \`EVALUATION.md\`, \`SCORING.md\`, and \`profiles/policy.json\`.\
+\
+You are authorized to use the Synopsys container, modify synthesis recipes, run experiments, and debug your implementation autonomously. Use isolated working directories and do not modify global configurations, other agents' files, or private evaluation resources.\
+\
+\## 2. Mandatory Requirements\
+\
+Implement a complete synthesizable \*\*64-point forward, unscaled, fixed-point complex FFT\*\* with top-level module \`fft64_top\`.\
+\
+Follow the public specification, including natural-order I/O, signed 16-bit inputs, signed 24-bit outputs, 15 fractional bits, per-nonzero-frame SQNR ≥50 dB, exact zero output for zero input, synchronous reset, correct streaming protocol, mandatory 10 ns timing, 384-cycle frame service, and output latency limits.\
+\
+These requirements determine feasibility. There is no minimum area improvement or hardware-score threshold for \`resolved=true\`. SQNR above 50 dB earns no additional reward.\
+\
+\## 3. Primary Objective: Maximize the Combined Score\
+\
+Use the default \`architecture\` profile.\
+\
+Your primary objective is to maximize:\
+\
+S = 0.60 × S_A + 0.30 × S_T + 0.10 × S_L\
+\
+with the following publicly disclosed normalization functions:\
+\
+\- \*\*Area:\*\* \`S_A = clip(3500/(A+3000), 0, 1)\`, where A is mapped area in μm².\
+\- \*\*Throughput:\*\* \`S_T = clip(ln(T_eff/T_min)/ln(240), 0, 1)\`.\
+\- \*\*Latency:\*\* \`S_L = clip((300-L)/237, 0, 1)\`.\
+\
+Here \`T_min = 10^9/(384×10)\` FFT/s and \`T_eff = 10^9/(II_ver×P_STA)\`, with the certified period in nanoseconds.\
+\
+The published aspirational targets are \*\*500 μm², 62,500,000 FFT/s, and 63 cycles\*\*. An area of 4,000 μm² gives half area credit. These values are deliberately challenging scoring anchors, \*\*not measured characteristics of an existing FFT\*\*.\
+\
+\*\*Optimize the combined normalized score, not any individual PPA metric.\*\* After meaningful changes, compare the weighted area, throughput, and latency score improvements. A throughput gain is valuable only when it offsets any weighted loss in area or latency. Account for score saturation.\
+\
+A complete public architecture evaluation provides component and combined preview scores without private calibration. A public preview is not an official hidden grade.\
+\
+\## 4. Autonomous Design Space\
+\
+You may independently explore and combine:\
+\
+\*\*(a) FFT Architecture:\*\* R2SDF, R2²SDF, R4MDC, folded/iterative FFTs, or other valid organizations.\
+\
+\*\*(b) Numerical Precision:\*\* Stage-dependent widths, twiddle precision, guard bits, rounding, truncation, and quantization boundaries.\
+\
+\*\*(c) EDA Synthesis Flow:\*\* Design Compiler compile strategies and optimization settings, resource sharing, and valid Yosys/ABC rewrite, refactor, balance, resyn2-style, pass-ordering, and technology-mapping strategies.\
+\
+You may use and modify the provided synthesis templates. Approximate logic synthesis, arbitrary gate pruning, undeclared Boolean corruption, simulation-only implementations, and unaccounted hardware resources are prohibited.\
+\
+Do not assume that any architecture or synthesis strategy is optimal without measurement.\
+\
+\## 5. Execute Experiments and Revise the Design\
+\
+First establish a functionally correct RTL baseline, then run public checks as needed:\
+\
+\`\`\`bash\
+bash run_synopsys_debug.sh submission --quick --out runs/quick_001\
+bash run_synopsys_debug.sh submission --profile area --out runs/area_001\
+bash run_synopsys_debug.sh submission --profile architecture --out runs/arch_001\
+\`\`\`\
+\
+Full architecture evaluation performs costly sustained multi-frame testing over multiple initiation intervals. Screen candidates with quick tests before full evaluation.\
+\
+For a custom synthesis recipe:\
+\
+\`\`\`bash\
+bash build_implementation.sh submission --init-flow\
+\# Edit legal synthesis scripts under submission/flow/\
+bash synopsys.sh build submission --export --out runs/build_001\
+\`\`\`\
+\
+Export the corresponding mapped netlist and manifest. Hidden grading independently imports and checks the netlist; it \*\*does not execute submitted optimization scripts\*\*. Rebuild and revalidate after changing RTL or synthesis recipes.\
+\
+Maintain \`submission/DESIGN_PLAN.md\` and \`submission/measurements.csv\`, recording hypotheses, candidates, measured SQNR, mapped area, verified II, certified clock period, worst observed latency, component scores, and total-score changes.\
+\
+\## 6. Begin Execution\
+\
+\*\*Start implementing, testing, and optimizing now.\*\*\
+\
+Within the available execution budget, first satisfy every mandatory specification. Then autonomously optimize FFT architecture, numerical precision, and synthesis-flow decisions using measured public scoring feedback.\
+\
+Submit the \*\*highest-scoring fully publicly verified feasible candidate\*\*, including RTL, experiment records, and matching synthesis recipes, mapped netlist, and manifest if custom synthesis is used.\
+\
+Briefly report the final architecture, precision strategy, synthesis settings, measured characteristics, key design revisions, and remaining limitations. Never fabricate measurements, access private FFT-Eval resources, or describe public preview feedback as an official hidden score.

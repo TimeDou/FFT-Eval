@@ -17,7 +17,7 @@ With sibling `Synopsys/` and `port.txt`, use `check_env.sh`, `run_synopsys_debug
 ## Suggested measurement schema
 
 ```text
-id,architecture,precision_policy,source_hash,recipe_hash,mapped_hash,backend,library_id,area_um2,worst_sqnr_db,verified_ii_cycles,certified_period_ns,maximum_first_cycles,maximum_completion_cycles,timing_pass,protocol_pass,status,notes
+id,architecture,precision_policy,source_hash,recipe_hash,mapped_hash,backend,library_id,area_um2,worst_sqnr_db,verified_ii_cycles,certified_period_ns,maximum_first_cycles,maximum_completion_cycles,area_score,throughput_score,latency_score,total_score,score_valid,scoring_scope,timing_pass,protocol_pass,status,notes
 ```
 
-Leave unavailable values blank rather than using zero. The `frame_ii_cycles` configuration field is a hint; official throughput is independently measured. A custom implementation's area and timing must be evaluated using the same frozen library and constraints as competing designs. The design plan and experiment log support qualitative analysis but do **not** directly change the numerical score.
+Leave unavailable values blank rather than using zero. Record component scores and total score only when the selected profile's complete evaluation returns valid feedback. Compare 0.60 ΔS_A, 0.30 ΔS_T and 0.10 ΔS_L when selecting the final design; a saturated component earns no further credit, and an area-only score cannot substitute for the combined objective. The `frame_ii_cycles` configuration field is a hint; official throughput is independently measured. A custom implementation's area and timing must be evaluated using the same frozen library and constraints as competing designs. The design plan and experiment log support qualitative analysis but do **not** directly change the numerical score.

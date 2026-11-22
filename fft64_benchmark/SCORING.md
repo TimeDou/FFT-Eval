@@ -53,6 +53,8 @@ S_L=\operatorname{clip}\left(\frac{300-L}{300-63},0,1\right),
 
 The optional `area` profile uses S=S_A and is a separate diagnostic. Use the full `architecture` profile to select the submitted design. Neither recipe names nor a larger number of experiments earns credit.
 
+When comparing candidates, use the weighted changes 0.60 ΔS_A, 0.30 ΔS_T and 0.10 ΔS_L. Raw percentage improvements are not interchangeable under these nonlinear functions. A throughput gain can be outweighed by an area penalty, and a component already at one earns no further credit. Choose the best complete architecture preview rather than the highest area-only diagnostic.
+
 ## Public feedback and final hidden grading
 
 A complete public run returns `grade.components`, `grade.weighted_components`, `grade.score`, the measured PPA and public normalization parameters. It sets `score_valid=true`, `scoring_scope=public_preview` and `official_score=false`. This is valid optimization feedback on public data; final acceptance still depends on independent hidden evaluation. Quick checks and unfinished measurements have no complete hardware score.

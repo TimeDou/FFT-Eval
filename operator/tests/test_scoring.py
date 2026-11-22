@@ -137,6 +137,27 @@ class ScoringTests(unittest.TestCase):
     def test_missing_calibration_reports_feasibility_separately(self):
         grade=score_result(result());self.assertTrue(grade['resolved']);self.assertFalse(grade['score_valid'])
 
+    def test_changed_specification_invalidates_hidden_calibration_without_changing_feasibility(self):
+        from common import sha
+        from scoring import measurement_context
+        design=result(profile='architecture')
+        design.update(seed=1157,scale=1,audience='hidden')
+        design['measurement_context']=measurement_context(design)
+        calibration=make_calibration({'accurate':design},profile='architecture')
+        self.assertTrue(score_result(design,calibration)['score_valid'])
+        specification=ROOT/'fft64_benchmark/SPEC.json'
+        replacement='0'*64 if sha(specification)!='0'*64 else '1'*64
+        with patch('common.sha',side_effect=lambda p:replacement if Path(p)==specification else sha(p)):
+            changed=copy.deepcopy(design)
+            changed['measurement_context']=measurement_context(changed)
+        self.assertEqual(design['measurement_context']['measurement_platform_fingerprint'],
+                         changed['measurement_context']['measurement_platform_fingerprint'])
+        self.assertNotEqual(design['measurement_context']['protocol_fingerprint'],
+                            changed['measurement_context']['protocol_fingerprint'])
+        grade=score_result(changed,calibration)
+        self.assertTrue(grade['resolved']);self.assertFalse(grade['score_valid'])
+        self.assertIn('Calibration protocol',grade['reason'])
+
     def test_other_profile_policy_or_backend_cannot_reuse_scale(self):
         for key,value in [('profile','architecture'),('policy_sha256','other'),('backend','local'),('weights',{'area':.5})]:
             cal=copy.deepcopy(self.reference);cal[key]=value

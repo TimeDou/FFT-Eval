@@ -43,7 +43,7 @@ After editing `submission/flow/`, build and export `submission/implementation/ma
 
 Long-stream capacity is a measured result over **finite frames and the tested II range**; it is not proof of a globally minimal II. Large RTL datasets and smaller mapped-netlist subsets establish different coverage. The tool flow gives **pre-layout**, ideal-interconnect standard-cell area and STA estimates, not post-route frequency, power or silicon performance. Optional formal equivalence is reported separately.
 
-Record the backend, tool and library identities, submitted RTL, imported netlist hash when present, selected profile, reference calibration, worst SQNR, maximum per-frame latency, verified II and certified period. Do not compare raw results or scores from different backends or profiles.
+Record the backend, tool and library identities, submitted RTL, imported netlist hash when present, selected profile, private platform/protocol calibration when grading hidden data, worst SQNR, maximum per-frame latency, verified II and certified period. Do not compare raw results or scores from different backends or profiles.
 
 ## 5. Caches and evaluation outcomes
 

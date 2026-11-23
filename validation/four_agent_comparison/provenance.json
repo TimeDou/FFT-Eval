@@ -1,0 +1,63 @@
+{
+  "public_benchmark_commit": "4a31a2a5fd4edefeae70d35a91b5b914c50e029d",
+  "private_evaluator_commit": "5d54b562c59f45aef0bfacf2fe2a140a6ad21040",
+  "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+  "final_results": [
+    {
+      "agent": "Claude-DS-Flash",
+      "public_commit": "4a31a2a5fd4edefeae70d35a91b5b914c50e029d",
+      "evaluator_commit": "5d54b562c59f45aef0bfacf2fe2a140a6ad21040",
+      "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+      "source_sha256": "3d8303285ee66c6f358db8d2623e604ada7141c74fe119e8cd4c1ff1deba3081",
+      "exported_mapped_sha256": "2935ed40cdeeb735f3016e4abb361f697cfd08b8752b1394db53fb45c659e76e",
+      "normalized_mapped_sha256": "3dd65382865c3514aabd951f172613e4a390c30b4e8934ed660dac6500d37317",
+      "private_result_sha256": "5f53cc64f6dcf31067cc891c14a4c2e6cdacd7bab7f54ba7e0e674386c3adbc7",
+      "conversation_source_sha256": "1ab9129e05687f1d6fb20ae11674b161616880e0948fddf953a3c256d0de4d29",
+      "private_result_branch": "agents/Claude-DS-Flash",
+      "private_result_commit": "1015bb6dceb4756dd933a99bbaa98ce9179ce98e"
+    },
+    {
+      "agent": "Codex-GPT-6.1-Sol-Max",
+      "public_commit": "4a31a2a5fd4edefeae70d35a91b5b914c50e029d",
+      "evaluator_commit": "5d54b562c59f45aef0bfacf2fe2a140a6ad21040",
+      "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+      "source_sha256": "7d4a8287c6e9d7e2ad2b8a6318b47c290c7814ae81a4ff276cf2ef4cfd5e01d3",
+      "exported_mapped_sha256": "877fb54295983dc817e2af185260df2d81a26cbb2094ab1758b55a3d9aa4a7af",
+      "normalized_mapped_sha256": "40d09812434c617959a496197380a9499cd71b7539c68c7f5c6973a64e483018",
+      "private_result_sha256": "85aa9951ed8814ccc9f126fbb9771ca5c8ec03eb18f2cf550dcb3474a502f986",
+      "conversation_source_sha256": "d35cd871edab382694f2a9bcd6b24aa3eef855b34fae18f692ac816d32a0bd06",
+      "private_result_branch": "agents/Codex-GPT-6.1-Sol-Max",
+      "private_result_commit": "d3323d1eb7694fc42ea526ce36502b5eba1de404"
+    },
+    {
+      "agent": "Codex-GPT-6.2-Sol-Max",
+      "public_commit": "4a31a2a5fd4edefeae70d35a91b5b914c50e029d",
+      "evaluator_commit": "5d54b562c59f45aef0bfacf2fe2a140a6ad21040",
+      "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+      "source_sha256": "e37c2b64293f0639da3a7619881b6a13bdb9939882094cfff1c54c892a145e85",
+      "exported_mapped_sha256": "88802bc164cdb96f76ea691390af14dceec9bcd37b99e3069912b922381439ef",
+      "normalized_mapped_sha256": "0f4baf5720f542278f6c53701fd18114606b3f8204c6329139184f1294d31ad6",
+      "private_result_sha256": "ea7fa204fbb0ce9b5ba2e5768d23cb19f261691e3b323df1fdc62112e874e45d",
+      "conversation_source_sha256": "58e2d244de540f7aa81338d2601a9f7039f6e8518c2473cee561ff4b501c7ce1",
+      "private_result_branch": "agents/Codex-GPT-6.2-Sol-Max",
+      "private_result_commit": "dac65031978618c305683c1412e93a50acb52dd7"
+    },
+    {
+      "agent": "Claude-Opus-5.5",
+      "public_commit": "4a31a2a5fd4edefeae70d35a91b5b914c50e029d",
+      "evaluator_commit": "5d54b562c59f45aef0bfacf2fe2a140a6ad21040",
+      "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+      "source_sha256": "10d5092a3a200fcf710760e482d1a46411f2499a3c36eb53e00f8f73494d373e",
+      "exported_mapped_sha256": "81c305357cdef25be33347de08f5e2ea4fa9f4143c8168b752baf4937e276669",
+      "normalized_mapped_sha256": "2dfa6d80c25903ec0a52c896432257420739c8b617caa73d9c47318fd1194a7a",
+      "private_result_sha256": "48481d01d4c91f0956f8f1278bca96f6507b81844e4876533aa0546884ba01ef",
+      "conversation_source_sha256": "d4bda09c6ce9bf76f98e999ab2b4614967974422567e3c50248b707ac496b121",
+      "private_result_branch": "agents/Claude-Opus-5.5",
+      "private_result_commit": "62b8b6f329ba393375dc89bd90a9b064e9219429"
+    }
+  ],
+  "intermediate_evidence": "Self-evaluated Agent records, accepted without independent EDA reruns",
+  "final_evidence": "All four final circuits independently hidden-validated; original three reused, Opus freshly evaluated",
+  "comparison_branch": "validation/final-agent-comparison",
+  "comparison_directory": "validation/four_agent_comparison"
+}

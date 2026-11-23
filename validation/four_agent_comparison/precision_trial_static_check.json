@@ -1,0 +1,25 @@
+{
+  "agent": "Claude-DS-Flash",
+  "generator_sha256": "208bd2c76a56bc97c228e4d4332dfcc59722904c04abb1a0d317b7e4f012b210",
+  "generator_private_branch_path": "public_evidence/development/work/gen_rtl3.py",
+  "observed_trial_command_timestamp_utc": "2026-11-22T11:42:57.257Z",
+  "evidence_lines": [
+    9,
+    162,
+    163,
+    187,
+    188,
+    195,
+    196
+  ],
+  "operation": "RAMW=20 retains the low 20 bits and sign-extends the read value; no fractional rescale is emitted",
+  "actual_format": "signed 20-bit Q15",
+  "actual_minimum": -16,
+  "actual_maximum": 15.999969482421875,
+  "intended_reported_format": "signed 20-bit Q13",
+  "intended_minimum": -64,
+  "intended_maximum": 63.9998779296875,
+  "legal_constant_input_0p5_fft_dc_value": 32,
+  "conclusion": "The recorded narrow-buffer failure is consistent with range loss from incorrect rescaling; it does not establish that a correctly implemented Q13 buffer is infeasible",
+  "verification": "Static inspection of the preserved generator and visible trial command; failed RTL was not re-simulated"
+}

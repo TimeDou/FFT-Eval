@@ -1,0 +1,30 @@
+{
+  "agent": "Claude-Opus-5.5",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "user_reported_duration": "6h30m",
+  "user_reported_duration_seconds": 23400,
+  "task_start_utc": "2026-11-22T15:17:57.474Z",
+  "final_visible_answer_utc": "2026-11-23T06:34:44.009Z",
+  "logged_task_wall_seconds": 55006.535,
+  "continuation_window_start_utc": "2026-11-23T00:01:15.240Z",
+  "continuation_window_seconds": 23608.769,
+  "largest_observed_event_gap": {
+    "seconds": 27107.029,
+    "before_utc": "2026-11-22T16:29:28.211Z",
+    "after_utc": "2026-11-23T00:01:15.240Z",
+    "source_record_after": 153
+  },
+  "prompt_matches_prior_three": true,
+  "prompt_normalized_sha256": "3aa9c2c4928122e5967f73f43d803e14b47927fab26b23254f902204daf632fa",
+  "source_sha256": "d4bda09c6ce9bf76f98e999ab2b4614967974422567e3c50248b707ac496b121",
+  "extra_user_instructions": [
+    {
+      "timestamp": "2026-11-23T06:26:52.858Z",
+      "message": "Since you have reach the runtime limitation (6h), plz submit your answer now and stop",
+      "initial_task": false
+    }
+  ],
+  "duration_note": "User-reported 6h30m retained. Raw session spans overnight and contains a long gap; continuation-window elapsed time is diagnostic, not an estimate of active model/tool compute time."
+}

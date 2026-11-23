@@ -1,0 +1,104 @@
+{
+  "agent": "Claude-Opus-5.5",
+  "source_file": "/home/sj/.claude/projects/-mnt-DATA1-sj-FFT-Claude-Opus-5-5/d493fdc3-e3f8-41d7-8921-543a24bc9830.jsonl",
+  "source_sha256": "d4bda09c6ce9bf76f98e999ab2b4614967974422567e3c50248b707ac496b121",
+  "source_bytes": 7579687,
+  "source_record_count": 1865,
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "user_reported_duration": "6h30m",
+  "user_reported_duration_seconds": 23400,
+  "task_start_utc": "2026-11-22T15:17:57.474Z",
+  "final_visible_answer_utc": "2026-11-23T06:34:44.009Z",
+  "logged_task_wall_seconds": 55006.535,
+  "continuation_window_start_utc": "2026-11-23T00:01:15.240Z",
+  "continuation_window_seconds": 23608.769,
+  "largest_observed_event_gap": {
+    "seconds": 27107.029,
+    "before_utc": "2026-11-22T16:29:28.211Z",
+    "after_utc": "2026-11-23T00:01:15.240Z",
+    "source_record_after": 153
+  },
+  "large_event_gaps": [
+    {
+      "seconds": 27107.029,
+      "before_utc": "2026-11-22T16:29:28.211Z",
+      "after_utc": "2026-11-23T00:01:15.240Z",
+      "source_record_after": 153
+    },
+    {
+      "seconds": 1237.394,
+      "before_utc": "2026-11-23T04:11:21.665Z",
+      "after_utc": "2026-11-23T04:31:59.059Z",
+      "source_record_after": 1122
+    },
+    {
+      "seconds": 1203.931,
+      "before_utc": "2026-11-22T15:53:51.385Z",
+      "after_utc": "2026-11-22T16:13:55.316Z",
+      "source_record_after": 144
+    },
+    {
+      "seconds": 1203.799,
+      "before_utc": "2026-11-22T15:33:47.586Z",
+      "after_utc": "2026-11-22T15:53:51.385Z",
+      "source_record_after": 143
+    },
+    {
+      "seconds": 1202.498,
+      "before_utc": "2026-11-23T01:13:34.876Z",
+      "after_utc": "2026-11-23T01:33:37.374Z",
+      "source_record_after": 356
+    },
+    {
+      "seconds": 1043.281,
+      "before_utc": "2026-11-23T00:01:20.362Z",
+      "after_utc": "2026-11-23T00:18:43.643Z",
+      "source_record_after": 158
+    },
+    {
+      "seconds": 1037.676,
+      "before_utc": "2026-11-23T00:42:01.439Z",
+      "after_utc": "2026-11-23T00:59:19.115Z",
+      "source_record_after": 228
+    },
+    {
+      "seconds": 928.946,
+      "before_utc": "2026-11-22T16:13:55.316Z",
+      "after_utc": "2026-11-22T16:29:24.262Z",
+      "source_record_after": 145
+    },
+    {
+      "seconds": 738.157,
+      "before_utc": "2026-11-23T00:29:43.186Z",
+      "after_utc": "2026-11-23T00:42:01.343Z",
+      "source_record_after": 226
+    },
+    {
+      "seconds": 673.776,
+      "before_utc": "2026-11-23T04:00:05.758Z",
+      "after_utc": "2026-11-23T04:11:19.534Z",
+      "source_record_after": 1115
+    }
+  ],
+  "prompt_normalized_sha256": "3aa9c2c4928122e5967f73f43d803e14b47927fab26b23254f902204daf632fa",
+  "prior_three_prompt_sha256": "3aa9c2c4928122e5967f73f43d803e14b47927fab26b23254f902204daf632fa",
+  "prompt_matches_prior_three": true,
+  "extra_user_instructions": [
+    {
+      "timestamp": "2026-11-23T06:26:52.858Z",
+      "message": "Since you have reach the runtime limitation (6h), plz submit your answer now and stop",
+      "initial_task": false
+    }
+  ],
+  "omissions": {
+    "non_conversation_records": 951,
+    "private_reasoning_blocks": 255
+  },
+  "duration_note": "User-reported 6h30m retained. Raw session spans overnight and contains a long gap; continuation-window elapsed time is diagnostic, not an estimate of active model/tool compute time.",
+  "export_sha256": "210b7f3a5c4de73f7f6834ecad89ed1c0590320fb006e2ea0b46d2e0b4b12644",
+  "redactions": {
+    "credential_like_tokens": 0
+  }
+}

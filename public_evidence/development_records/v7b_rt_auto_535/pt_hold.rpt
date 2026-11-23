@@ -1,0 +1,108 @@
+****************************************
+Report : timing
+	-path_type full
+	-delay_type min
+	-slack_lesser_than 100000.0000
+	-max_paths 3
+	-sort_by slack
+Design : fft64_top
+Version: M-2016.12-SP1
+Date   : Mon Nov 23 13:40:34 2026
+****************************************
+
+
+  Startpoint: in_re[15] (input port clocked by clk)
+  Endpoint: u_s1_dlr_reg_14_
+               (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Point                                                   Incr       Path
+  ------------------------------------------------------------------------------
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  input external delay                                  0.0000     0.0000 r
+  in_re[15] (in)                                        0.0000     0.0000 r
+  U4753/Y (INVx4_ASAP7_75t_R)                           7.9173     7.9173 f
+  U8016/Y (NAND2xp33_ASAP7_75t_R)                      11.9559    19.8733 r
+  U3654/Y (OAI21xp33_ASAP7_75t_R)                      11.3707    31.2440 f
+  u_s1_dlr_reg_14_/D (DFFHQNx1_ASAP7_75t_R)             0.0000    31.2440 f
+  data arrival time                                               31.2440
+
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  clock reconvergence pessimism                         0.0000     0.0000
+  u_s1_dlr_reg_14_/CLK (DFFHQNx1_ASAP7_75t_R)                      0.0000 r
+  library hold time                                    13.8658    13.8658
+  data required time                                              13.8658
+  ------------------------------------------------------------------------------
+  data required time                                              13.8658
+  data arrival time                                              -31.2440
+  ------------------------------------------------------------------------------
+  slack (MET)                                                     17.3782
+
+
+  Startpoint: in_re[2] (input port clocked by clk)
+  Endpoint: u_s1_dlr_reg_2_
+               (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Point                                                   Incr       Path
+  ------------------------------------------------------------------------------
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  input external delay                                  0.0000     0.0000 r
+  in_re[2] (in)                                         0.0000     0.0000 r
+  U5746/Y (NOR2x1_ASAP7_75t_R)                         16.7997    16.7997 f
+  U5458/Y (NAND2xp33_ASAP7_75t_R)                      14.3021    31.1018 r
+  U5459/Y (OAI21xp33_ASAP7_75t_R)                      11.6311    42.7328 f
+  u_s1_dlr_reg_2_/D (DFFHQNx1_ASAP7_75t_R)              0.0000    42.7328 f
+  data arrival time                                               42.7328
+
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  clock reconvergence pessimism                         0.0000     0.0000
+  u_s1_dlr_reg_2_/CLK (DFFHQNx1_ASAP7_75t_R)                       0.0000 r
+  library hold time                                    13.8271    13.8271
+  data required time                                              13.8271
+  ------------------------------------------------------------------------------
+  data required time                                              13.8271
+  data arrival time                                              -42.7328
+  ------------------------------------------------------------------------------
+  slack (MET)                                                     28.9058
+
+
+  Startpoint: in_im[15] (input port clocked by clk)
+  Endpoint: u_s1_dli_reg_14_
+               (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Point                                                   Incr       Path
+  ------------------------------------------------------------------------------
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  input external delay                                  0.0000     0.0000 r
+  in_im[15] (in)                                        0.0000     0.0000 r
+  U4978/Y (INVxp33_ASAP7_75t_R)                        17.0356    17.0356 f
+  U3659/Y (NAND2xp33_ASAP7_75t_R)                      16.4551    33.4907 r
+  U3658/Y (OAI21xp33_ASAP7_75t_R)                      11.8443    45.3350 f
+  u_s1_dli_reg_14_/D (DFFHQNx1_ASAP7_75t_R)             0.0000    45.3350 f
+  data arrival time                                               45.3350
+
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  clock reconvergence pessimism                         0.0000     0.0000
+  u_s1_dli_reg_14_/CLK (DFFHQNx1_ASAP7_75t_R)                      0.0000 r
+  library hold time                                    13.7954    13.7954
+  data required time                                              13.7954
+  ------------------------------------------------------------------------------
+  data required time                                              13.7954
+  data arrival time                                              -45.3350
+  ------------------------------------------------------------------------------
+  slack (MET)                                                     31.5396
+
+Warning: report_timing has satisfied the max_paths criteria. There are 4275 further endpoints which have paths of interest with slack less than 100000.0000 that were not considered when generating this report. (UITE-502)
+
+1

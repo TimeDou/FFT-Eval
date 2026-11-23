@@ -1,0 +1,20 @@
+[
+  "/mnt/mydata/runtime/python/bin/python3",
+  "/mnt/mydata/agent_reviews/opus_final_20261123_064903/engine_private/operator/evaluate_synopsys.py",
+  "--manifest",
+  "/mnt/mydata/agent_reviews/opus_final_20261123_064903/submissions.csv",
+  "--out",
+  "/mnt/mydata/agent_reviews/opus_final_20261123_064903/evaluation",
+  "--state-dir",
+  "/mnt/mydata/agent_reviews/opus_final_20261123_064903/state",
+  "--protocol",
+  "/mnt/mydata/agent_reviews/opus_final_20261123_064903/private_protocol.json",
+  "--calibration",
+  "/mnt/mydata/agent_reviews/opus_final_20261123_064903/calibration.json",
+  "--backend",
+  "commercial",
+  "--profile",
+  "architecture",
+  "--jobs",
+  "1"
+]

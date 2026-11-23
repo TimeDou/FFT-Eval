@@ -1,0 +1,85 @@
+
+                                 PrimeTime (R)
+
+               Version M-2016.12-SP1 for linux64 - Jan 12, 2017 
+
+                    Copyright (c) 1988 - 2017 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+            or distribution of this software is strictly prohibited.
+
+Warning: Cannot use command line editor for terminal type 'dumb'. (CLE-100)
+# Official-constraint STA on an experimental netlist (development only).
+set TECH /mnt/mydata/.fft64/tech/99619e6e51b75f151556
+/mnt/mydata/.fft64/tech/99619e6e51b75f151556
+set DBLIST [list $TECH/db/comb_rvt_tt.db $TECH/db/seq_rvt_tt.db]
+/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db
+set_app_var link_path [concat [list *] $DBLIST]
+* /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db
+set OUT $::env(EXP_OUT)
+/mnt/mydata/opus_work/runs/alt_t2000
+read_verilog [file join $OUT mapped.v]
+1
+link_design fft64_top
+Loading verilog file '/mnt/mydata/opus_work/runs/alt_t2000/mapped.v'
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db'
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db'
+Linking design fft64_top...
+Information: 104 (62.28%) library cells are unused in library asap7sc7p5t_ALL_RVT_TT_nldm_211120..... (LNK-045)
+Information: 32 (96.97%) library cells are unused in library asap7sc7p5t_SEQ_RVT_TT_nldm_220123..... (LNK-045)
+Information: total 136 library cells are unused (LNK-046)
+Design 'fft64_top' was successfully linked.
+Information: There are 11687 leaf cells, ports, hiers and 11636 nets in the design (LNK-047)
+1
+create_clock -name clk -period 10000 [get_ports clk]
+1
+set_clock_uncertainty -setup 100 [get_clocks clk]
+1
+set_clock_transition 20 [get_clocks clk]
+1
+set_input_delay 0 -clock clk [get_ports {rst in_valid frame_start in_re* in_im*}]
+1
+set_input_transition 20 [get_ports {rst in_valid frame_start in_re* in_im*}]
+1
+set_output_delay 0 -clock clk [all_outputs]
+1
+set_load 1 [all_outputs]
+1
+set_false_path -from [get_ports rst]
+1
+update_timing
+Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)
+1
+set sp [get_timing_paths -delay_type max -max_paths 1]
+_sel33
+set hp [get_timing_paths -delay_type min -max_paths 1]
+_sel34
+set s [get_attribute $sp slack]
+8000.494141
+set h [get_attribute $hp slack]
+0.631854
+redirect [file join $OUT pt_timing.rpt] {report_timing -delay_type max -max_paths 5 -significant_digits 4 -slack_lesser_than 100000}
+redirect [file join $OUT pt_hold.rpt] {report_timing -delay_type min -max_paths 3 -significant_digits 4 -slack_lesser_than 100000}
+set f [open [file join $OUT pt.json] w]
+file22
+puts $f [format {{"setup_slack_ps":%.3f,"hold_slack_ps":%.3f,"period_est_ns":%.4f}} $s $h [expr {(10000.0-$s)/1000.0}]]
+close $f
+exit
+Information: Defining new variable 'hp'. (CMD-041)
+Information: Defining new variable 'OUT'. (CMD-041)
+Information: Defining new variable 'f'. (CMD-041)
+Information: Defining new variable 'h'. (CMD-041)
+Information: Defining new variable 's'. (CMD-041)
+Information: Defining new variable 'sp'. (CMD-041)
+Information: Defining new variable 'DBLIST'. (CMD-041)
+Information: Defining new variable 'TECH'. (CMD-041)
+
+Timing updates: 1 (0 implicit, 1 explicit) (0 incremental, 1 full, 0 logical)
+Noise updates: 0 (0 implicit, 0 explicit) (0 incremental, 0 full)
+Maximum memory usage for this session: 600.69 MB
+CPU usage for this session: 2 seconds 
+Elapsed time for this session: 1 seconds
+Diagnostics summary: 4 warnings, 12 informationals
+
+Thank you for using pt_shell!

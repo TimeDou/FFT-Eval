@@ -1,0 +1,70 @@
+{
+  "status": "COMPLETE",
+  "backend": "commercial",
+  "profile": "architecture",
+  "functional_pass": true,
+  "worst_frame_sqnr_db": 53.082955609550666,
+  "first_output_cycles": [
+    122
+  ],
+  "completion_cycles": [
+    185
+  ],
+  "timing_pass": true,
+  "worst_slack_ns": 9.446026367,
+  "full_mapped_area_um2": 1950.45408,
+  "mapped_simulation_pass": true,
+  "area_ratio": 0.48761351999999997,
+  "grade": {
+    "resolved": true,
+    "feasible": true,
+    "score": 0.755685762228243,
+    "score_valid": true,
+    "evaluation_outcome": "FEASIBLE",
+    "scoring_policy_id": "fft64_quant",
+    "profile": "architecture",
+    "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+    "area_ratio": 0.48761351999999997,
+    "scoring_scope": "public_preview",
+    "official_score": false,
+    "components": {
+      "area": 0.7070058510673025,
+      "throughput": 0.8545892211859802,
+      "latency": 0.7510548523206751
+    },
+    "weighted_components": {
+      "area": 0.4242035106403815,
+      "throughput": 0.25637676635579404,
+      "latency": 0.07510548523206752
+    },
+    "weights": {
+      "area": 0.6,
+      "throughput": 0.3,
+      "latency": 0.1
+    },
+    "performance": {
+      "area_um2": 1950.45408,
+      "first_output_cycles": 122,
+      "first_output_latency_ns": 1220.0,
+      "target_clock_period_ns": 10.0,
+      "base_frame_II_cycles": 384,
+      "measured_frequency_in_score": false,
+      "certified_period_ns": 0.5546875,
+      "certified_setup_fmax_MHz": 1802.8169014084508,
+      "verified_frame_II_cycles": 64,
+      "effective_throughput_ffts_per_second": 28169014.08450704,
+      "effective_throughput_samples_per_second": 1802816901.4084506,
+      "first_output_latency_at_certified_clock_ns": 67.671875
+    },
+    "normalization_parameters": {
+      "area_ideal_um2": 500.0,
+      "area_half_credit_um2": 4000.0,
+      "throughput_min_ffts_per_second": 260416.66666666666,
+      "throughput_ideal_ffts_per_second": 62500000.0,
+      "first_output_ideal_cycles": 63.0,
+      "first_output_max_cycles": 300.0
+    },
+    "reason": "PUBLIC_PREVIEW: All public hardware checks passed; component scores use the published fixed numeric targets. Final acceptance requires independent hidden evaluation."
+  },
+  "failure": null
+}

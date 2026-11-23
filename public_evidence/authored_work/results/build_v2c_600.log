@@ -1,0 +1,36 @@
+SSH: root@localhost:2203
+Host results: /mnt/DATA1/sj/FFT/Claude-Opus-5.5/FFT-Bench/runs/build_v2c_600
+Container job: /mnt/mydata/.fft64/jobs/20261123T023839Z_7122fde910
+mesg: ttyname failed: Inappropriate ioctl for device
+{
+  "status": "BUILT",
+  "reused": false,
+  "implementation": "/mnt/mydata/.fft64/jobs/20261123T023839Z_7122fde910/output/implementation",
+  "manifest": {
+    "rtl_sha256": "0cab085101199eeb6df1091a10133f4275542c0fa50050335d55273c8b0631a8",
+    "mapped_sha256": "60af037f4017185b81de3cb3aa4c61b8965765b56db371569c45cff547c49a39",
+    "libraries_sha256": {
+      "ASAP7_RVT_TT_nldm_NO_FAHA.lib": "a470018fb07a718351566074090bdea9ed36647bc724265a9115a1c4225eeefa",
+      "ASAP7_SEQ_RVT_TT_nldm_220123.lib": "57a0b403485b99ebd676942af4673ac086b86c7c75fbdc3e5c0038501dd22ba3"
+    },
+    "producer": {
+      "backend": "commercial",
+      "tools": {
+        "dc_shell": {
+          "path": "/usr/synopsys/dc-L-2016.03-SP1/bin/dc_shell",
+          "sha256": "9f02911939ed5da9be588569bf74ae4a36b0ed5f48d67f4e9f36aa7110d7f5f5"
+        }
+      },
+      "recipe_sha256": {
+        "dc_opt.tcl": "21fb5602991d939ec821a28267854684c451ec6ef61273e1457e73aaa4c03c1d"
+      },
+      "custom_files_sha256": {
+        "dc_opt.tcl": "21fb5602991d939ec821a28267854684c451ec6ef61273e1457e73aaa4c03c1d"
+      },
+      "abc_delay_ps": 10000.0
+    },
+    "build_seconds": 95.39477059897035,
+    "evaluation": "Area/timing are measured independently; producer reports are not scores"
+  }
+}
+Exported implementation: /mnt/DATA1/sj/FFT/Claude-Opus-5.5/FFT-Bench/submission/implementation

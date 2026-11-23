@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/usr/synopsys/vcs-L-2016.06/bin/vcs",
+    "-sverilog",
+    "-full64",
+    "+vcs+initreg+random",
+    "-timescale=1ns/1ps",
+    "-top",
+    "tb",
+    "/mnt/mydata/.fft64/jobs/20261123T024318Z_7ad199b308/output/mapped_sim/source.sv",
+    "/mnt/mydata/.fft64/jobs/20261123T024318Z_7ad199b308/output/mapped_sim/tb.sv",
+    "-o",
+    "/mnt/mydata/.fft64/jobs/20261123T024318Z_7ad199b308/output/mapped_sim/simv"
+  ],
+  "seconds": 2.2693048059009016,
+  "returncode": 0
+}

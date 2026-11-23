@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/mnt/mydata/agent_reviews/opus_final_20261123_064903/launcher.py", line 46, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/mnt/mydata/agent_reviews/opus_final_20261123_064903/launcher.py", line 25, in main
+    assert environment['ready']
+           ~~~~~~~~~~~^^^^^^^^^
+AssertionError

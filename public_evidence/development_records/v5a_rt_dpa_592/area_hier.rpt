@@ -1,0 +1,67 @@
+ 
+****************************************
+Report : area
+Design : fft64_top
+Version: L-2016.03-SP1
+Date   : Mon Nov 23 12:45:02 2026
+****************************************
+
+Information: Updating design information... (UID-85)
+Warning: Design 'fft64_top' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+Library(s) Used:
+
+    asap7sc7p5t_ALL_RVT_TT_nldm_211120 (File: /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db)
+    asap7sc7p5t_SEQ_RVT_TT_nldm_220123 (File: /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db)
+
+Number of ports:                         1020
+Number of nets:                         13765
+Number of cells:                        12838
+Number of combinational cells:           8407
+Number of sequential cells:              4410
+Number of macros/black boxes:               0
+Number of buf/inv:                       1798
+Number of references:                      49
+
+Combinational area:                694.182957
+Buf/Inv area:                       81.254341
+Noncombinational area:            1285.985111
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (No wire load specified)
+
+Total cell area:                  1980.168068
+Total area:                 undefined
+
+Hierarchical area distribution
+------------------------------
+
+                                  Global cell area          Local cell area
+                                  ------------------  --------------------------- 
+Hierarchical cell                 Absolute   Percent  Combi-    Noncombi-  Black-
+                                  Total      Total    national  national   boxes   Design
+--------------------------------  ---------  -------  --------  ---------  ------  ------------------
+fft64_top                         1980.1681    100.0   17.0440     4.6802  0.0000  fft64_top
+ctl1                                 3.4992      0.2    1.4580     2.0412  0.0000  segctl1_TRIG32
+ctl2                                 3.5284      0.2    1.4872     2.0412  0.0000  rsegctl_TRIG16_NB6
+ctl3                                 3.4409      0.2    1.3997     2.0412  0.0000  rsegctl_TRIG10_NB6
+ctl4                                 3.4555      0.2    1.4143     2.0412  0.0000  rsegctl_TRIG7_NB6
+ctl5                                 2.1433      0.1    0.9769     1.1664  0.0000  rsegctl_TRIG2_NB3
+ctl6                                 1.8808      0.1    0.7144     1.1664  0.0000  rsegctl_TRIG3_NB3
+ctl7                                 2.4786      0.1    1.0206     1.4580  0.0000  rsegctl_TRIG3_NB4
+ctl8                                 3.0326      0.2    1.2830     1.7496  0.0000  rsegctl_TRIG13_NB5
+ctl9                                 3.5284      0.2    1.4872     2.0412  0.0000  rsegctl_TRIG30_NB6
+u_b32                               48.9742      2.5    9.3166    39.6576  0.0000  bswap32
+u_b41                              148.1036      7.5    9.3020   138.8016  0.0000  bswap41
+u_b50                              315.3508     15.9    8.0044   307.3464  0.0000  bswap50
+u_m4                               287.7217     14.5  225.3193    62.4024  0.0000  w64mul
+u_r3                               107.4838      5.4   71.8940    35.5898  0.0000  w8rot3
+u_r6                               133.3049      6.7   82.5665    50.7384  0.0000  w8rot6
+u_s1                               319.6811     16.1   30.9971   288.6840  0.0000  sdf_stage1
+u_s2                               198.0110     10.0   39.3806   158.6304  0.0000  sdf_stage2
+u_s3                               130.1557      6.6   40.9261    89.2296  0.0000  sdf_stage3
+u_s4                                94.4201      4.8   41.9321    52.4880  0.0000  sdf_stage4
+u_s5                                79.6505      4.0   48.1577    31.4928  0.0000  sdf_stage5
+u_s6                                68.5989      3.5   58.1013    10.4976  0.0000  sdf_stage6
+--------------------------------  ---------  -------  --------  ---------  ------  ------------------
+Total                                                 694.1830  1285.9851  0.0000
+
+1

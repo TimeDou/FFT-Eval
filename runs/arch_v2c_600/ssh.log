@@ -1,0 +1,71 @@
+mesg: ttyname failed: Inappropriate ioctl for device
+{
+  "status": "COMPLETE",
+  "backend": "commercial",
+  "profile": "architecture",
+  "functional_pass": true,
+  "worst_frame_sqnr_db": 53.286806056733184,
+  "first_output_cycles": [
+    123
+  ],
+  "completion_cycles": [
+    186
+  ],
+  "timing_pass": true,
+  "worst_slack_ns": 9.400039062,
+  "full_mapped_area_um2": 1994.29614,
+  "mapped_simulation_pass": true,
+  "area_ratio": 0.49857403499999997,
+  "grade": {
+    "resolved": true,
+    "feasible": true,
+    "score": 0.7470327154514246,
+    "score_valid": true,
+    "evaluation_outcome": "FEASIBLE",
+    "scoring_policy_id": "fft64_quant",
+    "profile": "architecture",
+    "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+    "area_ratio": 0.49857403499999997,
+    "scoring_scope": "public_preview",
+    "official_score": false,
+    "components": {
+      "area": 0.7007994523929051,
+      "throughput": 0.8395649990396137,
+      "latency": 0.7468354430379747
+    },
+    "weighted_components": {
+      "area": 0.42047967143574305,
+      "throughput": 0.2518694997118841,
+      "latency": 0.07468354430379746
+    },
+    "weights": {
+      "area": 0.6,
+      "throughput": 0.3,
+      "latency": 0.1
+    },
+    "performance": {
+      "area_um2": 1994.29614,
+      "first_output_cycles": 123,
+      "first_output_latency_ns": 1230.0,
+      "target_clock_period_ns": 10.0,
+      "base_frame_II_cycles": 384,
+      "measured_frequency_in_score": false,
+      "certified_period_ns": 0.602294921875,
+      "certified_setup_fmax_MHz": 1660.3161734900689,
+      "verified_frame_II_cycles": 64,
+      "effective_throughput_ffts_per_second": 25942440.210782327,
+      "effective_throughput_samples_per_second": 1660316173.490069,
+      "first_output_latency_at_certified_clock_ns": 74.082275390625
+    },
+    "normalization_parameters": {
+      "area_ideal_um2": 500.0,
+      "area_half_credit_um2": 4000.0,
+      "throughput_min_ffts_per_second": 260416.66666666666,
+      "throughput_ideal_ffts_per_second": 62500000.0,
+      "first_output_ideal_cycles": 63.0,
+      "first_output_max_cycles": 300.0
+    },
+    "reason": "PUBLIC_PREVIEW: All public hardware checks passed; component scores use the published fixed numeric targets. Final acceptance requires independent hidden evaluation."
+  },
+  "failure": null
+}

@@ -1,0 +1,974 @@
+
+                           Design Compiler Graphical 
+                                 DC Ultra (TM)
+                                  DFTMAX (TM)
+                              Power Compiler (TM)
+                                 DesignWare (R)
+                                 DC Expert (TM)
+                               Design Vision (TM)
+                               HDL Compiler (TM)
+                               VHDL Compiler (TM)
+                                  DFT Compiler
+                               Design Compiler(R)
+
+               Version L-2016.03-SP1 for linux64 - Apr 18, 2016 
+
+                    Copyright (c) 1988 - 2016 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+            or distribution of this software is strictly prohibited.
+Initializing...
+# Experimental DC synthesis driver (development only).
+# Env: EXP_RTL, EXP_OUT, EXP_PERIOD_PS, EXP_RECIPE (tcl file sourced after constraints)
+if {[catch {
+set TECH /mnt/mydata/.fft64/tech/99619e6e51b75f151556
+set DBLIST [list $TECH/db/comb_rvt_tt.db $TECH/db/seq_rvt_tt.db]
+set_app_var target_library $DBLIST
+set_app_var link_library [concat [list *] $DBLIST]
+set_host_options -max_cores 1
+set OUT $::env(EXP_OUT)
+file mkdir $OUT
+define_design_lib WORK -path [file join $OUT dc_work]
+analyze -format sverilog $::env(EXP_RTL)
+elaborate fft64_top
+current_design fft64_top
+link
+uniquify
+set P $::env(EXP_PERIOD_PS)
+create_clock -name clk -period $P [get_ports clk]
+set_clock_uncertainty -setup 100 [get_clocks clk]
+set_clock_transition 20 [get_clocks clk]
+set_input_delay 0 -clock clk [get_ports {rst in_valid frame_start in_re* in_im*}]
+set_input_transition 20 [get_ports {rst in_valid frame_start in_re* in_im*}]
+set_output_delay 0 -clock clk [all_outputs]
+set_load 1 [all_outputs]
+set_false_path -from [get_ports rst]
+source $::env(EXP_RECIPE)
+current_design fft64_top
+redirect [file join $OUT area_hier.rpt] {report_area -hierarchy}
+ungroup -all -flatten
+change_names -rules verilog -hierarchy
+redirect [file join $OUT area.rpt] {report_area}
+redirect [file join $OUT timing.rpt] {report_timing -delay_type max -max_paths 3 -nets -transition_time}
+redirect [file join $OUT ref.rpt] {report_reference}
+write -format verilog -hierarchy -output [file join $OUT mapped.v]
+} err]} {
+  puts stderr "EXP_FATAL: $err"
+  exit 1
+}
+Running PRESTO HDLC
+Compiling source file /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v
+Presto compilation completed successfully.
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db'
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db'
+Loading db file '/usr/synopsys/dc-L-2016.03-SP1/libraries/syn/gtech.db'
+Loading db file '/usr/synopsys/dc-L-2016.03-SP1/libraries/syn/standard.sldb'
+  Loading link library 'asap7sc7p5t_ALL_RVT_TT_nldm_211120'
+  Loading link library 'asap7sc7p5t_SEQ_RVT_TT_nldm_220123'
+  Loading link library 'gtech'
+Running PRESTO HDLC
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:412: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:413: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:466: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:467: unsigned to signed assignment occurs. (VER-318)
+
+Inferred memory devices in process
+	in routine fft64_top line 393 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|      mdp3_reg       | Flip-flop |   2   |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+
+Inferred memory devices in process
+	in routine fft64_top line 398 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|      mdp4_reg       | Flip-flop |   3   |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+
+Inferred memory devices in process
+	in routine fft64_top line 410 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|      mdp6_reg       | Flip-flop |   2   |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+
+Inferred memory devices in process
+	in routine fft64_top line 451 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|     ostart_reg      | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+
+Inferred memory devices in process
+	in routine fft64_top line 458 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       ovr_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+|       oc_reg        | Flip-flop |   6   |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Elaborated 1 design.
+Current design is now 'fft64_top'.
+Information: Building the design 'segctl1' instantiated from design 'fft64_top' with
+	the parameters "TRIG=31". (HDL-193)
+
+Inferred memory devices in process
+	in routine segctl1_TRIG31 line 373 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       cnt_reg       | Flip-flop |   6   |  Y  | N  | N  | N  | N  | N  | N  |
+|      pend_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'rsegctl' instantiated from design 'fft64_top' with
+	the parameters "TRIG=16,NB=6". (HDL-193)
+
+Inferred memory devices in process
+	in routine rsegctl_TRIG16_NB6 line 360 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       cnt_reg       | Flip-flop |   6   |  Y  | N  | N  | N  | N  | N  | N  |
+|      pend_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'rsegctl' instantiated from design 'fft64_top' with
+	the parameters "TRIG=10,NB=6". (HDL-193)
+
+Inferred memory devices in process
+	in routine rsegctl_TRIG10_NB6 line 360 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       cnt_reg       | Flip-flop |   6   |  Y  | N  | N  | N  | N  | N  | N  |
+|      pend_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'rsegctl' instantiated from design 'fft64_top' with
+	the parameters "TRIG=7,NB=6". (HDL-193)
+
+Inferred memory devices in process
+	in routine rsegctl_TRIG7_NB6 line 360 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       cnt_reg       | Flip-flop |   6   |  Y  | N  | N  | N  | N  | N  | N  |
+|      pend_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'rsegctl' instantiated from design 'fft64_top' with
+	the parameters "TRIG=2,NB=3". (HDL-193)
+
+Inferred memory devices in process
+	in routine rsegctl_TRIG2_NB3 line 360 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       cnt_reg       | Flip-flop |   3   |  Y  | N  | N  | N  | N  | N  | N  |
+|      pend_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'sdf_stage1'. (HDL-193)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:9: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:10: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:11: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:12: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:23: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:24: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:25: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:26: signed to unsigned part selection occurs. (VER-318)
+
+Inferred memory devices in process
+	in routine sdf_stage1 line 27 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       dlr_reg       | Flip-flop |  480  |  Y  | N  | N  | N  | N  | N  | N  |
+|       dli_reg       | Flip-flop |  480  |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'sdf_stage2'. (HDL-193)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:37: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:38: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:39: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:40: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:51: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:52: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:55: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:56: signed to unsigned part selection occurs. (VER-318)
+
+Inferred memory devices in process
+	in routine sdf_stage2 line 53 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       dlr_reg       | Flip-flop |  256  |  Y  | N  | N  | N  | N  | N  | N  |
+|       dli_reg       | Flip-flop |  256  |  Y  | N  | N  | N  | N  | N  | N  |
+|       yr_reg        | Flip-flop |  16   |  Y  | N  | N  | N  | N  | N  | N  |
+|       yi_reg        | Flip-flop |  16   |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'w8rot3'. (HDL-193)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:191: signed to unsigned part selection occurs. (VER-318)
+
+Statistics for case statements in always block at line 177 in file
+	'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'
+===============================================
+|           Line           |  full/ parallel  |
+===============================================
+|           178            |    auto/auto     |
+===============================================
+
+Inferred memory devices in process
+	in routine w8rot3 line 177 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|        V_reg        | Flip-flop |  17   |  Y  | N  | N  | N  | N  | N  | N  |
+|        U_reg        | Flip-flop |  17   |  Y  | N  | N  | N  | N  | N  | N  |
+|       m1_reg        | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+|       s1_reg        | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+
+Inferred memory devices in process
+	in routine w8rot3 line 191 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       p0r_reg       | Flip-flop |  17   |  Y  | N  | N  | N  | N  | N  | N  |
+|       p0i_reg       | Flip-flop |  17   |  Y  | N  | N  | N  | N  | N  | N  |
+|       p0n_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'sdf_stage3'. (HDL-193)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:65: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:66: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:67: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:68: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:79: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:80: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:83: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:84: signed to unsigned part selection occurs. (VER-318)
+
+Inferred memory devices in process
+	in routine sdf_stage3 line 81 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       dlr_reg       | Flip-flop |  136  |  Y  | N  | N  | N  | N  | N  | N  |
+|       dli_reg       | Flip-flop |  136  |  Y  | N  | N  | N  | N  | N  | N  |
+|       yr_reg        | Flip-flop |  17   |  Y  | N  | N  | N  | N  | N  | N  |
+|       yi_reg        | Flip-flop |  17   |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'w64mul'. (HDL-193)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:304: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:227: DEFAULT branch of CASE statement cannot be reached. (ELAB-311)
+
+Statistics for case statements in always block at line 226 in file
+	'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'
+===============================================
+|           Line           |  full/ parallel  |
+===============================================
+|           227            |    auto/auto     |
+===============================================
+
+Inferred memory devices in process
+	in routine w64mul line 304 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       p0r_reg       | Flip-flop |  17   |  Y  | N  | N  | N  | N  | N  | N  |
+|       p0i_reg       | Flip-flop |  17   |  Y  | N  | N  | N  | N  | N  | N  |
+|       p0n_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+
+Inferred memory devices in process
+	in routine w64mul line 306 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       p1r_reg       | Flip-flop |  17   |  Y  | N  | N  | N  | N  | N  | N  |
+|       p1i_reg       | Flip-flop |  17   |  Y  | N  | N  | N  | N  | N  | N  |
+|       p1n_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+
+Inferred memory devices in process
+	in routine w64mul line 308 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       p2r_reg       | Flip-flop |  17   |  Y  | N  | N  | N  | N  | N  | N  |
+|       p2i_reg       | Flip-flop |  17   |  Y  | N  | N  | N  | N  | N  | N  |
+|       p2n_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'sdf_stage4'. (HDL-193)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:93: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:94: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:95: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:96: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:107: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:108: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:111: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:112: signed to unsigned part selection occurs. (VER-318)
+
+Inferred memory devices in process
+	in routine sdf_stage4 line 109 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       dlr_reg       | Flip-flop |  72   |  Y  | N  | N  | N  | N  | N  | N  |
+|       dli_reg       | Flip-flop |  72   |  Y  | N  | N  | N  | N  | N  | N  |
+|       yr_reg        | Flip-flop |  18   |  Y  | N  | N  | N  | N  | N  | N  |
+|       yi_reg        | Flip-flop |  18   |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'sdf_stage5'. (HDL-193)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:121: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:122: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:123: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:124: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:135: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:136: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:139: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:140: signed to unsigned part selection occurs. (VER-318)
+
+Inferred memory devices in process
+	in routine sdf_stage5 line 137 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       dlr_reg       | Flip-flop |  36   |  Y  | N  | N  | N  | N  | N  | N  |
+|       dli_reg       | Flip-flop |  36   |  Y  | N  | N  | N  | N  | N  | N  |
+|       yr_reg        | Flip-flop |  18   |  Y  | N  | N  | N  | N  | N  | N  |
+|       yi_reg        | Flip-flop |  18   |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'w8rot6'. (HDL-193)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:216: signed to unsigned part selection occurs. (VER-318)
+
+Statistics for case statements in always block at line 202 in file
+	'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'
+===============================================
+|           Line           |  full/ parallel  |
+===============================================
+|           203            |    auto/auto     |
+===============================================
+
+Inferred memory devices in process
+	in routine w8rot6 line 202 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|        V_reg        | Flip-flop |  19   |  Y  | N  | N  | N  | N  | N  | N  |
+|        U_reg        | Flip-flop |  19   |  Y  | N  | N  | N  | N  | N  | N  |
+|       m1_reg        | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+|       s1_reg        | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+
+Inferred memory devices in process
+	in routine w8rot6 line 216 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       p0r_reg       | Flip-flop |  18   |  Y  | N  | N  | N  | N  | N  | N  |
+|       p0i_reg       | Flip-flop |  18   |  Y  | N  | N  | N  | N  | N  | N  |
+|       p0n_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'sdf_stage6'. (HDL-193)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:149: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:150: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:151: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:152: unsigned to signed assignment occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:163: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:164: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:165: signed to unsigned part selection occurs. (VER-318)
+Warning:  /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v:166: signed to unsigned part selection occurs. (VER-318)
+
+Inferred memory devices in process
+	in routine sdf_stage6 line 167 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       dlr_reg       | Flip-flop |  18   |  Y  | N  | N  | N  | N  | N  | N  |
+|       dli_reg       | Flip-flop |  18   |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'rsegctl' instantiated from design 'fft64_top' with
+	the parameters "TRIG=3,NB=4". (HDL-193)
+
+Inferred memory devices in process
+	in routine rsegctl_TRIG3_NB4 line 360 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       cnt_reg       | Flip-flop |   4   |  Y  | N  | N  | N  | N  | N  | N  |
+|      pend_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'rsegctl' instantiated from design 'fft64_top' with
+	the parameters "TRIG=13,NB=5". (HDL-193)
+
+Inferred memory devices in process
+	in routine rsegctl_TRIG13_NB5 line 360 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       cnt_reg       | Flip-flop |   5   |  Y  | N  | N  | N  | N  | N  | N  |
+|      pend_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'rsegctl' instantiated from design 'fft64_top' with
+	the parameters "TRIG=30,NB=6". (HDL-193)
+
+Inferred memory devices in process
+	in routine rsegctl_TRIG30_NB6 line 360 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       cnt_reg       | Flip-flop |   6   |  Y  | N  | N  | N  | N  | N  | N  |
+|      pend_reg       | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'bswap32'. (HDL-193)
+
+Inferred memory devices in process
+	in routine bswap32 line 318 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       dl_reg        | Flip-flop |  136  |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'bswap41'. (HDL-193)
+
+Inferred memory devices in process
+	in routine bswap41 line 326 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       dl_reg        | Flip-flop |  476  |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Information: Building the design 'bswap50'. (HDL-193)
+
+Inferred memory devices in process
+	in routine bswap50 line 334 in file
+		'/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/rtl.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       dl_reg        | Flip-flop | 1054  |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully.
+Current design is 'fft64_top'.
+
+  Linking design 'fft64_top'
+  Using the following designs and libraries:
+  --------------------------------------------------------------------------
+  * (21 designs)              /mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/fft64_top.db, etc
+  asap7sc7p5t_ALL_RVT_TT_nldm_211120 (library) /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db
+  asap7sc7p5t_SEQ_RVT_TT_nldm_220123 (library) /mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db
+
+Information: Uniquified 2 instances of design 'rsegctl_TRIG2_NB3'. (OPT-1056)
+Information: Performing power optimization. (PWR-850)
+Analyzing: "/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db"
+Analyzing: "/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db"
+Library analysis succeeded.
+Loading db file '/usr/synopsys/dc-L-2016.03-SP1/libraries/syn/dw_foundation.sldb'
+Warning: DesignWare synthetic library dw_foundation.sldb is added to the synthetic_library in the current command. (UISN-40)
+Information: Evaluating DesignWare library utilization. (UISN-27)
+
+============================================================================
+| DesignWare Building Block Library  |         Version         | Available |
+============================================================================
+| Basic DW Building Blocks           | L-2016.03-DWBB_201603.1 |     *     |
+| Licensed DW Building Blocks        | L-2016.03-DWBB_201603.1 |     *     |
+============================================================================
+
+Information: Sequential output inversion is enabled.  SVF file must be used for formal verification. (OPT-1208)
+Information: Retiming is enabled. SVF file must be used for formal verification. (OPT-1210)
+
+Information: There are 54 potential problems in your design. Please run 'check_design' for more information. (LINT-99)
+
+  Simplifying Design 'fft64_top'
+
+  Loading target library 'asap7sc7p5t_SEQ_RVT_TT_nldm_220123'
+Loaded alib file './alib-52/comb_rvt_tt.db.alib'
+Loaded alib file './alib-52/seq_rvt_tt.db.alib' (placeholder)
+  Building model 'DW01_NAND2'
+Information: Ungrouping hierarchy ctl1 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy ctl2 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy ctl3 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy ctl4 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy ctl5 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy u_s1 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy u_s2 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy u_r3 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy u_s3 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy u_s4 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy u_s5 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy u_r6 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy u_s6 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy ctl7 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy ctl8 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy ctl9 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy u_b32 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy u_b41 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy u_b50 before Pass 1 (OPT-776)
+Information: Ungrouping hierarchy ctl6 before Pass 1 (OPT-776)
+Information: Ungrouping 20 of 22 hierarchies before Pass 1 (OPT-775)
+Information: State dependent leakage is now switched from on to off.
+
+  Beginning Pass 1 Mapping
+  ------------------------
+  Processing 'fft64_top'
+Information: Added key list 'DesignWare' to design 'fft64_top'. (DDB-72)
+ Implement Synthetic for 'fft64_top'.
+  Processing 'w64mul'
+ Implement Synthetic for 'w64mul'.
+Memory usage for J1 task 300 Mbytes -- main task 279 Mbytes.
+
+  Updating timing information
+Information: Updating design information... (UID-85)
+Information: The library cell 'TIELOx1_ASAP7_75t_R' in the library 'asap7sc7p5t_ALL_RVT_TT_nldm_211120' is not characterized for internal power. (PWR-536)
+Information: The library cell 'TIEHIx1_ASAP7_75t_R' in the library 'asap7sc7p5t_ALL_RVT_TT_nldm_211120' is not characterized for internal power. (PWR-536)
+Information: The target library(s) contains cell(s), other than black boxes, that are not characterized for internal power. (PWR-24)
+
+  Beginning Mapping Optimizations  (Ultra High effort)
+  -------------------------------
+Information: Checking pipeline property of cell u_m4 (design w64mul). (RTDC-137)
+Information: cell u_m4 (design w64mul) is a pipeline. (RTDC-139)
+  Mapping Optimization (Phase 1)
+Information: Checkpoint guidance is generated in the .svf file. (INFO-122)
+  Retiming w64mul (u_m4)
+  Preferred flip-flop is DFFHQx4_ASAP7_75t_R with setup = 11.41
+
+
+  Retiming base-clock clk, rising edge.
+  Beginning minimum period retiming ...
+  ... minimum period retiming done.
+  Beginning minimum area retiming step 1 ...
+  ... minimum area retiming step 1 done.
+  Beginning minimum area retiming step 2 ...
+  5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100% 
+  ... minimum area retiming step 2 done.
+  Beginning minimum area retiming step 3 ...
+  10% 20% 30% 40% 50% 60% 70% ... 100% 
+  ... minimum area retiming step 3 done.
+  Beginning final register move ...
+  ... final register move done.
+  Lower bound estimate = 469.61
+  Critical path length = 469.61
+  Clock correction = 178.73 (clock-to-Q delay = 67.32, setup = 11.41, uncertainty = 100.00)
+  Mapping Optimization (Phase 2)
+
+  Beginning Constant Register Removal
+  -----------------------------------
+
+  Beginning Global Optimizations
+  ------------------------------
+  Numerical Synthesis (Phase 1)
+  Numerical Synthesis (Phase 2)
+  Global Optimization (Phase 1)
+  Global Optimization (Phase 2)
+  Global Optimization (Phase 3)
+  Global Optimization (Phase 4)
+  Global Optimization (Phase 5)
+  Global Optimization (Phase 6)
+  Global Optimization (Phase 7)
+  Global Optimization (Phase 8)
+  Global Optimization (Phase 9)
+  Global Optimization (Phase 10)
+  Global Optimization (Phase 11)
+  Global Optimization (Phase 12)
+  Global Optimization (Phase 13)
+  Global Optimization (Phase 14)
+  Global Optimization (Phase 15)
+  Global Optimization (Phase 16)
+  Global Optimization (Phase 17)
+  Global Optimization (Phase 18)
+  Global Optimization (Phase 19)
+  Global Optimization (Phase 20)
+  Global Optimization (Phase 21)
+  Global Optimization (Phase 22)
+  Global Optimization (Phase 23)
+  Global Optimization (Phase 24)
+  Global Optimization (Phase 25)
+  Global Optimization (Phase 26)
+  Global Optimization (Phase 27)
+  Global Optimization (Phase 28)
+  Global Optimization (Phase 29)
+  Global Optimization (Phase 30)
+  Global Optimization (Phase 31)
+Information: Added key list 'DesignWare' to design 'w64mul'. (DDB-72)
+
+  Beginning Isolate Ports
+  -----------------------
+
+  Beginning Delay Optimization
+  ----------------------------
+
+                                  TOTAL                                                            
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY 
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST    
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:21    2187.0    194.06   14825.8      67.7                           2099383.5000      0.00  
+    0:00:24    2200.4     10.76     662.1      59.0                           2126076.5000      0.00  
+    0:00:24    2200.4     10.76     662.1      59.0                           2126076.5000      0.00  
+    0:00:24    2200.4     10.76     662.1      59.0                           2126076.5000      0.00  
+
+  Beginning WLM Backend Optimization
+  --------------------------------------
+    0:00:26    2157.1     87.95    3542.1      45.5                           2054756.1250      0.00  
+    0:00:26    2156.6     86.56    3363.1      45.5                           2053860.7500      0.00  
+    0:00:27    1999.8     70.52    2883.2       0.0                           1690392.1250      0.00  
+    0:00:27    1999.8     70.52    2883.2       0.0                           1690392.1250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+
+
+  Beginning Leakage Power Optimization  (max_leakage_power 0)
+  ------------------------------------
+
+                                  TOTAL                                                            
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY 
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST    
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:30    2010.6      0.00       0.0       0.0                           1700840.6250      0.00  
+  Global Optimization (Phase 32)
+  Global Optimization (Phase 33)
+  Global Optimization (Phase 34)
+  Global Optimization (Phase 35)
+  Global Optimization (Phase 36)
+  Global Optimization (Phase 37)
+  Global Optimization (Phase 38)
+  Global Optimization (Phase 39)
+  Global Optimization (Phase 40)
+  Global Optimization (Phase 41)
+  Global Optimization (Phase 42)
+  Global Optimization (Phase 43)
+  Global Optimization (Phase 44)
+  Global Optimization (Phase 45)
+  Global Optimization (Phase 46)
+  Global Optimization (Phase 47)
+    0:00:33    1971.9      0.00       0.0       0.0                           1585982.5000      0.00  
+    0:00:33    1971.9      0.00       0.0       0.0                           1585982.5000      0.00  
+    0:00:33    1971.9      0.00       0.0       0.0                           1585982.5000      0.00  
+    0:00:33    1969.3      0.33       1.7       0.0                           1576925.1250      0.00  
+    0:00:33    1969.3      0.33       1.7       0.0                           1576925.1250      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+    0:00:34    1970.4      0.00       0.0       0.0                           1579900.5000      0.00  
+
+                                  TOTAL                                                            
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY 
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST    
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:34    1970.9      0.00       0.0       0.0                           1580070.3750      0.00  
+    0:00:35    1967.5      2.68       9.2       0.0                           1573992.0000      0.00  
+    0:00:35    1967.4      0.00       0.0       0.0                           1574260.8750      0.00  
+    0:00:35    1967.4      0.00       0.0       0.0                           1574260.8750      0.00  
+    0:00:35    1966.7      0.00       0.0       0.0                           1571624.1250      0.00  
+    0:00:36    1965.5      0.00       0.0       0.0                           1567941.6250      0.00  
+    0:00:36    1965.5      0.00       0.0       0.0                           1567941.6250      0.00  
+    0:00:36    1965.5      0.00       0.0       0.0                           1567941.6250      0.00  
+    0:00:36    1965.5      0.00       0.0       0.0                           1567941.6250      0.00  
+    0:00:36    1964.5      0.00       0.0       0.0                           1565834.2500      0.00  
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db'
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db'
+
+
+Note: Symbol # after min delay cost means estimated hold TNS across all active scenarios 
+
+
+  Optimization Complete
+  ---------------------
+Warning: Design 'fft64_top' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+     Net 'clk': 4222 load(s), 1 driver(s)
+  Loading target library 'asap7sc7p5t_SEQ_RVT_TT_nldm_220123'
+Information: State dependent leakage is now switched from off to on.
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Information: Performing power optimization. (PWR-850)
+Alib files are up-to-date.
+Warning: DesignWare synthetic library dw_foundation.sldb is added to the synthetic_library in the current command. (UISN-40)
+
+Loaded alib file './alib-52/comb_rvt_tt.db.alib'
+Loaded alib file './alib-52/seq_rvt_tt.db.alib' (placeholder)
+
+  Updating timing information
+Information: Updating design information... (UID-85)
+Information: The library cell 'TIELOx1_ASAP7_75t_R' in the library 'asap7sc7p5t_ALL_RVT_TT_nldm_211120' is not characterized for internal power. (PWR-536)
+Information: The library cell 'TIEHIx1_ASAP7_75t_R' in the library 'asap7sc7p5t_ALL_RVT_TT_nldm_211120' is not characterized for internal power. (PWR-536)
+Information: The target library(s) contains cell(s), other than black boxes, that are not characterized for internal power. (PWR-24)
+
+
+  Beginning Area Optimization
+  -----------------------------
+
+                                  TOTAL                                                            
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY 
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST    
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:01    1964.5      0.00       0.0       0.0                           1565834.2500      0.00  
+    0:00:05    1957.0      0.00       0.0       0.0                           1560904.3750      0.00  
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db'
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db'
+
+
+Note: Symbol # after min delay cost means estimated hold TNS across all active scenarios 
+
+
+  Optimization Complete
+  ---------------------
+Warning: Design 'fft64_top' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+     Net 'clk': 4222 load(s), 1 driver(s)
+Information: Performing power optimization. (PWR-850)
+Alib files are up-to-date.
+Warning: DesignWare synthetic library dw_foundation.sldb is added to the synthetic_library in the current command. (UISN-40)
+
+Information: State dependent leakage is now switched from on to off.
+
+  Beginning Pass 1 Mapping  (Incremental)
+  ------------------------
+
+  Updating timing information
+Information: Updating design information... (UID-85)
+Information: The library cell 'TIELOx1_ASAP7_75t_R' in the library 'asap7sc7p5t_ALL_RVT_TT_nldm_211120' is not characterized for internal power. (PWR-536)
+Information: The library cell 'TIEHIx1_ASAP7_75t_R' in the library 'asap7sc7p5t_ALL_RVT_TT_nldm_211120' is not characterized for internal power. (PWR-536)
+Information: The target library(s) contains cell(s), other than black boxes, that are not characterized for internal power. (PWR-24)
+
+                                  TOTAL                                                            
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY 
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST    
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:01    1957.0      0.00       0.0       0.0                           1560904.3750      0.00  
+    0:00:01    1957.0      0.00       0.0       0.0                           1560904.3750      0.00  
+
+  Beginning Mapping Optimizations  (Ultra High effort)  (Incremental)
+  -------------------------------
+
+  Beginning Incremental Implementation Selection
+  ----------------------------------------------
+    0:00:02    1956.5      0.00       0.0       0.0                           1560732.8750      0.00  
+
+  Beginning Delay Optimization Phase
+  ----------------------------------
+
+                                  TOTAL                                                            
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY 
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST    
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:02    1956.5      0.00       0.0       0.0                           1560732.8750      0.00  
+    0:00:02    1957.0      0.00       0.0       0.0                           1560749.5000      0.00  
+    0:00:02    1956.9      0.00       0.0       0.0                           1558791.8750      0.00  
+    0:00:02    1956.9      0.00       0.0       0.0                           1558791.8750      0.00  
+    0:00:02    1956.9      0.00       0.0       0.0                           1558791.8750      0.00  
+    0:00:02    1956.9      0.00       0.0       0.0                           1558791.8750      0.00  
+    0:00:02    1956.9      0.00       0.0       0.0                           1558791.8750      0.00  
+
+  Beginning Delay Optimization
+  ----------------------------
+    0:00:02    1956.9      0.00       0.0       0.0                           1558791.8750      0.00  
+    0:00:02    1956.9      0.00       0.0       0.0                           1558791.8750      0.00  
+    0:00:02    1956.9      0.00       0.0       0.0                           1558791.8750      0.00  
+    0:00:02    1956.9      0.00       0.0       0.0                           1558791.8750      0.00  
+    0:00:02    1956.9      0.00       0.0       0.0                           1558791.8750      0.00  
+    0:00:02    1956.9      0.00       0.0       0.0                           1558791.8750      0.00  
+    0:00:03    1956.9      0.00       0.0       0.0                           1558791.8750      0.00  
+    0:00:03    1956.9      0.00       0.0       0.0                           1558706.6250      0.00  
+    0:00:03    1956.9      0.00       0.0       0.0                           1558706.6250      0.00  
+    0:00:03    1956.9      0.00       0.0       0.0                           1558706.6250      0.00  
+    0:00:03    1956.9      0.00       0.0       0.0                           1558706.6250      0.00  
+    0:00:03    1956.9      0.00       0.0       0.0                           1558706.6250      0.00  
+    0:00:03    1956.9      0.00       0.0       0.0                           1558706.6250      0.00  
+    0:00:03    1956.9      0.00       0.0       0.0                           1558706.6250      0.00  
+    0:00:03    1956.9      0.00       0.0       0.0                           1558706.6250      0.00  
+    0:00:03    1956.9      0.00       0.0       0.0                           1558706.6250      0.00  
+    0:00:03    1956.9      0.00       0.0       0.0                           1558706.6250      0.00  
+    0:00:04    1956.9      0.00       0.0       0.0                           1558681.0000      0.00  
+    0:00:04    1956.9      0.00       0.0       0.0                           1558681.0000      0.00  
+    0:00:04    1956.9      0.00       0.0       0.0                           1558681.0000      0.00  
+    0:00:04    1956.9      0.00       0.0       0.0                           1558681.0000      0.00  
+    0:00:04    1956.9      0.00       0.0       0.0                           1558681.0000      0.00  
+    0:00:04    1956.9      0.00       0.0       0.0                           1558681.0000      0.00  
+    0:00:04    1956.9      0.00       0.0       0.0                           1558681.0000      0.00  
+    0:00:04    1956.9      0.00       0.0       0.0                           1558681.0000      0.00  
+    0:00:04    1956.9      0.00       0.0       0.0                           1558681.0000      0.00  
+    0:00:04    1957.0      0.00       0.0       0.0                           1558835.8750      0.00  
+
+                                  TOTAL                                                            
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY 
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST    
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:04    1957.0      0.00       0.0       0.0                           1558835.8750      0.00  
+    0:00:04    1957.0      0.00       0.0       0.0                           1558835.8750      0.00  
+    0:00:05    1956.3      0.00       0.0       0.0                           1555885.8750      0.00  
+    0:00:05    1956.3      0.00       0.0       0.0                           1555885.8750      0.00  
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db'
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db'
+
+
+Note: Symbol # after min delay cost means estimated hold TNS across all active scenarios 
+
+
+  Optimization Complete
+  ---------------------
+Warning: Design 'fft64_top' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+     Net 'clk': 4222 load(s), 1 driver(s)
+Information: State dependent leakage is now switched from off to on.
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Information: Performing power optimization. (PWR-850)
+Alib files are up-to-date.
+Warning: DesignWare synthetic library dw_foundation.sldb is added to the synthetic_library in the current command. (UISN-40)
+
+
+  Updating timing information
+Information: Updating design information... (UID-85)
+Information: The library cell 'TIELOx1_ASAP7_75t_R' in the library 'asap7sc7p5t_ALL_RVT_TT_nldm_211120' is not characterized for internal power. (PWR-536)
+Information: The library cell 'TIEHIx1_ASAP7_75t_R' in the library 'asap7sc7p5t_ALL_RVT_TT_nldm_211120' is not characterized for internal power. (PWR-536)
+Information: The target library(s) contains cell(s), other than black boxes, that are not characterized for internal power. (PWR-24)
+
+
+  Beginning Area Optimization
+  -----------------------------
+
+                                  TOTAL                                                            
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY 
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST    
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:01    1956.3      0.00       0.0       0.0                           1555885.8750      0.00  
+    0:00:04    1955.6      0.00       0.0       0.0                           1554890.8750      0.00  
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db'
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db'
+
+
+Note: Symbol # after min delay cost means estimated hold TNS across all active scenarios 
+
+
+  Optimization Complete
+  ---------------------
+Warning: Design 'fft64_top' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+     Net 'clk': 4222 load(s), 1 driver(s)
+Information: Performing power optimization. (PWR-850)
+Alib files are up-to-date.
+Warning: DesignWare synthetic library dw_foundation.sldb is added to the synthetic_library in the current command. (UISN-40)
+
+Information: State dependent leakage is now switched from on to off.
+
+  Beginning Pass 1 Mapping  (Incremental)
+  ------------------------
+
+  Updating timing information
+Information: Updating design information... (UID-85)
+Information: The library cell 'TIELOx1_ASAP7_75t_R' in the library 'asap7sc7p5t_ALL_RVT_TT_nldm_211120' is not characterized for internal power. (PWR-536)
+Information: The library cell 'TIEHIx1_ASAP7_75t_R' in the library 'asap7sc7p5t_ALL_RVT_TT_nldm_211120' is not characterized for internal power. (PWR-536)
+Information: The target library(s) contains cell(s), other than black boxes, that are not characterized for internal power. (PWR-24)
+
+  Beginning Mapping Optimizations  (Incremental)
+  -------------------------------
+
+  Beginning Delay Optimization Phase
+  ----------------------------------
+
+                                  TOTAL                                                            
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY 
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST    
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:01    1955.1      0.00       0.0       0.0                           1554719.5000      0.00  
+    0:00:01    1955.5      0.00       0.0       0.0                           1554736.0000      0.00  
+    0:00:01    1955.5      0.00       0.0       0.0                           1554736.0000      0.00  
+    0:00:01    1955.5      0.00       0.0       0.0                           1554736.0000      0.00  
+    0:00:01    1955.5      0.00       0.0       0.0                           1554736.0000      0.00  
+Information: State dependent leakage is now switched from off to on.
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+    0:00:02    1955.6      0.00       0.0       0.0                           1563296.0000      0.00  
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/comb_rvt_tt.db'
+Loading db file '/mnt/mydata/.fft64/tech/99619e6e51b75f151556/db/seq_rvt_tt.db'
+
+
+Note: Symbol # after min delay cost means estimated hold TNS across all active scenarios 
+
+
+  Optimization Complete
+  ---------------------
+Warning: Design 'fft64_top' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+     Net 'clk': 4222 load(s), 1 driver(s)
+Current design is 'fft64_top'.
+Writing verilog file '/mnt/mydata/opus_work/runs/v7b_rt_auto_iter_545/mapped.v'.
+exit 0
+
+Memory usage for main task 344 Mbytes.
+Memory usage for this session 344 Mbytes.
+CPU usage for this session 97 seconds ( 0.03 hours ).
+
+Thank you...

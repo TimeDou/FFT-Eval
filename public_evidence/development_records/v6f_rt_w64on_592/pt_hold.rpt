@@ -1,0 +1,106 @@
+****************************************
+Report : timing
+	-path_type full
+	-delay_type min
+	-slack_lesser_than 100000.0000
+	-max_paths 3
+	-sort_by slack
+Design : fft64_top
+Version: M-2016.12-SP1
+Date   : Mon Nov 23 12:52:42 2026
+****************************************
+
+
+  Startpoint: in_im[15] (input port clocked by clk)
+  Endpoint: u_s1_dli_reg_14_
+               (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Point                                                   Incr       Path
+  ------------------------------------------------------------------------------
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  input external delay                                  0.0000     0.0000 r
+  in_im[15] (in)                                        0.0000     0.0000 r
+  u_s1_U62/Y (OAI22xp33_ASAP7_75t_R)                   10.8884    10.8884 f
+  u_s1_U277/Y (HB1xp67_ASAP7_75t_R)                    19.4867    30.3751 f
+  u_s1_dli_reg_14_/D (DFFHQNx1_ASAP7_75t_R)             0.0000    30.3751 f
+  data arrival time                                               30.3751
+
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  clock reconvergence pessimism                         0.0000     0.0000
+  u_s1_dli_reg_14_/CLK (DFFHQNx1_ASAP7_75t_R)                      0.0000 r
+  library hold time                                    14.5215    14.5215
+  data required time                                              14.5215
+  ------------------------------------------------------------------------------
+  data required time                                              14.5215
+  data arrival time                                              -30.3751
+  ------------------------------------------------------------------------------
+  slack (MET)                                                     15.8536
+
+
+  Startpoint: in_valid (input port clocked by clk)
+  Endpoint: ctl1_pend_reg
+               (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Point                                                   Incr       Path
+  ------------------------------------------------------------------------------
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  input external delay                                  0.0000     0.0000 r
+  in_valid (in)                                         0.0000     0.0000 r
+  U234/Y (AND2x2_ASAP7_75t_R)                          21.8600    21.8600 r
+  ctl1_U22/Y (A2O1A1Ixp33_ASAP7_75t_R)                  9.1671    31.0271 f
+  ctl1_pend_reg/D (DFFHQNx1_ASAP7_75t_R)                0.0000    31.0271 f
+  data arrival time                                               31.0271
+
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  clock reconvergence pessimism                         0.0000     0.0000
+  ctl1_pend_reg/CLK (DFFHQNx1_ASAP7_75t_R)                         0.0000 r
+  library hold time                                    14.3814    14.3814
+  data required time                                              14.3814
+  ------------------------------------------------------------------------------
+  data required time                                              14.3814
+  data arrival time                                              -31.0271
+  ------------------------------------------------------------------------------
+  slack (MET)                                                     16.6457
+
+
+  Startpoint: in_im[0] (input port clocked by clk)
+  Endpoint: u_s1_dli_reg_0_
+               (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Point                                                   Incr       Path
+  ------------------------------------------------------------------------------
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  input external delay                                  0.0000     0.0000 r
+  in_im[0] (in)                                         0.0000     0.0000 r
+  U233/Y (INVxp67_ASAP7_75t_R)                          9.5134     9.5134 f
+  U301/Y (NAND2xp5_ASAP7_75t_R)                        15.7435    25.2569 r
+  u_s1_U263/Y (OAI22xp5_ASAP7_75t_R)                   12.0412    37.2981 f
+  u_s1_dli_reg_0_/D (DFFHQNx1_ASAP7_75t_R)              0.0000    37.2981 f
+  data arrival time                                               37.2981
+
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  clock reconvergence pessimism                         0.0000     0.0000
+  u_s1_dli_reg_0_/CLK (DFFHQNx1_ASAP7_75t_R)                       0.0000 r
+  library hold time                                    14.5084    14.5084
+  data required time                                              14.5084
+  ------------------------------------------------------------------------------
+  data required time                                              14.5084
+  data arrival time                                              -37.2981
+  ------------------------------------------------------------------------------
+  slack (MET)                                                     22.7897
+
+Warning: report_timing has satisfied the max_paths criteria. There are 4082 further endpoints which have paths of interest with slack less than 100000.0000 that were not considered when generating this report. (UITE-502)
+
+1

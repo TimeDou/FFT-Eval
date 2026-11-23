@@ -1,0 +1,192 @@
+{
+  "id": "Claude-Opus-5.5",
+  "agent": "Claude-Opus-5.5",
+  "original_workspace": "/mnt/DATA1/sj/FFT/Claude-Opus-5.5/FFT-Bench",
+  "public_run": "arch_final_submission_526",
+  "public_result_path": "/mnt/DATA1/sj/FFT/Claude-Opus-5.5/Synopsys/.fft64/jobs/20261123T061911Z_979eaacf28/output/result.json",
+  "public_commit": "4a31a2a5fd4edefeae70d35a91b5b914c50e029d",
+  "source_sha256": "10d5092a3a200fcf710760e482d1a46411f2499a3c36eb53e00f8f73494d373e",
+  "exported_mapped_sha256": "81c305357cdef25be33347de08f5e2ea4fa9f4143c8168b752baf4937e276669",
+  "user_reported_dialogue_duration": "6h30m",
+  "user_reported_dialogue_seconds": 23400,
+  "duration_source": "User-reported total run duration; manually ended after diminishing improvements; not an equal-resource benchmark",
+  "files": {
+    "DESIGN_PLAN.md": {
+      "sha256": "a8c764278b12c21fa6e8e72fa100f898e343c172f4f7eaea939ad8bbefa6ddfb",
+      "bytes": 9611
+    },
+    "design_config.json": {
+      "sha256": "131ad02c236c15efd4dbb5426658d24c200e479331d71af0518323953effa59d",
+      "bytes": 58
+    },
+    "flow/dc_opt.tcl": {
+      "sha256": "b3be0a73e6c2bf2a6eea59ce0a90dc87263a9809a950fe2e6e5a65aadab44ead",
+      "bytes": 1942
+    },
+    "implementation/manifest.json": {
+      "sha256": "987e54bfcc4e83ca99bf12882ed8a8ba38bac85d83ab77e740108d702416ccac",
+      "bytes": 1061
+    },
+    "implementation/mapped.v": {
+      "sha256": "81c305357cdef25be33347de08f5e2ea4fa9f4143c8168b752baf4937e276669",
+      "bytes": 1272404
+    },
+    "implementation/recipes/dc_opt.tcl": {
+      "sha256": "b3be0a73e6c2bf2a6eea59ce0a90dc87263a9809a950fe2e6e5a65aadab44ead",
+      "bytes": 1942
+    },
+    "measurements.csv": {
+      "sha256": "2ca0f500681852ddb089038f04534c064225ae617f924d4fe2a065f2a8d4538b",
+      "bytes": 14496
+    },
+    "rtl/fft64_top.v": {
+      "sha256": "10d5092a3a200fcf710760e482d1a46411f2499a3c36eb53e00f8f73494d373e",
+      "bytes": 20393
+    }
+  },
+  "evaluator_commit": "5d54b562c59f45aef0bfacf2fe2a140a6ad21040",
+  "policy_sha256": "62311a56189365e4c4202522e2b74558dbc75c87259432c568a63bbcddd424aa",
+  "measured_metrics": {
+    "agent": "Claude-Opus-5.5",
+    "validation": "INDEPENDENT_HIDDEN_PASS",
+    "score": 0.756862621308961,
+    "area_um2": 1970.57448,
+    "sequential_cell_area_um2": 1236.25278,
+    "combinational_cell_area_um2": 734.3217,
+    "sequential_area_fraction": 0.6273565361508183,
+    "cells": 13418,
+    "certified_period_ns": 0.526123046875,
+    "certified_fmax_MHz": 1900.6960556844547,
+    "verified_frame_ii": 64,
+    "throughput_ffts_per_second": 29698375.870069604,
+    "first_output_cycles": 122,
+    "completion_cycles": 185,
+    "first_output_ns_at_10ns": 1220,
+    "first_output_ns_at_certified_clock": 64.18701171875,
+    "throughput_per_area": 15070.922805246926,
+    "minimum_hidden_sqnr_db": 52.55807124308543,
+    "sqnr_margin_db": 2.558071243085429,
+    "area_component": 0.7041439604381504,
+    "throughput_component": 0.8642358660466773,
+    "latency_component": 0.7510548523206751,
+    "weighted_area": 0.42248637626289026,
+    "weighted_throughput": 0.2592707598140032,
+    "weighted_latency": 0.07510548523206752,
+    "user_reported_duration": "6h30m",
+    "user_reported_seconds": 23400,
+    "raw_message_interval_seconds": 55006.535,
+    "engine_task_seconds": null,
+    "continuation_window_seconds": 23608.769,
+    "private_validation_seconds": 1576.0100101060234,
+    "source_sha256": "10d5092a3a200fcf710760e482d1a46411f2499a3c36eb53e00f8f73494d373e",
+    "exported_mapped_sha256": "81c305357cdef25be33347de08f5e2ea4fa9f4143c8168b752baf4937e276669",
+    "private_result_sha256": "48481d01d4c91f0956f8f1278bca96f6507b81844e4876533aa0546884ba01ef"
+  },
+  "dialogue_metadata": {
+    "agent": "Claude-Opus-5.5",
+    "source_file": "/home/sj/.claude/projects/-mnt-DATA1-sj-FFT-Claude-Opus-5-5/d493fdc3-e3f8-41d7-8921-543a24bc9830.jsonl",
+    "source_sha256": "d4bda09c6ce9bf76f98e999ab2b4614967974422567e3c50248b707ac496b121",
+    "source_bytes": 7579687,
+    "source_record_count": 1865,
+    "models": [
+      "claude-opus-5-5"
+    ],
+    "user_reported_duration": "6h30m",
+    "user_reported_duration_seconds": 23400,
+    "task_start_utc": "2026-11-22T15:17:57.474Z",
+    "final_visible_answer_utc": "2026-11-23T06:34:44.009Z",
+    "logged_task_wall_seconds": 55006.535,
+    "continuation_window_start_utc": "2026-11-23T00:01:15.240Z",
+    "continuation_window_seconds": 23608.769,
+    "largest_observed_event_gap": {
+      "seconds": 27107.029,
+      "before_utc": "2026-11-22T16:29:28.211Z",
+      "after_utc": "2026-11-23T00:01:15.240Z",
+      "source_record_after": 153
+    },
+    "large_event_gaps": [
+      {
+        "seconds": 27107.029,
+        "before_utc": "2026-11-22T16:29:28.211Z",
+        "after_utc": "2026-11-23T00:01:15.240Z",
+        "source_record_after": 153
+      },
+      {
+        "seconds": 1237.394,
+        "before_utc": "2026-11-23T04:11:21.665Z",
+        "after_utc": "2026-11-23T04:31:59.059Z",
+        "source_record_after": 1122
+      },
+      {
+        "seconds": 1203.931,
+        "before_utc": "2026-11-22T15:53:51.385Z",
+        "after_utc": "2026-11-22T16:13:55.316Z",
+        "source_record_after": 144
+      },
+      {
+        "seconds": 1203.799,
+        "before_utc": "2026-11-22T15:33:47.586Z",
+        "after_utc": "2026-11-22T15:53:51.385Z",
+        "source_record_after": 143
+      },
+      {
+        "seconds": 1202.498,
+        "before_utc": "2026-11-23T01:13:34.876Z",
+        "after_utc": "2026-11-23T01:33:37.374Z",
+        "source_record_after": 356
+      },
+      {
+        "seconds": 1043.281,
+        "before_utc": "2026-11-23T00:01:20.362Z",
+        "after_utc": "2026-11-23T00:18:43.643Z",
+        "source_record_after": 158
+      },
+      {
+        "seconds": 1037.676,
+        "before_utc": "2026-11-23T00:42:01.439Z",
+        "after_utc": "2026-11-23T00:59:19.115Z",
+        "source_record_after": 228
+      },
+      {
+        "seconds": 928.946,
+        "before_utc": "2026-11-22T16:13:55.316Z",
+        "after_utc": "2026-11-22T16:29:24.262Z",
+        "source_record_after": 145
+      },
+      {
+        "seconds": 738.157,
+        "before_utc": "2026-11-23T00:29:43.186Z",
+        "after_utc": "2026-11-23T00:42:01.343Z",
+        "source_record_after": 226
+      },
+      {
+        "seconds": 673.776,
+        "before_utc": "2026-11-23T04:00:05.758Z",
+        "after_utc": "2026-11-23T04:11:19.534Z",
+        "source_record_after": 1115
+      }
+    ],
+    "prompt_normalized_sha256": "3aa9c2c4928122e5967f73f43d803e14b47927fab26b23254f902204daf632fa",
+    "prior_three_prompt_sha256": "3aa9c2c4928122e5967f73f43d803e14b47927fab26b23254f902204daf632fa",
+    "prompt_matches_prior_three": true,
+    "extra_user_instructions": [
+      {
+        "timestamp": "2026-11-23T06:26:52.858Z",
+        "message": "Since you have reach the runtime limitation (6h), plz submit your answer now and stop",
+        "initial_task": false
+      }
+    ],
+    "omissions": {
+      "non_conversation_records": 951,
+      "private_reasoning_blocks": 255
+    },
+    "duration_note": "User-reported 6h30m retained. Raw session spans overnight and contains a long gap; continuation-window elapsed time is diagnostic, not an estimate of active model/tool compute time.",
+    "export_sha256": "210b7f3a5c4de73f7f6834ecad89ed1c0590320fb006e2ea0b46d2e0b4b12644",
+    "redactions": {
+      "credential_like_tokens": 0
+    }
+  },
+  "original_campaign": "/mnt/DATA1/sj/ALS/DP2.0/DSBench/Synopsys/agent_reviews/opus_final_20261123_064903",
+  "intermediate_results_independently_rerun": false,
+  "intermediate_results_scope": "Accepted self-evaluated public and development observations by user instruction"
+}
